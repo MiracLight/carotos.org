@@ -1,0 +1,80 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base
+  lang="tr"
+  title="Sayfa bulunamadı — CarotOS"
+  description="Aradığınız sayfa bulunamadı."
+>
+  <section class="band band--foam nf">
+    <div class="wrap nf__inner">
+      <img
+        class="nf__img"
+        src="/404-gorsel.png"
+        alt="404 — kaplumbağa yolunu kaybetmiş"
+        width="630"
+        height="375"
+      />
+
+      <h1 class="nf__h1">Bu sayfa yok.</h1>
+      <p class="lede nf__lede">
+        Adres yanlış yazılmış olabilir ya da sayfa taşınmış olabilir.
+      </p>
+      <p class="nf__en" lang="en">
+        This page doesn't exist. The address may be mistyped, or the page may
+        have moved.
+      </p>
+
+      <div class="nf__links">
+        <a class="btn btn--solid" href="/">Ana sayfa</a>
+        <a class="btn btn--ghost" href="/#indir">İndirme</a>
+        <a class="btn btn--ghost" href="/surum-notlari">Sürüm notları</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    min-height: 72vh;
+    display: grid;
+    align-items: center;
+  }
+
+  .nf__inner {
+    text-align: center;
+    max-width: 640px;
+  }
+
+  .nf__img {
+    width: min(100%, 400px);
+    height: auto;
+    margin-bottom: 1.6rem;
+    border-radius: var(--r-md);
+  }
+
+  .nf__h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin-bottom: 0.9rem;
+  }
+
+  .nf__lede {
+    margin-inline: auto;
+  }
+
+  .nf__en {
+    margin: 0.7rem auto 0;
+    font-size: 0.92rem;
+    color: var(--ink-faint);
+    max-width: 46ch;
+  }
+
+  .nf__links {
+    display: flex;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 2.2rem;
+  }
+</style>

@@ -1,0 +1,92 @@
+---
+import "../styles/global.css";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+
+interface Props {
+  lang: "tr" | "en";
+  title: string;
+  description: string;
+}
+
+const { lang, title, description } = Astro.props;
+
+const kanonik = new URL(Astro.url.pathname, Astro.site ?? "https://carotos.org");
+const sosyalGorsel = new URL("/sosyal-kart.png", Astro.site ?? "https://carotos.org");
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <link rel="icon" type="image/svg+xml" href="/carotos-amblem.svg" />
+
+    <link rel="canonical" href={kanonik} />
+
+    <!-- Sosyal paylaşım -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={kanonik} />
+    <meta property="og:site_name" content="CarotOS" />
+    <meta property="og:locale" content={lang === "tr" ? "tr_TR" : "en_US"} />
+    <meta property="og:image" content={sosyalGorsel} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="CarotOS" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={sosyalGorsel} />
+
+    <!-- Diller arası ilişki -->
+    <link rel="alternate" hreflang="tr" href="https://carotos.org/" />
+    <link rel="alternate" hreflang="en" href="https://carotos.org/en" />
+    <link rel="alternate" hreflang="x-default" href="https://carotos.org/" />
+
+    <!-- Yazı tipleri -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <a class="skip" href="#main">
+      {lang === "tr" ? "İçeriğe geç" : "Skip to content"}
+    </a>
+
+    <Nav lang={lang} />
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <Footer lang={lang} />
+
+    <style>
+      .skip {
+        position: absolute;
+        left: -9999px;
+        top: 0;
+        z-index: 100;
+        background: var(--deep);
+        color: #fff;
+        padding: 0.75rem 1.25rem;
+        border-radius: 0 0 var(--r-sm) 0;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .skip:focus {
+        left: 0;
+      }
+    </style>
+  </body>
+</html>

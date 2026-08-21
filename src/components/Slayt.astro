@@ -1,0 +1,550 @@
+---
+/**
+ * Ekran görüntüsü slaytı.
+ *
+ * - Sağ/sol oklar, klavye ok tuşları, dokunmatik kaydırma
+ * - Altta küçük önizleme şeridi (12 slaytta nokta yetersiz kalıyordu)
+ * - Sayaç ve grup etiketi
+ * - Görsele tıklayınca tam boy görüntüleyici açılır (native <dialog>:
+ *   odak tuzağı ve Esc davranışı tarayıcıdan geliyor)
+ *
+ * Görseller kırpılmaz. Sahne 3:2 oranında sabit, görsel içine
+ * object-fit: contain ile sığar; oran farkı kenarlarda çerçeve olur.
+ */
+interface Slayt {
+  src: string;
+  kucuk: string;
+  alt: string;
+  grup: string;
+  baslik: string;
+  aciklama: string;
+}
+
+interface Props {
+  slaytlar: Slayt[];
+  lang: "tr" | "en";
+}
+
+const { slaytlar, lang } = Astro.props;
+
+const m = {
+  tr: {
+    onceki: "Önceki görsel",
+    sonraki: "Sonraki görsel",
+    git: "Şu görsele git",
+    bolge: "Ekran görüntüleri",
+    buyut: "Tam boy görüntüle",
+    kapat: "Kapat",
+    ipucu: "Büyütmek için tıkla",
+  },
+  en: {
+    onceki: "Previous image",
+    sonraki: "Next image",
+    git: "Go to image",
+    bolge: "Screenshots",
+    buyut: "View full size",
+    kapat: "Close",
+    ipucu: "Click to enlarge",
+  },
+}[lang];
+---
+
+<div class="shot" data-shot>
+  <div
+    class="shot__stage"
+    role="group"
+    aria-roledescription="carousel"
+    aria-label={m.bolge}
+  >
+    <div class="shot__track" data-track>
+      {
+        slaytlar.map((s, i) => (
+          <figure class="shot__slide" data-slide aria-hidden={i === 0 ? "false" : "true"}>
+            <button
+              class="shot__zoom"
+              data-zoom
+              type="button"
+              tabindex={i === 0 ? 0 : -1}
+              aria-label={`${s.baslik} — ${m.buyut}`}
+            >
+              <img
+                src={s.src}
+                alt={s.alt}
+                loading={i === 0 ? "eager" : "lazy"}
+                decoding="async"
+              />
+            </button>
+          </figure>
+        ))
+      }
+    </div>
+
+    <button class="shot__nav shot__nav--prev" data-prev type="button" aria-label={m.onceki}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"
+        ><path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round"></path></svg
+      >
+    </button>
+    <button class="shot__nav shot__nav--next" data-next type="button" aria-label={m.sonraki}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"
+        ><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round"></path></svg
+      >
+    </button>
+
+  </div>
+
+  <div class="shot__foot">
+    <p class="shot__ust">
+      <span class="shot__grup mono" data-grup>{slaytlar[0].grup}</span>
+      <span class="shot__ust-sag">
+        <span class="shot__hint">{m.ipucu}</span>
+        <span class="shot__count mono" data-count>1 / {slaytlar.length}</span>
+      </span>
+    </p>
+    <p class="shot__caption" aria-live="polite">
+      <span class="shot__baslik" data-baslik>{slaytlar[0].baslik}</span>
+      <span class="shot__metin" data-metin>{slaytlar[0].aciklama}</span>
+    </p>
+  </div>
+
+  <div class="shot__thumbs" data-thumbs role="tablist" aria-label={m.bolge}>
+    {
+      slaytlar.map((s, i) => (
+        <button
+          class="shot__thumb"
+          data-thumb
+          type="button"
+          role="tab"
+          aria-selected={i === 0 ? "true" : "false"}
+          aria-label={`${m.git}: ${s.baslik}`}
+        >
+          <img src={s.kucuk} alt="" loading="lazy" decoding="async" />
+        </button>
+      ))
+    }
+  </div>
+
+  {/* --- Tam boy görüntüleyici --- */}
+  <dialog class="lb" data-lb aria-label={m.buyut}>
+    <button class="lb__kapat" data-lb-kapat type="button" aria-label={m.kapat}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"
+        ><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round"></path></svg
+      >
+    </button>
+
+    <button class="lb__nav lb__nav--prev" data-lb-prev type="button" aria-label={m.onceki}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"
+        ><path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round"></path></svg
+      >
+    </button>
+    <button class="lb__nav lb__nav--next" data-lb-next type="button" aria-label={m.sonraki}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"
+        ><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round"></path></svg
+      >
+    </button>
+
+    <img class="lb__img" data-lb-img src="" alt="" />
+    <p class="lb__cap" data-lb-cap></p>
+  </dialog>
+
+  <script
+    type="application/json"
+    data-meta
+    set:html={JSON.stringify(
+      slaytlar.map((s) => ({ g: s.grup, b: s.baslik, a: s.aciklama, s: s.src, alt: s.alt })),
+    )}
+  />
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-shot]").forEach((kok) => {
+    const iz = kok.querySelector<HTMLElement>("[data-track]")!;
+    const slaytlar = Array.from(kok.querySelectorAll<HTMLElement>("[data-slide]"));
+    const zoomlar = Array.from(kok.querySelectorAll<HTMLButtonElement>("[data-zoom]"));
+    const thumblar = Array.from(kok.querySelectorAll<HTMLButtonElement>("[data-thumb]"));
+    const serit = kok.querySelector<HTMLElement>("[data-thumbs]")!;
+    const grupEl = kok.querySelector<HTMLElement>("[data-grup]")!;
+    const baslikEl = kok.querySelector<HTMLElement>("[data-baslik]")!;
+    const metinEl = kok.querySelector<HTMLElement>("[data-metin]")!;
+    const sayacEl = kok.querySelector<HTMLElement>("[data-count]")!;
+    const meta = JSON.parse(kok.querySelector<HTMLElement>("[data-meta]")!.textContent || "[]");
+
+    const lb = kok.querySelector<HTMLDialogElement>("[data-lb]")!;
+    const lbImg = kok.querySelector<HTMLImageElement>("[data-lb-img]")!;
+    const lbCap = kok.querySelector<HTMLElement>("[data-lb-cap]")!;
+
+    let simdi = 0;
+    const son = slaytlar.length - 1;
+
+    function goster(i: number) {
+      simdi = i < 0 ? son : i > son ? 0 : i;
+      iz.style.transform = `translateX(-${simdi * 100}%)`;
+
+      slaytlar.forEach((s, n) => s.setAttribute("aria-hidden", n === simdi ? "false" : "true"));
+      zoomlar.forEach((z, n) => (z.tabIndex = n === simdi ? 0 : -1));
+      thumblar.forEach((t, n) => t.setAttribute("aria-selected", n === simdi ? "true" : "false"));
+
+      grupEl.textContent = meta[simdi].g;
+      baslikEl.textContent = meta[simdi].b;
+      metinEl.textContent = meta[simdi].a;
+      sayacEl.textContent = `${simdi + 1} / ${slaytlar.length}`;
+
+      // Etkin önizlemeyi şeritte görünür tut
+      const t = thumblar[simdi];
+      const solTasma = t.offsetLeft - serit.scrollLeft;
+      const sagTasma = solTasma + t.offsetWidth - serit.clientWidth;
+      if (solTasma < 0 || sagTasma > 0) {
+        serit.scrollTo({
+          left: t.offsetLeft - serit.clientWidth / 2 + t.offsetWidth / 2,
+          behavior: "smooth",
+        });
+      }
+
+      if (lb.open) lbYenile();
+    }
+
+    function lbYenile() {
+      lbImg.src = meta[simdi].s;
+      lbImg.alt = meta[simdi].alt;
+      lbCap.textContent = `${meta[simdi].g} · ${meta[simdi].b}`;
+    }
+
+    kok.querySelector("[data-prev]")!.addEventListener("click", () => goster(simdi - 1));
+    kok.querySelector("[data-next]")!.addEventListener("click", () => goster(simdi + 1));
+    thumblar.forEach((t, n) => t.addEventListener("click", () => goster(n)));
+    zoomlar.forEach((z) =>
+      z.addEventListener("click", () => {
+        lbYenile();
+        lb.showModal();
+      }),
+    );
+
+    kok.querySelector("[data-lb-kapat]")!.addEventListener("click", () => lb.close());
+    kok.querySelector("[data-lb-prev]")!.addEventListener("click", () => goster(simdi - 1));
+    kok.querySelector("[data-lb-next]")!.addEventListener("click", () => goster(simdi + 1));
+
+    // Görüntüleyicide boşluğa tıklayınca kapan
+    lb.addEventListener("click", (e) => {
+      if (e.target === lb) lb.close();
+    });
+
+    // Klavye: sol/sağ ok. Esc'yi <dialog> kendisi hallediyor.
+    function tus(e: KeyboardEvent) {
+      if (e.key === "ArrowLeft") { e.preventDefault(); goster(simdi - 1); }
+      if (e.key === "ArrowRight") { e.preventDefault(); goster(simdi + 1); }
+    }
+    kok.addEventListener("keydown", tus);
+
+    // Dokunmatik kaydırma
+    function kaydirmaBagla(hedef: HTMLElement) {
+      let x0 = 0;
+      hedef.addEventListener("touchstart", (e) => { x0 = e.changedTouches[0].screenX; }, { passive: true });
+      hedef.addEventListener("touchend", (e) => {
+        const fark = e.changedTouches[0].screenX - x0;
+        if (Math.abs(fark) > 45) goster(fark < 0 ? simdi + 1 : simdi - 1);
+      }, { passive: true });
+    }
+    kaydirmaBagla(iz);
+    kaydirmaBagla(lb);
+  });
+</script>
+
+<style>
+  .shot {
+    margin-top: clamp(2.2rem, 4vw, 3rem);
+  }
+
+  /* --- Sahne --- */
+  .shot__stage {
+    position: relative;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    background: #0b2e52;
+    border: 1.5px solid rgba(255, 255, 255, 0.35);
+  }
+
+  .shot__track {
+    display: flex;
+    transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .shot__slide {
+    flex: 0 0 100%;
+    margin: 0;
+    line-height: 0;
+  }
+
+  .shot__zoom {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: zoom-in;
+  }
+
+  /* Görseller kırpılmaz: sahne 3:2, görsel içine sığar. */
+  .shot__zoom img {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: contain;
+    display: block;
+  }
+
+  /* --- Oklar --- */
+  .shot__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border: none;
+    border-radius: 50%;
+    background: rgba(11, 46, 82, 0.78);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.18s ease;
+  }
+
+  .shot__nav:hover {
+    background: var(--current);
+  }
+
+  .shot__nav svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .shot__nav--prev {
+    left: 12px;
+  }
+  .shot__nav--next {
+    right: 12px;
+  }
+
+  /* --- Altyazı --- */
+  .shot__foot {
+    margin-top: 1rem;
+  }
+
+  .shot__ust {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0 0 0.3rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(24, 95, 165, 0.16);
+  }
+
+  .shot__ust-sag {
+    display: flex;
+    align-items: baseline;
+    gap: 0.85rem;
+    flex: none;
+  }
+
+  .shot__grup {
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .shot__hint {
+    font-size: 0.76rem;
+    color: var(--ink-faint);
+  }
+
+  .shot__count {
+    font-size: 0.74rem;
+    color: var(--ink-soft);
+  }
+
+  .shot__caption {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.12rem;
+    min-height: 3.4rem;
+  }
+
+  .shot__baslik {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+  }
+
+  .shot__metin {
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    line-height: 1.45;
+  }
+
+  /* --- Önizleme şeridi --- */
+  .shot__thumbs {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    padding-bottom: 0.4rem;
+  }
+
+  .shot__thumb {
+    flex: 0 0 auto;
+    width: 78px;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 7px;
+    overflow: hidden;
+    background: #0b2e52;
+    cursor: pointer;
+    opacity: 0.5;
+    transition:
+      opacity 0.18s ease,
+      border-color 0.18s ease;
+    line-height: 0;
+  }
+
+  .shot__thumb img {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: contain;
+    display: block;
+  }
+
+  .shot__thumb:hover {
+    opacity: 0.85;
+  }
+
+  .shot__thumb[aria-selected="true"] {
+    opacity: 1;
+    border-color: var(--deep);
+  }
+
+  /* --- Tam boy görüntüleyici --- */
+  .lb {
+    width: min(96vw, 1500px);
+    max-width: none;
+    max-height: 94vh;
+    padding: 0;
+    border: none;
+    border-radius: var(--r-md);
+    background: #0b2e52;
+    color: var(--on-dark);
+    overflow: visible;
+  }
+
+  .lb::backdrop {
+    background: rgba(6, 24, 44, 0.88);
+  }
+
+  .lb__img {
+    width: 100%;
+    max-height: 84vh;
+    object-fit: contain;
+    display: block;
+    border-radius: var(--r-md) var(--r-md) 0 0;
+  }
+
+  .lb__cap {
+    margin: 0;
+    padding: 0.75rem 1.1rem;
+    font-size: 0.85rem;
+    color: var(--on-dark-soft);
+    border-top: 1px solid rgba(169, 198, 224, 0.16);
+  }
+
+  .lb__kapat {
+    position: absolute;
+    top: -14px;
+    right: -14px;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border: none;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--ink);
+    cursor: pointer;
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.35);
+  }
+
+  .lb__kapat svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .lb__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 46px;
+    height: 46px;
+    display: grid;
+    place-items: center;
+    border: none;
+    border-radius: 50%;
+    background: rgba(11, 46, 82, 0.85);
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .lb__nav:hover {
+    background: var(--current);
+  }
+
+  .lb__nav svg {
+    width: 23px;
+    height: 23px;
+  }
+
+  .lb__nav--prev {
+    left: 10px;
+  }
+  .lb__nav--next {
+    right: 10px;
+  }
+
+  @media (max-width: 620px) {
+    .shot__nav {
+      width: 38px;
+      height: 38px;
+    }
+    .shot__nav--prev {
+      left: 8px;
+    }
+    .shot__nav--next {
+      right: 8px;
+    }
+    .shot__thumb {
+      width: 62px;
+    }
+    .shot__hint {
+      display: none;
+    }
+    .shot__ust {
+      font-size: 0.9em;
+    }
+    .lb__kapat {
+      top: 6px;
+      right: 6px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shot__track {
+      transition: none;
+    }
+  }
+</style>

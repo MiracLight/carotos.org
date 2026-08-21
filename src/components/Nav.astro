@@ -1,0 +1,159 @@
+---
+interface Props {
+  lang: "tr" | "en";
+}
+
+const { lang } = Astro.props;
+
+const t = {
+  tr: {
+    home: "/",
+    links: [
+      { href: "/#felsefe", label: "Yaklaşım" },
+      { href: "/#icinde", label: "Uygulamalar" },
+      { href: "/surum-notlari", label: "Sürüm notları" },
+    ],
+    download: "İndir",
+    switchLabel: "EN",
+    switchTitle: "Switch to English",
+  },
+  en: {
+    home: "/en",
+    links: [
+      { href: "/en#philosophy", label: "Approach" },
+      { href: "/en#inside", label: "Applications" },
+      { href: "/en/changelog", label: "Changelog" },
+    ],
+    download: "Download",
+    switchLabel: "TR",
+    switchTitle: "Türkçe sürüme geç",
+  },
+}[lang];
+
+const downloadAnchor = lang === "tr" ? "/#indir" : "/en#download";
+
+/* Dil değiştirici, bulunulan sayfanın karşılığına gider.
+   Yeni sayfa eklendiğinde buraya da bir satır eklenmeli. */
+const esler: Record<string, string> = {
+  "/": "/en",
+  "/en": "/",
+  "/surum-notlari": "/en/changelog",
+  "/en/changelog": "/surum-notlari",
+};
+
+const buYol = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const switchTo = esler[buYol] ?? (lang === "tr" ? "/en" : "/");
+---
+
+<header class="nav">
+  <div class="wrap nav__inner">
+    <a class="nav__brand" href={t.home}>
+      <img
+        src="/carotos-logo-yatay.svg"
+        alt="CarotOS"
+        width="180"
+        height="58"
+      />
+    </a>
+
+    <nav class="nav__links" aria-label={lang === "tr" ? "Ana menü" : "Main menu"}>
+      {t.links.map((l) => <a href={l.href}>{l.label}</a>)}
+    </nav>
+
+    <div class="nav__end">
+      <a class="btn btn--solid nav__cta" href={downloadAnchor}>{t.download}</a>
+      <a class="nav__lang" href={switchTo} title={t.switchTitle} hreflang={lang === "tr" ? "en" : "tr"}>
+        {t.switchLabel}
+      </a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(244, 249, 253, 0.88);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(24, 95, 165, 0.13);
+  }
+
+  .nav__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    min-height: 68px;
+  }
+
+  .nav__brand {
+    display: flex;
+    align-items: center;
+    flex: none;
+  }
+
+  .nav__brand img {
+    height: 34px;
+    width: auto;
+    display: block;
+  }
+
+  .nav__links {
+    display: flex;
+    gap: 1.9rem;
+    margin-left: auto;
+  }
+
+  .nav__links a {
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.18s ease;
+  }
+
+  .nav__links a:hover {
+    color: var(--deep);
+  }
+
+  .nav__end {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    flex: none;
+  }
+
+  .nav__cta {
+    padding: 0.6rem 1.25rem;
+    font-size: 0.92rem;
+  }
+
+  .nav__lang {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    text-decoration: none;
+    padding: 0.4rem 0.6rem;
+    border: 1.5px solid rgba(24, 95, 165, 0.25);
+    border-radius: var(--r-sm);
+    transition:
+      border-color 0.18s ease,
+      color 0.18s ease;
+  }
+
+  .nav__lang:hover {
+    border-color: var(--current);
+    color: var(--deep);
+  }
+
+  /* Dar ekranda ara bağlantılar gizlenir; logo, indir ve dil kalır.
+     Sayfa tek uzun kaydırma olduğu için bu kayıp kritik değil. */
+  @media (max-width: 780px) {
+    .nav__links {
+      display: none;
+    }
+  }
+</style>

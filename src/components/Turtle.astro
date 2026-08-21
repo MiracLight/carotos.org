@@ -1,0 +1,73 @@
+---
+/**
+ * CarotOS kaplumbağası.
+ * Renkler CSS değişkeniyle ayarlanır, böylece açık/koyu zeminlerde
+ * aynı bileşen kullanılabiliyor.
+ *
+ * Kullanım:
+ *   <Turtle class="..." shell="#378ADA" body="#185FA5" />
+ */
+interface Props {
+  class?: string;
+  shell?: string;
+  body?: string;
+  title?: string;
+}
+
+const {
+  class: className = "",
+  shell = "#378ADA",
+  body = "#185FA5",
+  title,
+} = Astro.props;
+---
+
+<svg
+  class={className}
+  viewBox="0 0 306.08 283.04"
+  xmlns="http://www.w3.org/2000/svg"
+  role={title ? "img" : "presentation"}
+  aria-hidden={title ? undefined : "true"}
+>
+  {title && <title>{title}</title>}
+  <g transform="translate(-186.960 -25.290)">
+    {/* Ayaklar ve baş */}
+    <g fill={body} stroke={body} stroke-width="5" stroke-linejoin="round">
+      <path d="M278.02 130.97 L226.66 109.32 L213.46 132.18 L257.89 165.83 Z"></path>
+      <path d="M401.98 130.97 L453.34 109.32 L466.54 132.18 L422.11 165.83 Z"></path>
+      <path d="M258.96 216.03 L222.39 243.29 L235.05 265.21 L276.94 247.17 Z"></path>
+      <path d="M421.04 216.03 L457.61 243.29 L444.95 265.21 L403.06 247.17 Z"></path>
+      <path
+        d="M316 104 C 316 84, 320 66, 328 56 C 332.5 50.38, 347.5 50.38, 352 56 C 360 66, 364 84, 364 104 Z"
+      ></path>
+    </g>
+
+    {/* Kabuğun altı dilimi */}
+    <g fill={shell} stroke={shell} stroke-width="5" stroke-linejoin="round">
+      <path d="M385.65 194 L366.29 227.53 L395.33 277.83 L443.73 194 Z"></path>
+      <path
+        d="M385.65 194 L366.29 227.53 L395.33 277.83 L443.73 194 Z"
+        transform="rotate(60 340 190)"></path>
+      <path
+        d="M385.65 194 L366.29 227.53 L395.33 277.83 L443.73 194 Z"
+        transform="rotate(120 340 190)"></path>
+      <path
+        d="M385.65 194 L366.29 227.53 L395.33 277.83 L443.73 194 Z"
+        transform="rotate(180 340 190)"></path>
+      <path
+        d="M385.65 194 L366.29 227.53 L395.33 277.83 L443.73 194 Z"
+        transform="rotate(240 340 190)"></path>
+      <path
+        d="M385.65 194 L366.29 227.53 L395.33 277.83 L443.73 194 Z"
+        transform="rotate(300 340 190)"></path>
+    </g>
+
+    {/* Kabuğun merkez altıgeni */}
+    <path
+      d="M378.70 190 L359.35 223.52 L320.65 223.52 L301.30 190 L320.65 156.48 L359.35 156.48 Z"
+      fill={body}
+      stroke={body}
+      stroke-width="5"
+      stroke-linejoin="round"></path>
+  </g>
+</svg>

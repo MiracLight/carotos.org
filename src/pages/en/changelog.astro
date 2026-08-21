@@ -1,0 +1,232 @@
+---
+import Base from "../../layouts/Base.astro";
+import Wave from "../../components/Wave.astro";
+
+/* ------------------------------------------------------------------
+   CHANGELOG
+
+   When a new release ships, add an object to the FRONT of this array.
+   Mirror the same entry in src/pages/surum-notlari.astro
+   ------------------------------------------------------------------ */
+const surumler = [
+  {
+    etiket: "1.0",
+    kodAdi: "Eggshell",
+    tarih: "19 August 2026",
+    tarihISO: "2026-08-19",
+    ozet:
+      "First stable release. Debian 13 “trixie” base, XFCE desktop, ten security tools and four original applications.",
+    degisiklikler: [
+      { tur: "eklendi", metin: "Security Panel: a graphical interface for the ten tools, with field documentation and live output" },
+      { tur: "eklendi", metin: "Welcome Wizard: an eleven-page bilingual introduction with theme and language selection" },
+      { tur: "eklendi", metin: "System Health: twenty checks across six categories, a health score, twelve one-click fixes" },
+      { tur: "eklendi", metin: "USB Inspector: checks connected devices for autorun.inf, double extensions and hidden extensions" },
+      { tur: "eklendi", metin: "BIOS and UEFI installation, with a signed shim for Secure Boot" },
+      { tur: "eklendi", metin: "Full firmware set for Wi-Fi, audio and graphics hardware" },
+      { tur: "eklendi", metin: "Turkish as the default language, with English available" },
+      { tur: "duzeltildi", metin: "nikto did not run on an installed system; a missing dependency was added" },
+      { tur: "duzeltildi", metin: "The language chosen in the wizard was not applied after the session restarted" },
+      { tur: "duzeltildi", metin: "Panel and menu icons were missing under some themes" },
+    ],
+  },
+];
+
+const etiketler: Record<string, string> = {
+  eklendi: "Added",
+  duzeltildi: "Fixed",
+  degisti: "Changed",
+  kaldirildi: "Removed",
+};
+---
+
+<Base
+  lang="en"
+  title="Changelog — CarotOS"
+  description="What changed in each CarotOS release: tools added, bugs fixed, backwards-incompatible changes."
+>
+  <section class="band band--foam log__intro">
+    <div class="wrap">
+      <p class="eyebrow">Changelog</p>
+      <h1 class="log__h1">What changed</h1>
+      <p class="lede">
+        Tools added, bugs fixed and backwards-incompatible changes are listed
+        here for every release. The same notes are published on the GitHub
+        releases page.
+      </p>
+      <div class="log__links">
+        <a class="btn btn--ghost" href="/en#download">Download</a>
+        <a
+          class="btn btn--ghost"
+          href="https://github.com/MiracLight/CarotOS/releases"
+          target="_blank"
+          rel="noopener noreferrer">GitHub releases</a
+        >
+      </div>
+    </div>
+  </section>
+
+  <Wave from="#f4f9fd" to="#deedf8" />
+
+  <section class="band band--shallow">
+    <div class="wrap">
+      {
+        surumler.map((s) => (
+          <article class="rel">
+            <header class="rel__head">
+              <h2 class="rel__tag">
+                {s.etiket} <span class="rel__code">“{s.kodAdi}”</span>
+              </h2>
+              <time class="rel__date mono" datetime={s.tarihISO}>
+                {s.tarih}
+              </time>
+            </header>
+
+            <p class="rel__ozet">{s.ozet}</p>
+
+            <ul class="rel__list">
+              {s.degisiklikler.map((d) => (
+                <li class="rel__item">
+                  <span class={`tag tag--${d.tur}`}>{etiketler[d.tur]}</span>
+                  <span class="rel__text">{d.metin}</span>
+                </li>
+              ))}
+            </ul>
+          </article>
+        ))
+      }
+
+      <p class="log__son">
+        No earlier releases — 1.0 is the first stable one. Intermediate builds
+        from development were never published.
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .log__intro {
+    padding-bottom: clamp(3rem, 6vw, 4rem);
+  }
+
+  .log__h1 {
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    margin-bottom: 1.1rem;
+  }
+
+  .log__links {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+
+  .rel {
+    max-width: 78ch;
+  }
+
+  .rel + .rel {
+    margin-top: 3.5rem;
+    padding-top: 3.5rem;
+    border-top: 1.5px solid rgba(24, 95, 165, 0.2);
+  }
+
+  .rel__head {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.9rem;
+  }
+
+  .rel__tag {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    margin: 0;
+  }
+
+  .rel__code {
+    color: var(--current);
+    font-weight: 700;
+  }
+
+  .rel__date {
+    color: var(--ink-faint);
+    font-size: 0.85rem;
+  }
+
+  .rel__ozet {
+    color: var(--ink-soft);
+    font-size: 1.02rem;
+    margin-bottom: 1.8rem;
+    max-width: var(--w-text);
+  }
+
+  .rel__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .rel__item {
+    display: grid;
+    grid-template-columns: 92px 1fr;
+    gap: 0.9rem;
+    align-items: baseline;
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid rgba(24, 95, 165, 0.13);
+  }
+
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 0.24rem 0.4rem;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .tag--eklendi {
+    background: rgba(74, 156, 120, 0.16);
+    color: #2f6f52;
+  }
+
+  .tag--duzeltildi {
+    background: rgba(55, 138, 218, 0.16);
+    color: var(--deep);
+  }
+
+  .tag--degisti {
+    background: rgba(24, 95, 165, 0.1);
+    color: var(--ink-soft);
+  }
+
+  .tag--kaldirildi {
+    background: rgba(160, 90, 90, 0.14);
+    color: #8a4646;
+  }
+
+  .rel__text {
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+
+  .log__son {
+    margin-top: 3rem;
+    font-size: 0.88rem;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 560px) {
+    .rel__item {
+      grid-template-columns: 1fr;
+      gap: 0.3rem;
+    }
+
+    .tag {
+      justify-self: start;
+    }
+  }
+</style>

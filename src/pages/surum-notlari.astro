@@ -1,0 +1,234 @@
+---
+import Base from "../layouts/Base.astro";
+import Wave from "../components/Wave.astro";
+
+/* ------------------------------------------------------------------
+   SÜRÜM NOTLARI
+
+   Yeni sürüm çıktığında bu dizinin BAŞINA yeni bir nesne ekle.
+   Aynısını src/pages/en/changelog.astro içine de ekle.
+
+   tur: "eklendi" | "duzeltildi" | "degisti" | "kaldirildi"
+   ------------------------------------------------------------------ */
+const surumler = [
+  {
+    etiket: "1.0",
+    kodAdi: "Eggshell",
+    tarih: "19 Ağustos 2026",
+    tarihISO: "2026-08-19",
+    ozet:
+      "İlk kararlı sürüm. Debian 13 “trixie” tabanı, XFCE masaüstü, on güvenlik aracı ve dört özgün uygulama.",
+    degisiklikler: [
+      { tur: "eklendi", metin: "Güvenlik Paneli: on aracın grafik arayüzü, alan açıklamaları ve canlı çıktı" },
+      { tur: "eklendi", metin: "Karşılama Sihirbazı: on bir sayfalık iki dilli tanıtım, tema ve dil seçimi" },
+      { tur: "eklendi", metin: "Sistem Sağlığı: altı kategoride yirmi denetim, sağlık puanı, on iki tek tık düzeltme" },
+      { tur: "eklendi", metin: "USB Denetimi: bağlanan aygıtta autorun.inf, çift uzantı ve gizlenmiş uzantı denetimi" },
+      { tur: "eklendi", metin: "BIOS ve UEFI kurulumu, Secure Boot için imzalı shim" },
+      { tur: "eklendi", metin: "Wi-Fi, ses ve grafik donanımı için tam firmware paketi" },
+      { tur: "eklendi", metin: "Türkçe varsayılan dil, İngilizce seçeneği" },
+      { tur: "duzeltildi", metin: "nikto kurulumda çalışmıyordu; bağımlılık eksikliği giderildi" },
+      { tur: "duzeltildi", metin: "Sihirbazda seçilen dil oturum sonrası uygulanmıyordu" },
+      { tur: "duzeltildi", metin: "Panel ve menü simgeleri bazı temalarda görünmüyordu" },
+    ],
+  },
+];
+
+const etiketler: Record<string, string> = {
+  eklendi: "Eklendi",
+  duzeltildi: "Düzeltildi",
+  degisti: "Değişti",
+  kaldirildi: "Kaldırıldı",
+};
+---
+
+<Base
+  lang="tr"
+  title="Sürüm notları — CarotOS"
+  description="CarotOS sürümlerinde neyin değiştiği: eklenen araçlar, düzeltilen hatalar, geriye dönük uyumsuzluklar."
+>
+  <section class="band band--foam log__intro">
+    <div class="wrap">
+      <p class="eyebrow">Sürüm notları</p>
+      <h1 class="log__h1">Neler değişti</h1>
+      <p class="lede">
+        Her sürümde eklenen araçlar, düzeltilen hatalar ve geriye dönük
+        uyumsuzluklar burada listelenir. Aynı notlar GitHub sürüm sayfasında da
+        yayımlanır.
+      </p>
+      <div class="log__links">
+        <a class="btn btn--ghost" href="/#indir">İndirme</a>
+        <a
+          class="btn btn--ghost"
+          href="https://github.com/MiracLight/CarotOS/releases"
+          target="_blank"
+          rel="noopener noreferrer">GitHub sürümleri</a
+        >
+      </div>
+    </div>
+  </section>
+
+  <Wave from="#f4f9fd" to="#deedf8" />
+
+  <section class="band band--shallow">
+    <div class="wrap">
+      {
+        surumler.map((s) => (
+          <article class="rel">
+            <header class="rel__head">
+              <h2 class="rel__tag">
+                {s.etiket} <span class="rel__code">“{s.kodAdi}”</span>
+              </h2>
+              <time class="rel__date mono" datetime={s.tarihISO}>
+                {s.tarih}
+              </time>
+            </header>
+
+            <p class="rel__ozet">{s.ozet}</p>
+
+            <ul class="rel__list">
+              {s.degisiklikler.map((d) => (
+                <li class="rel__item">
+                  <span class={`tag tag--${d.tur}`}>{etiketler[d.tur]}</span>
+                  <span class="rel__text">{d.metin}</span>
+                </li>
+              ))}
+            </ul>
+          </article>
+        ))
+      }
+
+      <p class="log__son">
+        Daha eski sürüm yok — 1.0 ilk kararlı yayın. Geliştirme sürecindeki
+        ara yapılar yayımlanmadı.
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .log__intro {
+    padding-bottom: clamp(3rem, 6vw, 4rem);
+  }
+
+  .log__h1 {
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    margin-bottom: 1.1rem;
+  }
+
+  .log__links {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+
+  .rel {
+    max-width: 78ch;
+  }
+
+  .rel + .rel {
+    margin-top: 3.5rem;
+    padding-top: 3.5rem;
+    border-top: 1.5px solid rgba(24, 95, 165, 0.2);
+  }
+
+  .rel__head {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.9rem;
+  }
+
+  .rel__tag {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    margin: 0;
+  }
+
+  .rel__code {
+    color: var(--current);
+    font-weight: 700;
+  }
+
+  .rel__date {
+    color: var(--ink-faint);
+    font-size: 0.85rem;
+  }
+
+  .rel__ozet {
+    color: var(--ink-soft);
+    font-size: 1.02rem;
+    margin-bottom: 1.8rem;
+    max-width: var(--w-text);
+  }
+
+  .rel__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .rel__item {
+    display: grid;
+    grid-template-columns: 92px 1fr;
+    gap: 0.9rem;
+    align-items: baseline;
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid rgba(24, 95, 165, 0.13);
+  }
+
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 0.24rem 0.4rem;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .tag--eklendi {
+    background: rgba(74, 156, 120, 0.16);
+    color: #2f6f52;
+  }
+
+  .tag--duzeltildi {
+    background: rgba(55, 138, 218, 0.16);
+    color: var(--deep);
+  }
+
+  .tag--degisti {
+    background: rgba(24, 95, 165, 0.1);
+    color: var(--ink-soft);
+  }
+
+  .tag--kaldirildi {
+    background: rgba(160, 90, 90, 0.14);
+    color: #8a4646;
+  }
+
+  .rel__text {
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+
+  .log__son {
+    margin-top: 3rem;
+    font-size: 0.88rem;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 560px) {
+    .rel__item {
+      grid-template-columns: 1fr;
+      gap: 0.3rem;
+    }
+
+    .tag {
+      justify-self: start;
+    }
+  }
+</style>

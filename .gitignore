@@ -1,0 +1,21 @@
+# derleme çıktısı
+dist/
+.astro/
+
+# bağımlılıklar
+node_modules/
+
+# günlükler
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ortam değişkenleri
+.env
+.env.production
+
+# işletim sistemi artıkları
+.DS_Store
+Thumbs.db
+.vscode/

@@ -1,0 +1,419 @@
+/* ============================================================
+   CarotOS — carotos.org
+   Tasarım belirteçleri (design tokens)
+
+   Konsept: "Derinlik". Sayfa yüzeyden dibe iner.
+   Renkler logodan türetildi: #185FA5 ve #378ADD.
+   ============================================================ */
+
+:root {
+  /* --- Su katmanları: açıktan koyuya --- */
+  --foam: #f4f9fd; /* köpük — en üst, sayfa zemini */
+  --shallow: #deedf8; /* sığ su — ikinci bant */
+  --tide: #a9cfea; /* gelgit — üçüncü bant */
+  --current: #378ada; /* akıntı — logo orta mavi, vurgular */
+  --deep: #185fa5; /* derin — logo koyu mavi, başlıklar */
+  --abyss: #0b2e52; /* dip — alt bilgi */
+
+  /* --- Vurgu --- */
+  --kelp: #a9dbc4; /* yosun — tek yumuşak yeşil vurgu */
+  --kelp-dark: #4a9c78;
+
+  /* --- Metin --- */
+  --ink: #0a2440; /* ana metin */
+  --ink-soft: #3d5f80; /* ikincil metin */
+  --ink-faint: #7a97b3; /* etiketler, üst başlıklar */
+  --on-dark: #eaf4fc; /* koyu zemin üzerinde metin */
+  --on-dark-soft: #a8c6e0;
+
+  /* --- Yazı tipleri --- */
+  --font-display: "Archivo", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Courier New", monospace;
+
+  /* --- Ölçek --- */
+  --w-page: 1160px;
+  --w-text: 62ch;
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 22px;
+
+  /* --- Boşluk --- */
+  --pad-section: clamp(4.5rem, 9vw, 8rem);
+  --gap: clamp(1.25rem, 2.5vw, 2rem);
+}
+
+/* ============================================================
+   Temel
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--foam);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg {
+  max-width: 100%;
+}
+
+a {
+  color: var(--deep);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+:focus-visible {
+  outline: 3px solid var(--current);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* ============================================================
+   Tipografi
+   ============================================================ */
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  margin: 0;
+  color: var(--deep);
+}
+
+h1 {
+  font-size: clamp(2.9rem, 8vw, 5.6rem);
+}
+
+h2 {
+  font-size: clamp(2.1rem, 5vw, 3.5rem);
+}
+
+h3 {
+  font-size: clamp(1.15rem, 2vw, 1.35rem);
+  font-weight: 700;
+  letter-spacing: -0.012em;
+}
+
+p {
+  margin: 0 0 1.1em;
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+/* Bölüm üst başlığı — küçük, harf aralıklı etiket */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0 0 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* Etiketin yanındaki küçük altıgen — kabuk plakası motifi */
+.eyebrow::before {
+  content: "";
+  width: 9px;
+  height: 10px;
+  flex: none;
+  background: var(--current);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+}
+
+.lede {
+  font-size: clamp(1.1rem, 1.8vw, 1.3rem);
+  line-height: 1.55;
+  color: var(--ink-soft);
+  max-width: var(--w-text);
+}
+
+/* ============================================================
+   Düzen
+   ============================================================ */
+
+.wrap {
+  width: 100%;
+  max-width: var(--w-page);
+  margin-inline: auto;
+  padding-inline: clamp(1.15rem, 4vw, 2.5rem);
+}
+
+.band {
+  position: relative;
+  padding-block: var(--pad-section);
+}
+
+.band--foam {
+  background: var(--foam);
+}
+.band--shallow {
+  background: var(--shallow);
+}
+.band--tide {
+  background: var(--tide);
+}
+.band--deep {
+  background: var(--deep);
+}
+.band--abyss {
+  background: var(--abyss);
+}
+
+/* Koyu zeminlerde metin renkleri */
+.band--deep,
+.band--abyss {
+  color: var(--on-dark-soft);
+}
+
+.band--deep h2,
+.band--deep h3,
+.band--abyss h2,
+.band--abyss h3 {
+  color: var(--on-dark);
+}
+
+.band--deep .eyebrow,
+.band--abyss .eyebrow {
+  color: var(--on-dark-soft);
+}
+
+.band--deep .eyebrow::before,
+.band--abyss .eyebrow::before {
+  background: var(--kelp);
+}
+
+.band--deep .lede,
+.band--abyss .lede {
+  color: var(--on-dark-soft);
+}
+
+/* Gelgit bandında metin hâlâ koyu okunmalı */
+.band--tide {
+  color: var(--ink);
+}
+
+/* ============================================================
+   Dalga geçişleri
+   ============================================================ */
+
+.wave {
+  display: block;
+  width: 100%;
+  height: clamp(48px, 7vw, 96px);
+  margin-bottom: -1px;
+}
+
+.wave + .band {
+  margin-top: -1px;
+}
+
+/* ============================================================
+   Düğmeler
+   ============================================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  font-weight: 600;
+  padding: 0.85rem 1.6rem;
+  border-radius: 999px;
+  border: 1.5px solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn--solid {
+  background: var(--deep);
+  color: #fff;
+  border-color: var(--deep);
+}
+
+.btn--solid:hover {
+  background: var(--current);
+  border-color: var(--current);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--deep);
+  border-color: var(--deep);
+}
+
+.btn--ghost:hover {
+  background: var(--deep);
+  color: #fff;
+}
+
+.btn--light {
+  background: var(--kelp);
+  color: #0a2440;
+  border-color: var(--kelp);
+}
+
+.btn--light:hover {
+  background: #fff;
+  border-color: #fff;
+}
+
+.btn--outline-light {
+  background: transparent;
+  color: var(--on-dark);
+  border-color: rgba(234, 244, 252, 0.45);
+}
+
+.btn--outline-light:hover {
+  background: rgba(234, 244, 252, 0.12);
+  border-color: var(--on-dark);
+}
+
+/* ============================================================
+   Kartlar
+   ============================================================ */
+
+.grid {
+  display: grid;
+  gap: var(--gap);
+}
+
+/* Sütun sayıları auto-fit'e bırakılmıyor: auto-fit geniş ekranda
+   beklenmedik sayıda sütun üretiyordu. Kırılma noktaları açık yazıldı. */
+.grid--3 {
+  grid-template-columns: 1fr;
+}
+
+.grid--2 {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 700px) {
+  .grid--3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .grid--2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1000px) {
+  .grid--3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.62);
+  border: 1.5px solid rgba(24, 95, 165, 0.22);
+  border-radius: var(--r-md);
+  padding: clamp(1.4rem, 2.5vw, 1.9rem);
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.card:hover {
+  border-color: var(--current);
+  transform: translateY(-3px);
+}
+
+.card p {
+  font-size: 0.97rem;
+  color: var(--ink-soft);
+  margin-top: 0.7rem;
+}
+
+.card--dark {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(169, 198, 224, 0.3);
+}
+
+.card--dark p {
+  color: var(--on-dark-soft);
+}
+
+/* ============================================================
+   Yardımcılar
+   ============================================================ */
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+.stack-sm > * + * {
+  margin-top: 0.75rem;
+}
+.stack > * + * {
+  margin-top: 1.75rem;
+}
+.stack-lg > * + * {
+  margin-top: 3rem;
+}
+
+.center {
+  text-align: center;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   Hareket tercihi
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

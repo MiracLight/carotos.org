@@ -11,26 +11,28 @@ const t = {
   tr: {
     eyebrow: "İletişim",
     heading: "İletişim",
-    lede: "Hata bildirimleri ve katkılar GitHub üzerinden. Diğer konular için e-posta.",
+    lede: "Hata bildirimleri ve katkılar GitHub üzerinden, sorular ve tartışma Reddit'te. Diğer konular için e-posta.",
     made: "Yapımcılar",
     licence: "GPL-3.0 lisansı altında yayımlanır. Debian 13 “trixie” tabanlıdır.",
     channels: [
       { key: "github", label: "GitHub", sub: "Kaynak kod, sürümler, hata kaydı" },
       { key: "youtube", label: "YouTube", sub: "Anlatım videoları" },
       { key: "instagram", label: "Instagram", sub: "Duyurular" },
+      { key: "reddit", label: "Reddit", sub: "Topluluk ve tartışma" },
       { key: "mail", label: "E-posta", sub: "Genel iletişim" },
     ],
   },
   en: {
     eyebrow: "Contact",
     heading: "Contact",
-    lede: "Bug reports and contributions go through GitHub. Everything else by email.",
+    lede: "Bug reports and contributions go through GitHub, questions and discussion on Reddit. Everything else by email.",
     made: "Built by",
     licence: "Released under the GPL-3.0 licence. Based on Debian 13 “trixie”.",
     channels: [
       { key: "github", label: "GitHub", sub: "Source, releases, issue tracker" },
       { key: "youtube", label: "YouTube", sub: "Walkthrough videos" },
       { key: "instagram", label: "Instagram", sub: "Announcements" },
+      { key: "reddit", label: "Reddit", sub: "Community and discussion" },
       { key: "mail", label: "Email", sub: "General enquiries" },
     ],
   },
@@ -48,6 +50,10 @@ const urls: Record<string, { href: string; display: string }> = {
   instagram: {
     href: "https://www.instagram.com/carotosproject/",
     display: "instagram.com/carotosproject",
+  },
+  reddit: {
+    href: "https://www.reddit.com/r/CarotOS/",
+    display: "reddit.com/r/CarotOS",
   },
   mail: {
     href: "mailto:carotosproject@gmail.com",
@@ -125,6 +131,44 @@ const year = new Date().getFullYear();
                       stroke-width="1.9"
                     />
                     <circle cx="17.5" cy="6.6" r="1.3" fill="currentColor" />
+                  </svg>
+                )}
+                {c.key === "reddit" && (
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    {/* Yuz cemberi */}
+                    <ellipse
+                      cx="12"
+                      cy="13.6"
+                      rx="9"
+                      ry="6.6"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                    />
+                    {/* Anten ve ucundaki daire */}
+                    <path
+                      d="M13.4 7.4 14.7 3.2l3.5.9"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <circle cx="19.1" cy="4.4" r="1.7" fill="currentColor" />
+                    {/* Kulaklar */}
+                    <circle cx="2.6" cy="11.4" r="2.4" fill="currentColor" />
+                    <circle cx="21.4" cy="11.4" r="2.4" fill="currentColor" />
+                    {/* Gozler */}
+                    <circle cx="8.9" cy="12.9" r="1.35" fill="currentColor" />
+                    <circle cx="15.1" cy="12.9" r="1.35" fill="currentColor" />
+                    {/* Gulumseme */}
+                    <path
+                      d="M8.7 16.4c.9.8 2 1.2 3.3 1.2s2.4-.4 3.3-1.2"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                      stroke-linecap="round"
+                    />
                   </svg>
                 )}
                 {c.key === "mail" && (

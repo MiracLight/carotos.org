@@ -193,13 +193,14 @@
   display: grid;
   place-items: center;
   clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+}
 
 /* ============================================================
    CarotOS Poligon
    ============================================================ */
 .poligon {
-  margin-top: clamp(3rem, 6vw, 4rem);
-  padding-top: clamp(2.5rem, 5vw, 3.5rem);
+  margin-top: clamp(5rem, 9vw, 7rem);
+  padding-top: clamp(3rem, 6vw, 4rem);
   border-top: 1px solid rgba(24, 95, 165, 0.16);
 }
 
@@ -254,8 +255,6 @@
   height: 100%;
   object-fit: contain;
   display: block;
-}
-
 }
 
 /* ============================================================

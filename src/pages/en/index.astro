@@ -130,7 +130,7 @@ const slides = [
 
 const facts = [
   { num: "10", label: "hand-picked security tools" },
-  { num: "4", label: "original applications" },
+  { num: "6", label: "original applications" },
   { num: "~500 MB", label: "memory use when idle" },
   { num: "13", label: "Debian release — trixie" },
 ];
@@ -167,6 +167,31 @@ const apps = [
     title: "USB Inspector",
     text: "Inspects a connected device automatically: autorun.inf, double extensions, hidden extensions, shortcuts disguised as folders. File contents are never read; only names, extensions and locations are examined.",
   },
+  {
+    title: "CarotOS Poligon",
+    text: "Student application. Practice real tasks with hydra, nmap, john, sqlmap and tshark in an isolated environment; also includes defense practice with ufw and fail2ban.",
+  },
+  {
+    title: "CarotOS Poligon Teacher",
+    text: "Teacher application. Opens a classroom room with one click, shows student progress, directs the current task, and sends a private hint to anyone who needs one.",
+  },
+];
+
+const poligonApps = [
+  {
+    title: "CarotOS Poligon",
+    icon: "/ikonlar/ikon-poligon-ogrenci.webp",
+    screenshot: "/ekranlar/poligon-ogrenci.webp",
+    alt: "CarotOS Poligon student application: individual practice and join-a-class options",
+    text: "Join a class or practice solo. Solve real tasks, ask for a hint, your progress is saved permanently.",
+  },
+  {
+    title: "CarotOS Poligon Teacher",
+    icon: "/ikonlar/ikon-poligon-ogretmen.webp",
+    screenshot: "/ekranlar/poligon-ogretmen.webp",
+    alt: "CarotOS Poligon teacher application: room code, password and student list",
+    text: "Generate a classroom room code with one click, watch student progress, direct the task, send a private hint to anyone who needs one.",
+  },
 ];
 
 const tools = [
@@ -198,7 +223,7 @@ const tools = [
         <h1>Few, explained well.</h1>
         <p class="lede hero__lede">
           CarotOS is a Linux distribution built for cybersecurity education. It
-          ships ten security tools and four applications written to operate
+          ships ten security tools and six applications written to operate
           them.
         </p>
 
@@ -279,7 +304,7 @@ const tools = [
       <p class="eyebrow">Applications</p>
       <h2 class="sec__title">What we ship.</h2>
       <p class="lede sec__lede">
-        Four applications written for this project in Python and GTK3,
+        Six applications written for this project in Python and GTK3,
         distributed under the GPL-3.0.
       </p>
 
@@ -315,6 +340,38 @@ const tools = [
       <div class="gorseller">
         <h3 class="tools__title">Screenshots</h3>
         <Slayt lang="en" slaytlar={slides} />
+      </div>
+
+      <div class="poligon">
+        <h3 class="tools__title">CarotOS Poligon</h3>
+        <p class="lede poligon__lede">
+          An isolated, safe pentesting practice range for students and
+          teachers. The teacher opens a class, students practice with real
+          tools on their own machines — nothing is ever exposed to the
+          network, everything stays on the local machine.
+        </p>
+        <div class="grid grid--2 poligon__grid">
+          {
+            poligonApps.map((p) => (
+              <article class="card poligon__card">
+                <div class="poligon__head">
+                  <img src={p.icon} alt="" class="poligon__ikon" width="40" height="40" />
+                  <h4>{p.title}</h4>
+                </div>
+                <p>{p.text}</p>
+                <div class="poligon__ekran-cerceve">
+                  <img
+                    src={p.screenshot}
+                    alt={p.alt}
+                    class="poligon__ekran"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              </article>
+            ))
+          }
+        </div>
       </div>
     </div>
   </section>

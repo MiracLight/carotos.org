@@ -130,7 +130,7 @@ const slaytlar = [
 
 const gercekler = [
   { sayi: "10", etiket: "seçilmiş güvenlik aracı" },
-  { sayi: "4", etiket: "özgün uygulama" },
+  { sayi: "6", etiket: "özgün uygulama" },
   { sayi: "~500 MB", etiket: "boşta bellek kullanımı" },
   { sayi: "13", etiket: "Debian sürümü — trixie" },
 ];
@@ -174,6 +174,35 @@ const uygulamalar = [
     metin:
       "Bağlanan aygıtı otomatik denetler: autorun.inf, çift uzantı, gizlenmiş uzantı, klasör görünümlü kısayol. Dosya içeriği okunmaz; yalnızca ad, uzantı ve konum incelenir.",
   },
+  {
+    baslik: "CarotOS Poligon",
+    metin:
+      "Öğrenci uygulaması. İzole bir ortamda hydra, nmap, john, sqlmap ve tshark ile gerçek görevler çözülür; ufw ve fail2ban ile savunma pratiği de yapılır.",
+  },
+  {
+    baslik: "CarotOS Poligon Öğretmen",
+    metin:
+      "Öğretmen uygulaması. Tek tıkla bir sınıf odası açar, öğrencilerin ilerlemesini gösterir, göreve yönlendirir ve ihtiyacı olana özel ipucu gönderir.",
+  },
+];
+
+const poligonUygulamalari = [
+  {
+    baslik: "CarotOS Poligon",
+    ikon: "/ikonlar/ikon-poligon-ogrenci.webp",
+    ekran: "/ekranlar/poligon-ogrenci.webp",
+    alt: "CarotOS Poligon öğrenci uygulaması: bireysel pratik ve sınıfa katılma seçenekleri",
+    metin:
+      "Sınıfa katıl ya da tek başına pratik yap. Gerçek görevleri çöz, ipucu iste, ilerlemen kalıcı olarak kaydedilir.",
+  },
+  {
+    baslik: "CarotOS Poligon Öğretmen",
+    ikon: "/ikonlar/ikon-poligon-ogretmen.webp",
+    ekran: "/ekranlar/poligon-ogretmen.webp",
+    alt: "CarotOS Poligon öğretmen uygulaması: oda kodu, şifre ve öğrenci listesi",
+    metin:
+      "Tek tıkla bir sınıf oda kodu üret, öğrencilerin ilerlemesini izle, göreve yönlendir, ihtiyacı olana özel ipucu gönder.",
+  },
 ];
 
 const araclar = [
@@ -206,7 +235,7 @@ const araclar = [
         <p class="lede hero__lede">
           CarotOS, siber güvenlik eğitimi için hazırlanmış bir Linux
           dağıtımıdır. On güvenlik aracı ve bu araçları kullanmak için yazılmış
-          dört uygulama içerir.
+          altı uygulama içerir.
         </p>
 
         <div class="hero__actions">
@@ -287,7 +316,7 @@ const araclar = [
       <p class="eyebrow">Uygulamalar</p>
       <h2 class="sec__title">Size sunduklarımız.</h2>
       <p class="lede sec__lede">
-        Bu proje için yazılan dört uygulama. Python ve GTK3 ile geliştirildi,
+        Bu proje için yazılan altı uygulama. Python ve GTK3 ile geliştirildi,
         GPL-3.0 ile dağıtılıyor.
       </p>
 
@@ -323,6 +352,38 @@ const araclar = [
       <div class="gorseller">
         <h3 class="tools__title">Ekran görüntüleri</h3>
         <Slayt lang="tr" slaytlar={slaytlar} />
+      </div>
+
+      <div class="poligon">
+        <h3 class="tools__title">CarotOS Poligon</h3>
+        <p class="lede poligon__lede">
+          Öğrenciler ve öğretmenler için izole, güvenli bir sızma testi
+          pratik alanı. Öğretmen bir sınıf açar, öğrenciler kendi
+          bilgisayarlarında gerçek araçlarla pratik yapar — hiçbir şey ağa
+          açılmaz, her şey kendi makinesinde kalır.
+        </p>
+        <div class="grid grid--2 poligon__grid">
+          {
+            poligonUygulamalari.map((p) => (
+              <article class="card poligon__card">
+                <div class="poligon__head">
+                  <img src={p.ikon} alt="" class="poligon__ikon" width="40" height="40" />
+                  <h4>{p.baslik}</h4>
+                </div>
+                <p>{p.metin}</p>
+                <div class="poligon__ekran-cerceve">
+                  <img
+                    src={p.ekran}
+                    alt={p.alt}
+                    class="poligon__ekran"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              </article>
+            ))
+          }
+        </div>
       </div>
     </div>
   </section>

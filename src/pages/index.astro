@@ -55,6 +55,14 @@ const slaytlar = [
     aciklama: "Açık veya koyu tema ve sistem dili. Seçimler çıkışta uygulanır.",
   },
   {
+    src: "/ekranlar/karsilama-duvar.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-duvar.webp",
+    alt: "Karşılama Sihirbazı: üç seçenekli masaüstü arka planı sayfası",
+    grup: "Karşılama Sihirbazı · 1.2",
+    baslik: "Masaüstü arka planı",
+    aciklama: "Üç CarotOS arka planından biri seçilir; seçim çıkışta masaüstüne uygulanır.",
+  },
+  {
     src: "/ekranlar/karsilama-3.webp",
     kucuk: "/ekranlar/kucuk/karsilama-3.webp",
     alt: "Karşılama Sihirbazı: Linux ve dağıtımlar sayfası",
@@ -126,11 +134,27 @@ const slaytlar = [
     baslik: "Sistem Sağlığı",
     aciklama: "Altı kategoride yirmi denetim, sağlık puanı ve tek tık düzeltmeler.",
   },
+  {
+    src: "/ekranlar/usb-denetimi.webp",
+    kucuk: "/ekranlar/kucuk/usb-denetimi.webp",
+    alt: "CarotOS USB Denetimi: bir bellekte dört şüpheli bulgu, önem derecesine göre listelenmiş",
+    grup: "Uygulama",
+    baslik: "USB Denetimi",
+    aciklama: "Bulgular önem derecesine göre sıralanır; her bulgunun nedeni ve dosya yolu gösterilir.",
+  },
+  {
+    src: "/ekranlar/magaza.webp",
+    kucuk: "/ekranlar/kucuk/magaza.webp",
+    alt: "CarotOS Mağaza: solda kategoriler, sağda uygulama kartları ve Kur düğmeleri",
+    grup: "Uygulama · 1.2",
+    baslik: "CarotOS Mağaza",
+    aciklama: "Yedi kategoride 51 uygulama. Kurulum ve kaldırma apt üzerinden yapılır.",
+  },
 ];
 
 const gercekler = [
   { sayi: "10", etiket: "seçilmiş güvenlik aracı" },
-  { sayi: "6", etiket: "özgün uygulama" },
+  { sayi: "7", etiket: "özgün uygulama" },
   { sayi: "~500 MB", etiket: "boşta bellek kullanımı" },
   { sayi: "13", etiket: "Debian sürümü — trixie" },
 ];
@@ -162,7 +186,7 @@ const uygulamalar = [
   {
     baslik: "Karşılama Sihirbazı",
     metin:
-      "İlk oturumda açılan on bir sayfalık iki dilli tanıtım. Tema ve dil seçimi ikinci sayfada yapılır, çıkışta sisteme uygulanır.",
+      "İlk oturumda açılan iki dilli tanıtım. Tema, dil ve masaüstü arka planı ilk sayfalarda seçilir, çıkışta sisteme uygulanır. 1.2 sürümünde sayfa sayısı on birden on beşe çıktı.",
   },
   {
     baslik: "Sistem Sağlığı",
@@ -172,7 +196,7 @@ const uygulamalar = [
   {
     baslik: "USB Denetimi",
     metin:
-      "Bağlanan aygıtı otomatik denetler: autorun.inf, çift uzantı, gizlenmiş uzantı, klasör görünümlü kısayol. Dosya içeriği okunmaz; yalnızca ad, uzantı ve konum incelenir.",
+      "Bağlanan aygıtı otomatik denetler: autorun.inf, çift uzantı, gizlenmiş uzantı, klasör görünümlü kısayol. Dosya içeriği okunmaz; yalnızca ad, uzantı ve konum incelenir. 1.2 sürümünden itibaren oturum açılışında arka planda başlar.",
   },
   {
     baslik: "CarotOS Poligon",
@@ -184,6 +208,12 @@ const uygulamalar = [
     metin:
       "Öğretmen uygulaması. Tek tıkla bir sınıf odası açar, öğrencilerin ilerlemesini gösterir, göreve yönlendirir ve ihtiyacı olana özel ipucu gönderir.",
   },
+  {
+    baslik: "CarotOS Mağaza",
+    yeni: "1.2",
+    metin:
+      "Debian depolarındaki 51 uygulamayı yedi kategoride sunan grafik mağaza. Kurulum ve kaldırma apt üzerinden yürütülür, yetki pkexec ile istenir. Açık ve koyu tema, Türkçe ve İngilizce arayüz.",
+  },
 ];
 
 const poligonUygulamalari = [
@@ -191,17 +221,17 @@ const poligonUygulamalari = [
     baslik: "CarotOS Poligon",
     ikon: "/ikonlar/ikon-poligon-ogrenci.webp",
     ekran: "/ekranlar/poligon-ogrenci.webp",
-    alt: "CarotOS Poligon öğrenci uygulaması: bireysel pratik ve sınıfa katılma seçenekleri",
+    alt: "CarotOS Poligon öğrenci uygulaması: misafir girişi, kullanıcı oluşturma ve kullanıcı girişi seçenekleri",
     metin:
-      "Sınıfa katıl ya da tek başına pratik yap. Gerçek görevleri çöz, ipucu iste, ilerlemen kalıcı olarak kaydedilir.",
+      "Misafir olarak hesap açmadan başlanabilir ya da kullanıcı hesabıyla giriş yapılır. Hesapla girişte ilerleme kaydedilir; görevler bireysel olarak veya bir sınıf odasına katılarak çözülür.",
   },
   {
     baslik: "CarotOS Poligon Öğretmen",
     ikon: "/ikonlar/ikon-poligon-ogretmen.webp",
     ekran: "/ekranlar/poligon-ogretmen.webp",
-    alt: "CarotOS Poligon öğretmen uygulaması: oda kodu, şifre ve öğrenci listesi",
+    alt: "CarotOS Poligon öğretmen uygulaması: oda kodu, oda şifresi, öğrenci listesi ve ipucu alanı",
     metin:
-      "Tek tıkla bir sınıf oda kodu üret, öğrencilerin ilerlemesini izle, göreve yönlendir, ihtiyacı olana özel ipucu gönder.",
+      "Oda kodu ve şifresi tek tıkla üretilir. Öğrenci ve sınıf görünümleri, soru oluşturma ve kaydedilmiş sorular ayrı sekmelerdedir. İpucu tek öğrenciye ya da tüm sınıfa gönderilebilir.",
   },
 ];
 
@@ -235,7 +265,7 @@ const araclar = [
         <p class="lede hero__lede">
           CarotOS, siber güvenlik eğitimi için hazırlanmış bir Linux
           dağıtımıdır. On güvenlik aracı ve bu araçları kullanmak için yazılmış
-          altı uygulama içerir.
+          yedi uygulama içerir.
         </p>
 
         <div class="hero__actions">
@@ -316,7 +346,7 @@ const araclar = [
       <p class="eyebrow">Uygulamalar</p>
       <h2 class="sec__title">Size sunduklarımız.</h2>
       <p class="lede sec__lede">
-        Bu proje için yazılan altı uygulama. Python ve GTK3 ile geliştirildi,
+        Bu proje için yazılan yedi uygulama. Python ve GTK3 ile geliştirildi,
         GPL-3.0 ile dağıtılıyor.
       </p>
 
@@ -326,7 +356,10 @@ const araclar = [
             <article class="card app">
               <span class="app__no">{String(i + 1).padStart(2, "0")}</span>
               <div>
-                <h3>{u.baslik}</h3>
+                <h3>
+                  {u.baslik}
+                  {u.yeni && <span class="app__tag">{u.yeni}</span>}
+                </h3>
                 <p>{u.metin}</p>
               </div>
             </article>

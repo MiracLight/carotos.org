@@ -37,7 +37,7 @@ public/
   sosyal-kart.png            paylaşım görseli (1200x630)
   404-gorsel.png             404 sayfası görseli
   robots.txt                 arama motoru yönergesi
-  ekranlar/                  12 ekran görüntüsü (webp, kırpılmamış)
+  ekranlar/                  17 ekran görüntüsü (webp, kırpılmamış)
   ekranlar/kucuk/            aynı görsellerin 200 piksellik önizlemeleri
 
 src/

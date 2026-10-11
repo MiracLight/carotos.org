@@ -55,6 +55,14 @@ const slides = [
     aciklama: "Light or dark theme and the system language, applied on exit.",
   },
   {
+    src: "/ekranlar/karsilama-duvar.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-duvar.webp",
+    alt: "Welcome Wizard desktop background page with three options",
+    grup: "Welcome Wizard · 1.2",
+    baslik: "Desktop background",
+    aciklama: "One of three CarotOS backgrounds is selected and applied to the desktop on exit.",
+  },
+  {
     src: "/ekranlar/karsilama-3.webp",
     kucuk: "/ekranlar/kucuk/karsilama-3.webp",
     alt: "Welcome Wizard page on Linux and distributions",
@@ -126,11 +134,27 @@ const slides = [
     baslik: "System Health",
     aciklama: "Twenty checks across six categories, a score and one-click fixes.",
   },
+  {
+    src: "/ekranlar/usb-denetimi.webp",
+    kucuk: "/ekranlar/kucuk/usb-denetimi.webp",
+    alt: "CarotOS USB Inspector showing four suspicious findings on a flash drive, ordered by severity",
+    grup: "Application",
+    baslik: "USB Inspector",
+    aciklama: "Findings are ordered by severity; each one shows its reason and file path.",
+  },
+  {
+    src: "/ekranlar/magaza.webp",
+    kucuk: "/ekranlar/kucuk/magaza.webp",
+    alt: "CarotOS Store with categories on the left and application cards with Install buttons",
+    grup: "Application · 1.2",
+    baslik: "CarotOS Store",
+    aciklama: "51 applications in seven categories. Installation and removal run through apt.",
+  },
 ];
 
 const facts = [
   { num: "10", label: "hand-picked security tools" },
-  { num: "6", label: "original applications" },
+  { num: "7", label: "original applications" },
   { num: "~500 MB", label: "memory use when idle" },
   { num: "13", label: "Debian release — trixie" },
 ];
@@ -157,7 +181,7 @@ const apps = [
   },
   {
     title: "Welcome Wizard",
-    text: "An eleven-page bilingual introduction shown on the first session. Theme and language are selected on page two and applied to the system on exit.",
+    text: "A bilingual introduction shown on the first session. Theme, language and desktop background are selected on the opening pages and applied to the system on exit. Version 1.2 expands it from eleven pages to fifteen.",
   },
   {
     title: "System Health",
@@ -165,7 +189,7 @@ const apps = [
   },
   {
     title: "USB Inspector",
-    text: "Inspects a connected device automatically: autorun.inf, double extensions, hidden extensions, shortcuts disguised as folders. File contents are never read; only names, extensions and locations are examined.",
+    text: "Inspects a connected device automatically: autorun.inf, double extensions, hidden extensions, shortcuts disguised as folders. File contents are never read; only names, extensions and locations are examined. From version 1.2 it starts in the background at login.",
   },
   {
     title: "CarotOS Poligon",
@@ -175,6 +199,11 @@ const apps = [
     title: "CarotOS Poligon Teacher",
     text: "Teacher application. Opens a classroom room with one click, shows student progress, directs the current task, and sends a private hint to anyone who needs one.",
   },
+  {
+    title: "CarotOS Store",
+    yeni: "1.2",
+    text: "A graphical store offering 51 applications from the Debian repositories in seven categories. Installation and removal run through apt, with privileges requested via pkexec. Light and dark themes, Turkish and English interface.",
+  },
 ];
 
 const poligonApps = [
@@ -182,15 +211,15 @@ const poligonApps = [
     title: "CarotOS Poligon",
     icon: "/ikonlar/ikon-poligon-ogrenci.webp",
     screenshot: "/ekranlar/poligon-ogrenci.webp",
-    alt: "CarotOS Poligon student application: individual practice and join-a-class options",
-    text: "Join a class or practice solo. Solve real tasks, ask for a hint, your progress is saved permanently.",
+    alt: "CarotOS Poligon student application: guest, create account and sign-in options",
+    text: "Starts as a guest without an account, or with a user account. Progress is saved for account sign-ins; tasks are solved individually or by joining a classroom room.",
   },
   {
     title: "CarotOS Poligon Teacher",
     icon: "/ikonlar/ikon-poligon-ogretmen.webp",
     screenshot: "/ekranlar/poligon-ogretmen.webp",
-    alt: "CarotOS Poligon teacher application: room code, password and student list",
-    text: "Generate a classroom room code with one click, watch student progress, direct the task, send a private hint to anyone who needs one.",
+    alt: "CarotOS Poligon teacher application: room code, room password, student list and hint field",
+    text: "Room code and password are generated with one click. Student and class views, question authoring and saved questions sit in separate tabs. A hint can go to one student or to the whole class.",
   },
 ];
 
@@ -223,7 +252,7 @@ const tools = [
         <h1>Few, explained well.</h1>
         <p class="lede hero__lede">
           CarotOS is a Linux distribution built for cybersecurity education. It
-          ships ten security tools and six applications written to operate
+          ships ten security tools and seven applications written to operate
           them.
         </p>
 
@@ -304,7 +333,7 @@ const tools = [
       <p class="eyebrow">Applications</p>
       <h2 class="sec__title">What we ship.</h2>
       <p class="lede sec__lede">
-        Six applications written for this project in Python and GTK3,
+        Seven applications written for this project in Python and GTK3,
         distributed under the GPL-3.0.
       </p>
 
@@ -314,7 +343,10 @@ const tools = [
             <article class="card app">
               <span class="app__no">{String(i + 1).padStart(2, "0")}</span>
               <div>
-                <h3>{a.title}</h3>
+                <h3>
+                  {a.title}
+                  {a.yeni && <span class="app__tag">{a.yeni}</span>}
+                </h3>
                 <p>{a.text}</p>
               </div>
             </article>

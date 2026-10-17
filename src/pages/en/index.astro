@@ -36,7 +36,7 @@ const slides = [
     alt: "CarotOS desktop with the XFCE panel and a dock",
     grup: "System",
     baslik: "Desktop",
-    aciklama: "XFCE 4, a two-panel layout and its own wallpaper.",
+    aciklama: "XFCE 4, two-panel layout and CarotOS wallpaper.",
   },
   {
     src: "/ekranlar/karsilama-1.webp",
@@ -44,7 +44,7 @@ const slides = [
     alt: "Welcome Wizard opening page",
     grup: "Welcome Wizard",
     baslik: "CarotOS 1.0 “Eggshell”",
-    aciklama: "Opens on the first session. A short introduction for first-time Linux users.",
+    aciklama: "Introduction shown on first login, for first-time Linux users.",
   },
   {
     src: "/ekranlar/karsilama-2.webp",
@@ -52,7 +52,7 @@ const slides = [
     alt: "Welcome Wizard appearance and language page",
     grup: "Welcome Wizard",
     baslik: "Appearance and language",
-    aciklama: "Light or dark theme and the system language, applied on exit.",
+    aciklama: "Light or dark theme and system language selection; settings are applied on exit.",
   },
   {
     src: "/ekranlar/karsilama-duvar.webp",
@@ -60,7 +60,7 @@ const slides = [
     alt: "Welcome Wizard desktop background page with three options",
     grup: "Welcome Wizard · 1.2",
     baslik: "Desktop background",
-    aciklama: "One of three CarotOS backgrounds is selected and applied to the desktop on exit.",
+    aciklama: "Selection among three CarotOS backgrounds; the chosen background is applied to the desktop on exit.",
   },
   {
     src: "/ekranlar/karsilama-3.webp",
@@ -68,7 +68,7 @@ const slides = [
     alt: "Welcome Wizard page on Linux and distributions",
     grup: "Welcome Wizard",
     baslik: "Linux and distributions",
-    aciklama: "What CarotOS is and what it is built on: Debian 13, Xfce and APT.",
+    aciklama: "Definition and base of CarotOS: Debian 13, Xfce and APT.",
   },
   {
     src: "/ekranlar/karsilama-4.webp",
@@ -76,7 +76,7 @@ const slides = [
     alt: "Welcome Wizard page on the desktop layout",
     grup: "Welcome Wizard",
     baslik: "The desktop",
-    aciklama: "How the two-panel layout works.",
+    aciklama: "Use of the two-panel desktop layout.",
   },
   {
     src: "/ekranlar/karsilama-5.webp",
@@ -84,7 +84,7 @@ const slides = [
     alt: "Welcome Wizard page on the file system",
     grup: "Welcome Wizard",
     baslik: "The file system",
-    aciklama: "Linux has no drive letters; everything sits in one tree.",
+    aciklama: "Linux file system: no drive letters; all directories are in a single tree.",
   },
   {
     src: "/ekranlar/karsilama-6.webp",
@@ -92,7 +92,7 @@ const slides = [
     alt: "Welcome Wizard page on the home folder",
     grup: "Welcome Wizard",
     baslik: "Your home folder",
-    aciklama: "Where your personal files live.",
+    aciklama: "Home folder, the location of personal files.",
   },
   {
     src: "/ekranlar/karsilama-7.webp",
@@ -100,7 +100,7 @@ const slides = [
     alt: "Welcome Wizard page on installing software",
     grup: "Welcome Wizard",
     baslik: "Installing software",
-    aciklama: "Repositories: signed, central installation. No .exe downloads.",
+    aciklama: "Central, signed software installation from repositories; no .exe downloads.",
   },
   {
     src: "/ekranlar/karsilama-8.webp",
@@ -108,7 +108,7 @@ const slides = [
     alt: "Welcome Wizard page introducing the Security Panel",
     grup: "Welcome Wizard",
     baslik: "CarotOS Security Panel",
-    aciklama: "Use the security tools without knowing the command line.",
+    aciklama: "Use of the security tools without command-line knowledge.",
   },
   {
     src: "/ekranlar/karsilama-9.webp",
@@ -116,7 +116,7 @@ const slides = [
     alt: "Welcome Wizard listing the installed security tools",
     grup: "Welcome Wizard",
     baslik: "Installed security tools",
-    aciklama: "Ten tools, all usable from the panel.",
+    aciklama: "Ten installed security tools, all available from the panel.",
   },
   {
     src: "/ekranlar/guvenlik-paneli.webp",
@@ -124,7 +124,7 @@ const slides = [
     alt: "CarotOS Security Panel showing the tool list and the nmap form",
     grup: "Application",
     baslik: "Security Panel",
-    aciklama: "Each field documents its function; command output streams live.",
+    aciklama: "Per-field function descriptions and live command output.",
   },
   {
     src: "/ekranlar/sistem-sagligi.webp",
@@ -132,7 +132,7 @@ const slides = [
     alt: "CarotOS System Health showing an 88 percent score and a check list",
     grup: "Application",
     baslik: "System Health",
-    aciklama: "Twenty checks across six categories, a score and one-click fixes.",
+    aciklama: "Twenty checks in six categories, health score and one-click fixes.",
   },
   {
     src: "/ekranlar/usb-denetimi.webp",
@@ -140,7 +140,7 @@ const slides = [
     alt: "CarotOS USB Inspector showing four suspicious findings on a flash drive, ordered by severity",
     grup: "Application",
     baslik: "USB Inspector",
-    aciklama: "Findings are ordered by severity; each one shows its reason and file path.",
+    aciklama: "Findings listed by severity, with the reason and file path for each.",
   },
   {
     src: "/ekranlar/magaza.webp",
@@ -148,7 +148,7 @@ const slides = [
     alt: "CarotOS Store with categories on the left and application cards with Install buttons",
     grup: "Application · 1.2",
     baslik: "CarotOS Store",
-    aciklama: "51 applications in seven categories. Installation and removal run through apt.",
+    aciklama: "51 applications in seven categories; installation and removal use apt.",
   },
 ];
 
@@ -244,7 +244,7 @@ const tools = [
 <Base
   lang="en"
   title="CarotOS — A Linux distribution for learning cybersecurity"
-  description="A Debian 13 based, education-focused Linux distribution. Instead of six hundred tools, it explains ten of them well."
+  description="A Debian 13 based, education-focused Linux distribution with ten security tools and seven original applications."
 >
   {/* ============================================================
       HERO
@@ -253,11 +253,11 @@ const tools = [
     <div class="wrap hero__inner">
       <div class="hero__text">
         <p class="eyebrow">Debian 13 · XFCE · amd64</p>
-        <h1>Few, explained well.</h1>
+        <h1>Education-focused Linux distribution.</h1>
         <p class="lede hero__lede">
-          CarotOS is a Linux distribution built for cybersecurity education. It
-          ships ten security tools and seven applications written to operate
-          them.
+          CarotOS is a Debian 13 based distribution for cybersecurity
+          education. It includes ten security tools and seven applications
+          developed to work with them.
         </p>
 
         <div class="hero__actions">
@@ -306,7 +306,7 @@ const tools = [
   <section id="philosophy" class="band band--shallow">
     <div class="wrap">
       <p class="eyebrow">Approach</p>
-      <h2 class="sec__title">What it is, what it isn't.</h2>
+      <h2 class="sec__title">Scope and design principles</h2>
       <p class="lede sec__lede">
         CarotOS is not an alternative to distributions that ship large tool
         sets. It adds ten tools and the interfaces to operate them on top of a
@@ -335,7 +335,7 @@ const tools = [
   <section id="inside" class="band band--tide">
     <div class="wrap">
       <p class="eyebrow">Applications</p>
-      <h2 class="sec__title">What we ship.</h2>
+      <h2 class="sec__title">Applications and tools</h2>
       <p class="lede sec__lede">
         Seven applications written for this project in Python and GTK3,
         distributed under the GPL-3.0.
@@ -381,10 +381,10 @@ const tools = [
       <div class="poligon">
         <h3 class="tools__title">CarotOS Poligon</h3>
         <p class="lede poligon__lede">
-          An isolated, safe pentesting practice range for students and
-          teachers. The teacher opens a class, students practice with real
-          tools on their own machines — nothing is ever exposed to the
-          network, everything stays on the local machine.
+          An isolated and secure penetration-testing environment for students
+          and teachers. The teacher creates a classroom room; students complete
+          tasks with real tools on their own machines. There are no
+          network-exposed components; all operations run on the local machine.
         </p>
         <div class="grid grid--2 poligon__grid">
           {
@@ -494,7 +494,7 @@ const tools = [
           </div>
 
           <div class="dl__soon">
-          <p class="dl__soon-title">In progress</p>
+          <p class="dl__soon-title">Planned releases</p>
 
           <article class="soon">
             <div>

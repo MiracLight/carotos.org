@@ -49,112 +49,184 @@ const OBSTACLE_SIZE = {
   crab: { w: 38, h: 28 },
   wood: { w: 165, h: 24 },
   weed: { w: 46, h: 44 },
+  starfish: { w: 40, h: 36 },
+  bottle: { w: 46, h: 22 },
+  urchin: { w: 38, h: 38 },
+  sandcastle: { w: 44, h: 38 },
+  net: { w: 50, h: 34 },
 };
+
+/**
+ * Her bölümün 3 ayrı düzeni var. Düzen; engel seti, dizilim mantığı ve zemin
+ * rengini birlikte değiştirir. Her denemede rastgele biri seçilir.
+ *   0 Kumsal  : serpiştirilmiş engeller, yengeç ve kütük satırları
+ *   1 Kayalık : slalom, boş şerit sağa sola kayar
+ *   2 Sürüntü : kütük ve yengeç geçitleri, arada kabuk izleri
+ */
+export const VARIANT_COUNT = 3;
+
+// [tür, ilk göründüğü bölüm, ağırlık]
+const SINGLES = [
+  [["rock", 1, 3], ["starfish", 1, 2], ["weed", 3, 2]],
+  [["rock", 1, 3], ["sandcastle", 1, 2], ["urchin", 2, 2], ["net", 3, 2]],
+  [["bottle", 1, 3], ["net", 1, 2], ["weed", 1, 2], ["starfish", 2, 1]],
+];
+
+function pickSingle(variant, n, rand) {
+  const pool = SINGLES[variant].filter((t) => n >= t[1]);
+  const total = pool.reduce((a, t) => a + t[2], 0);
+  let r = rand() * total;
+  for (const t of pool) {
+    r -= t[2];
+    if (r < 0) return t[0];
+  }
+  return pool[0][0];
+}
 
 /**
  * Bir bölümün engellerini ve toplanabilirlerini üretir.
  * Her sırada en az bir şerit boştur ve bir sonraki sıranın boş şeridine,
  * önceki sıranın boş şeridinden en fazla bir şerit kayarak ulaşılabilir.
+ * Yengeç ve kütük satırlarında kapalı sayılan şeritler engel ya da
+ * yengecin süpürdüğü iki şerittir.
  */
-export function buildLevel(n, rand = Math.random) {
+export function buildLevel(n, rand = Math.random, variant = 0) {
   const p = levelParams(n);
   const obstacles = [];
   const items = [];
   let z = 720;
   let prevFree = [0, 1, 2];
 
-  const pickType = () => {
-    const pool = ["rock"];
-    if (n >= 2) pool.push("rock");
-    if (n >= 3) pool.push("weed");
-    return pool[Math.floor(rand() * pool.length)];
+  const freeOf = (blocked) => [0, 1, 2].filter((l) => !blocked.includes(l));
+  const reach = (free) => free.some((a) => prevFree.some((q) => Math.abs(a - q) <= 1));
+
+  const single = (lane) => {
+    const type = pickSingle(variant, n, rand);
+    obstacles.push({
+      type,
+      lanes: [lane],
+      z,
+      x: laneCenter(lane),
+      ...OBSTACLE_SIZE[type],
+      phase: rand() * 6.28,
+    });
+  };
+  const wood = (a) =>
+    obstacles.push({
+      type: "wood",
+      lanes: [a, a + 1],
+      z,
+      x: (laneCenter(a) + laneCenter(a + 1)) / 2,
+      ...OBSTACLE_SIZE.wood,
+      phase: rand() * 6.28,
+    });
+  // Yengeç: orta şerit ile bir yan şerit arasında gidip gelir
+  const crab = (side) =>
+    obstacles.push({
+      type: "crab",
+      lanes: [1, side],
+      z,
+      x: (laneCenter(1) + laneCenter(side)) / 2,
+      ...OBSTACLE_SIZE.crab,
+      phase: rand() * 6.28,
+      freq: Math.min(2.2 + 0.15 * Math.max(0, n - 2), 4),
+    });
+  const pickLane = () => Math.floor(rand() * LANES);
+  const twoSingles = () => {
+    const fr = pickLane();
+    const bl = [0, 1, 2].filter((l) => l !== fr);
+    return { blocked: bl, build: () => bl.forEach(single) };
+  };
+  const woodRow = () => {
+    const a = rand() < 0.5 ? 0 : 1;
+    return { blocked: [a, a + 1], build: () => wood(a) };
+  };
+  const crabRow = () => {
+    const side = rand() < 0.5 ? 0 : 2;
+    return { blocked: [1, side], build: () => crab(side) };
   };
 
-  while (z < p.length - 450) {
-    let row = null;
+  // --- 0 Kumsal: serpiştirilmiş ---
+  const scatter = () => {
+    if (n >= 2 && rand() < Math.min(0.35, 0.18 + 0.03 * (n - 2))) return crabRow();
+    if (rand() < p.doubleChance) return n >= 2 && rand() < 0.5 ? woodRow() : twoSingles();
+    const l = pickLane();
+    return { blocked: [l], build: () => single(l) };
+  };
 
-    if (rand() > 0.12) {
-      for (let tries = 0; tries < 6 && !row; tries++) {
-        // Yengeç satırı: orta şerit ile bir yan şerit arasında gidip gelir.
-        // İki şerit de kapalı sayılır; boş kalan tek şerit uzak kenardır.
-        const crabRow = n >= 2 && rand() < Math.min(0.35, 0.18 + 0.03 * (n - 2));
-        const two = rand() < p.doubleChance;
-        let blocked;
-        let wood = false;
-        let crab = null;
-        if (crabRow) {
-          const side = rand() < 0.5 ? 0 : 2;
-          blocked = [1, side];
-          crab = { side };
-        } else if (!two) {
-          blocked = [Math.floor(rand() * LANES)];
-        } else if (n >= 2 && rand() < 0.5) {
-          const a = Math.floor(rand() * 2); // 0-1 veya 1-2
-          blocked = [a, a + 1];
-          wood = true;
-        } else {
-          const free = Math.floor(rand() * LANES);
-          blocked = [0, 1, 2].filter((l) => l !== free);
-        }
-        const free = [0, 1, 2].filter((l) => !blocked.includes(l));
-        const reachable = free.some((f) => prevFree.some((q) => Math.abs(f - q) <= 1));
-        if (reachable) row = { blocked, free, wood, crab };
-      }
+  // --- 1 Kayalık: slalom ---
+  let f = 1;
+  const slalom = () => {
+    const cand = [];
+    if (f > 0) cand.push(f - 1);
+    if (f < 2) cand.push(f + 1);
+    const nf = cand[Math.floor(rand() * cand.length)];
+    f = nf;
+    if (n >= 3 && (nf === 0 || nf === 2) && rand() < 0.25) {
+      const side = nf === 0 ? 2 : 0; // boş kalan şerit nf
+      return { blocked: [1, side], build: () => crab(side) };
+    }
+    const others = [0, 1, 2].filter((l) => l !== nf);
+    const both = n >= 2 && rand() < Math.min(0.9, 0.35 + 0.15 * (n - 1));
+    const bl = both ? others : [others[Math.floor(rand() * 2)]];
+    return { blocked: bl, build: () => bl.forEach(single) };
+  };
+
+  // --- 2 Sürüntü: geçitler ---
+  let step = 0;
+  const gates = () => {
+    step += 1;
+    const ph = step % 4;
+    if (ph === 0) return null; // nefes alma sırası
+    if (ph === 1) return n >= 2 ? woodRow() : twoSingles();
+    if (ph === 2) return n >= 2 ? crabRow() : twoSingles();
+    const l = pickLane();
+    return { blocked: [l], build: () => single(l) };
+  };
+
+  let rowNo = 0;
+  while (z < p.length - 450) {
+    rowNo += 1;
+    let spec = null;
+    if (variant === 0) {
+      if (rand() > 0.12) spec = scatter();
+    } else if (variant === 1) {
+      if (rowNo % 5 !== 0) spec = slalom();
+    } else {
+      spec = gates();
     }
 
-    if (row) {
-      if (row.crab) {
-        const side = row.crab.side;
-        obstacles.push({
-          type: "crab",
-          lanes: [1, side],
-          z,
-          x: (laneCenter(1) + laneCenter(side)) / 2, // iki şeridin ortası
-          ...OBSTACLE_SIZE.crab,
-          phase: rand() * 6.28,
-          freq: Math.min(2.2 + 0.15 * (n - 2), 4), // gidip gelme hızı
-        });
-      } else if (row.wood) {
-        const a = row.blocked[0];
-        obstacles.push({
-          type: "wood",
-          lanes: row.blocked,
-          z,
-          x: (laneCenter(a) + laneCenter(a + 1)) / 2,
-          ...OBSTACLE_SIZE.wood,
-          phase: rand() * 6.28,
-        });
-      } else {
-        for (const l of row.blocked) {
-          const type = pickType();
-          obstacles.push({
-            type,
-            lanes: [l],
-            z,
-            x: laneCenter(l),
-            ...OBSTACLE_SIZE[type],
-            phase: rand() * 6.28,
-          });
-        }
-      }
-      prevFree = row.free;
-    } else {
-      prevFree = [0, 1, 2];
+    if (spec && !reach(freeOf(spec.blocked))) {
+      const l = pickLane();
+      spec = { blocked: [l], build: () => single(l) };
     }
 
     const gapPx = p.gap * p.speed * (0.9 + rand() * 0.4);
 
-    // Sıra arasına bazen bir kabuk parçası
+    if (spec) {
+      spec.build();
+      prevFree = freeOf(spec.blocked);
+    } else {
+      prevFree = [0, 1, 2];
+      // Nefes sırasında kabuk izi (sürüntü düzeninde daha sık)
+      if (variant === 2 && rand() < 0.75) {
+        const lane = pickLane();
+        for (const k of [-1, 0, 1]) {
+          items.push({ z: z + gapPx / 2 + k * 38, x: laneCenter(lane), lane, taken: false });
+        }
+      }
+    }
+
+    // Sıra arasına bazen tek bir kabuk parçası
     if (rand() < 0.4) {
-      const pool = prevFree;
-      const lane = pool[Math.floor(rand() * pool.length)];
+      const lane = prevFree[Math.floor(rand() * prevFree.length)];
       items.push({ z: z + gapPx / 2, x: laneCenter(lane), lane, taken: false });
     }
 
     z += gapPx;
   }
 
-  return { params: p, obstacles, items, length: p.length };
+  return { params: p, obstacles, items, length: p.length, variant };
 }
 
 /** Gizli oyunu bir canvas üzerinde başlatır. */
@@ -192,6 +264,8 @@ export function createGame(canvas, opt) {
     world: null,
     lean: 0, // şerit değiştirirken yana yatma
     squash: 0, // çarpınca ezilme
+    variant: 0,
+    lastVariant: {}, // bölüm -> son oynanan düzen
     heartFlash: 0,
     partsBump: 0,
     vig: 0, // çarpma kızıllığı
@@ -270,9 +344,22 @@ export function createGame(canvas, opt) {
     scale = canvas.width / W;
   }
 
-  function start(level) {
+  // Aynı bölümde art arda aynı düzen gelmez
+  function pickVariant(level) {
+    if (opt.variant != null) return opt.variant;
+    const prev = g.lastVariant[level];
+    let v;
+    do {
+      v = Math.floor(rand() * VARIANT_COUNT);
+    } while (v === prev && VARIANT_COUNT > 1);
+    g.lastVariant[level] = v;
+    return v;
+  }
+
+  function start(level, variant) {
     g.level = level;
-    g.world = buildLevel(level, rand);
+    g.variant = variant != null ? variant : pickVariant(level);
+    g.world = buildLevel(level, rand, g.variant);
     g.phase = "ready";
     g.phaseT = 0;
     g.d = 0;
@@ -522,17 +609,25 @@ export function createGame(canvas, opt) {
     ctx.closePath();
   }
 
+  // düzene göre zemin: kumsal, kayalık, ıslak sürüntü kumu
+  const PALETTE = [
+    { top: "#ecdcae", bot: "#e2cf9b", dot: "120,95,50", big: 1 },
+    { top: "#dcd4c0", bot: "#cbc1a8", dot: "80,80,92", big: 1.7 },
+    { top: "#dcc796", bot: "#c9b07a", dot: "96,70,36", big: 1.2 },
+  ];
+
   function drawSand() {
+    const pal = PALETTE[g.variant] || PALETTE[0];
     const grd = ctx.createLinearGradient(0, 0, 0, H);
-    grd.addColorStop(0, "#ecdcae");
-    grd.addColorStop(1, "#e2cf9b");
+    grd.addColorStop(0, pal.top);
+    grd.addColorStop(1, pal.bot);
     ctx.fillStyle = grd;
     ctx.fillRect(0, 0, W, H);
     for (const p of sandDots) {
       const y = (p.y + g.d) % H;
-      ctx.fillStyle = `rgba(120,95,50,${p.a})`;
+      ctx.fillStyle = `rgba(${pal.dot},${p.a})`;
       ctx.beginPath();
-      ctx.arc(p.x, y, p.r, 0, 6.283);
+      ctx.arc(p.x, y, p.r * pal.big, 0, 6.283);
       ctx.fill();
     }
     // Rüzgârın kumda bıraktığı hafif dalgalar
@@ -724,25 +819,240 @@ export function createGame(canvas, opt) {
       ctx.arc(4, -6, 2.2, 0, 6.283);
       ctx.fill();
     } else if (o.type === "wood") {
-      ctx.fillStyle = "#8a6a43";
-      ctx.strokeStyle = "#5e4627";
+      const hw = o.w / 2;
+      // gövde: yukarıdan aşağıya koyulaşan kabuk
+      const bark = ctx.createLinearGradient(0, -11, 0, 12);
+      bark.addColorStop(0, "#a9835a");
+      bark.addColorStop(0.5, "#86653f");
+      bark.addColorStop(1, "#5f4528");
+      ctx.fillStyle = bark;
+      ctx.strokeStyle = "#4a351d";
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.roundRect(-o.w / 2, -10, o.w, 22, 10);
+      ctx.moveTo(-hw + 6, -10);
+      ctx.bezierCurveTo(-hw * 0.5, -13, -hw * 0.1, -9, hw * 0.3, -12);
+      ctx.bezierCurveTo(hw * 0.6, -13, hw * 0.85, -10, hw - 6, -9);
+      ctx.lineTo(hw - 6, 10);
+      ctx.bezierCurveTo(hw * 0.7, 13, hw * 0.3, 10, -hw * 0.1, 12);
+      ctx.bezierCurveTo(-hw * 0.5, 13, -hw * 0.8, 10, -hw + 6, 10);
+      ctx.closePath();
       ctx.fill();
       ctx.stroke();
-      ctx.strokeStyle = "rgba(60,40,20,0.35)";
-      ctx.lineWidth = 1.5;
-      for (let i = -3; i <= 3; i++) {
+      // boyuna kabuk oluklar
+      ctx.strokeStyle = "rgba(40,26,12,0.5)";
+      ctx.lineWidth = 1.4;
+      ctx.lineCap = "round";
+      for (const y of [-5, 0, 5]) {
+        for (let x = -hw + 14; x < hw - 24; x += 38) {
+          ctx.beginPath();
+          ctx.moveTo(x + (y + 5) * 2, y);
+          ctx.quadraticCurveTo(x + 16, y + 2, x + 30, y - 1);
+          ctx.stroke();
+        }
+      }
+      // budaklar
+      for (const [kx, ky, kr] of [[-hw * 0.35, -1, 4.2], [hw * 0.4, 3, 3.6]]) {
+        ctx.fillStyle = "#4a351d";
         ctx.beginPath();
-        ctx.moveTo(i * 22, -8);
-        ctx.lineTo(i * 22 + 6, 9);
+        ctx.ellipse(kx, ky, kr, kr * 0.8, 0, 0, 6.283);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(200,170,120,0.5)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.ellipse(kx, ky, kr + 2, kr * 0.8 + 2, 0, 0, 6.283);
         ctx.stroke();
       }
-      ctx.fillStyle = "#b08a5a";
+      // kırık dal
+      ctx.fillStyle = "#7a5b37";
+      ctx.strokeStyle = "#4a351d";
+      ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.ellipse(-o.w / 2 + 6, 1, 5, 9, 0, 0, 6.283);
+      ctx.moveTo(hw * 0.05, -10);
+      ctx.lineTo(hw * 0.02, -20);
+      ctx.lineTo(hw * 0.14, -19);
+      ctx.lineTo(hw * 0.13, -10);
+      ctx.closePath();
       ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = "#cfae7a";
+      ctx.beginPath();
+      ctx.ellipse(hw * 0.08, -19.5, 6, 2.6, 0, 0, 6.283);
+      ctx.fill();
+      // iki ucu: kesik yüzey, halkalar
+      for (const sx of [-1, 1]) {
+        const ex = sx * (hw - 6);
+        ctx.fillStyle = "#cfae7a";
+        ctx.strokeStyle = "#4a351d";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.ellipse(ex, 0, 6.5, 10.5, 0, 0, 6.283);
+        ctx.fill();
+        ctx.stroke();
+        ctx.strokeStyle = "#a07c4a";
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.ellipse(ex, 0, 3.8, 6.5, 0, 0, 6.283);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.ellipse(ex, 0, 1.4, 2.4, 0, 0, 6.283);
+        ctx.stroke();
+      }
+      // üstüne takılmış yosun
+      ctx.strokeStyle = "#4a9c78";
+      ctx.lineWidth = 2.6;
+      ctx.beginPath();
+      ctx.moveTo(-hw * 0.6, 8);
+      ctx.quadraticCurveTo(-hw * 0.62, 16, -hw * 0.5, 18);
+      ctx.moveTo(-hw * 0.55, 9);
+      ctx.quadraticCurveTo(-hw * 0.5, 14, -hw * 0.42, 14);
+      ctx.stroke();
+    } else if (o.type === "starfish") {
+      ctx.rotate(o.phase * 0.5);
+      ctx.fillStyle = "#f08a4b";
+      ctx.strokeStyle = "#c4622a";
+      ctx.lineWidth = 2;
+      ctx.lineJoin = "round";
+      ctx.beginPath();
+      for (let i = 0; i < 10; i++) {
+        const ang = -Math.PI / 2 + (i * Math.PI) / 5;
+        const r = i % 2 ? 7.5 : 19;
+        ctx.lineTo(Math.cos(ang) * r, Math.sin(ang) * r);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = "#ffd3a8";
+      for (let i = 0; i < 5; i++) {
+        const ang = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
+        for (const r of [6, 11, 15]) {
+          ctx.beginPath();
+          ctx.arc(Math.cos(ang) * r, Math.sin(ang) * r, 1.3, 0, 6.283);
+          ctx.fill();
+        }
+      }
+    } else if (o.type === "bottle") {
+      ctx.rotate((o.phase % 1) - 0.5);
+      ctx.strokeStyle = "#2d7a5a";
+      ctx.lineWidth = 1.8;
+      ctx.fillStyle = "rgba(78,170,128,0.92)";
+      ctx.beginPath();
+      ctx.roundRect(-20, -7.5, 28, 15, 6);
+      ctx.fill();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.roundRect(6, -4, 14, 8, 3);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = "#c9a23a";
+      ctx.fillRect(19, -4.5, 4.5, 9);
+      ctx.fillStyle = "rgba(244,249,253,0.85)";
+      ctx.fillRect(-11, -5.5, 12, 11);
+      ctx.strokeStyle = "rgba(255,255,255,0.7)";
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(-16, -4);
+      ctx.lineTo(-13, -4);
+      ctx.stroke();
+    } else if (o.type === "urchin") {
+      ctx.rotate(Math.sin(g.t * 1.6 + o.phase) * 0.12);
+      ctx.strokeStyle = "#3a2c63";
+      ctx.lineWidth = 2.4;
+      ctx.lineCap = "round";
+      for (let i = 0; i < 22; i++) {
+        const ang = (i * 2 * Math.PI) / 22;
+        const r2 = i % 2 ? 17 : 20;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(ang) * 9, Math.sin(ang) * 9);
+        ctx.lineTo(Math.cos(ang) * r2, Math.sin(ang) * r2);
+        ctx.stroke();
+      }
+      ctx.fillStyle = "#5b4a94";
+      ctx.beginPath();
+      ctx.arc(0, 0, 11.5, 0, 6.283);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = "rgba(255,255,255,0.35)";
+      ctx.beginPath();
+      ctx.arc(-4, -4, 3.2, 0, 6.283);
+      ctx.fill();
+    } else if (o.type === "sandcastle") {
+      ctx.fillStyle = "#e0bf78";
+      ctx.strokeStyle = "#a98b4a";
+      ctx.lineWidth = 2;
+      ctx.lineJoin = "round";
+      ctx.beginPath();
+      ctx.roundRect(-20, -4, 40, 20, 3);
+      ctx.fill();
+      ctx.stroke();
+      for (const [tx, tw, th] of [[-22, 12, 28], [10, 12, 28], [-8, 16, 34]]) {
+        ctx.beginPath();
+        ctx.roundRect(tx, 14 - th, tw, th, 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = "#a98b4a";
+        for (let k = 0; k < 3; k++) ctx.fillRect(tx + 1 + k * (tw / 3), 14 - th - 3, tw / 3 - 1, 3.5);
+        ctx.fillStyle = "#e0bf78";
+      }
+      ctx.fillStyle = "#8a6d3a";
+      ctx.beginPath();
+      ctx.moveTo(-4, 16);
+      ctx.lineTo(-4, 9);
+      ctx.quadraticCurveTo(0, 3, 4, 9);
+      ctx.lineTo(4, 16);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = "#8a6d3a";
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(0, -20);
+      ctx.lineTo(0, -29);
+      ctx.stroke();
+      ctx.fillStyle = "#e0643a";
+      ctx.beginPath();
+      ctx.moveTo(0, -29);
+      ctx.lineTo(9, -26);
+      ctx.lineTo(0, -23);
+      ctx.closePath();
+      ctx.fill();
+    } else if (o.type === "net") {
+      ctx.beginPath();
+      ctx.moveTo(-23, -4);
+      ctx.lineTo(-14, -15);
+      ctx.lineTo(6, -17);
+      ctx.lineTo(22, -8);
+      ctx.lineTo(24, 8);
+      ctx.lineTo(8, 16);
+      ctx.lineTo(-14, 15);
+      ctx.lineTo(-24, 6);
+      ctx.closePath();
+      ctx.fillStyle = "rgba(120,150,170,0.28)";
+      ctx.fill();
+      ctx.save();
+      ctx.clip();
+      ctx.strokeStyle = "rgba(76,104,124,0.9)";
+      ctx.lineWidth = 1.3;
+      for (let k = -40; k <= 40; k += 8) {
+        ctx.beginPath();
+        ctx.moveTo(k - 20, -20);
+        ctx.lineTo(k + 20, 20);
+        ctx.moveTo(k + 20, -20);
+        ctx.lineTo(k - 20, 20);
+        ctx.stroke();
+      }
+      ctx.restore();
+      ctx.strokeStyle = "#4c687c";
+      ctx.lineWidth = 2.2;
+      ctx.stroke();
+      for (const [fx, fy] of [[-18, -9], [14, -13], [18, 11]]) {
+        ctx.fillStyle = "#ff8a3d";
+        ctx.beginPath();
+        ctx.arc(fx, fy, 4.4, 0, 6.283);
+        ctx.fill();
+        ctx.fillStyle = "rgba(255,255,255,0.6)";
+        ctx.beginPath();
+        ctx.arc(fx - 1.3, fy - 1.3, 1.3, 0, 6.283);
+        ctx.fill();
+      }
     } else if (o.type === "weed") {
       ctx.strokeStyle = "#3f7f5e";
       ctx.lineWidth = 5;
@@ -1063,6 +1373,7 @@ export function createGame(canvas, opt) {
       const n = 3 - Math.min(2, Math.floor(g.phaseT / 0.5));
       const fr = (g.phaseT % 0.5) / 0.5;
       text(`${S.level} ${g.level}`, W / 2, 200, 34);
+      if (S.variants && S.variants[g.variant]) text(S.variants[g.variant], W / 2, 230, 17, "center", 600);
       ctx.globalAlpha = Math.min(1, 1.4 - fr);
       text(String(n), W / 2, 300, 84 * (1 + 0.28 * (1 - fr)));
       ctx.globalAlpha = 1;
@@ -1109,6 +1420,7 @@ export function createGame(canvas, opt) {
     getState() {
       return {
         level: g.level,
+        variant: g.variant,
         phase: g.phase,
         lane: g.lane,
         hearts: g.hearts,

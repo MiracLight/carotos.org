@@ -20,6 +20,7 @@ const t = {
     level: "Bölüm",
     hint: "← → veya kaydır",
     reached: "Denize ulaşıldı!",
+    variants: ["Kumsal", "Kayalık", "Sürüntü"],
     introTitle: "Yumurtadan çıktı, deniz ileride.",
     introText: "Yavru kaplumbağayı engellerden kaçırarak denize ulaştır. Her bölüm bir öncekinden daha uzun ve hızlı.",
     start: "Başla",
@@ -52,6 +53,7 @@ const t = {
     level: "Level",
     hint: "← → or swipe",
     reached: "You reached the sea!",
+    variants: ["Shoreline", "Rocky Cove", "Driftwood Beach"],
     introTitle: "Hatched. The sea is ahead.",
     introText: "Guide the hatchling past the obstacles to the sea. Each level is longer and faster than the last.",
     start: "Start",
@@ -84,6 +86,7 @@ const veri = {
   level: t.level,
   hint: t.hint,
   reached: t.reached,
+  variants: t.variants,
   tips: t.tips,
   doneTitle: lang === "tr" ? "Bölüm {n} tamamlandı" : "Level {n} complete",
   best: t.best,
@@ -258,7 +261,12 @@ const veri = {
         const mod = await import("../scripts/minigame.js");
         game = mod.createGame(canvas, {
           muted,
-          strings: { level: data.level, hint: data.hint, reached: data.reached },
+          strings: {
+            level: data.level,
+            hint: data.hint,
+            reached: data.reached,
+            variants: data.variants,
+          },
           onComplete: (r: any) => {
             level = r.level;
             if (r.level + 1 > readBest()) writeBest(r.level + 1);

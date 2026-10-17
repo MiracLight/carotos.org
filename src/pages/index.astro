@@ -186,38 +186,38 @@ const uygulamalar = [
   {
     baslik: "Güvenlik Paneli",
     metin:
-      "On aracın grafik arayüzü. Her alanın işlevi yanında açıklanır, komut çıktısı canlı akar, yetki gerektiren işlemler pkexec üzerinden yürütülür.",
+      "Seçili on güvenlik aracı için grafik arayüz. Alan başına işlev açıklaması, canlı komut çıktısı ve yetki gerektiren işlemlerde pkexec ile yetkilendirme.",
   },
   {
     baslik: "Karşılama Sihirbazı",
     metin:
-      "İlk oturumda açılan iki dilli tanıtım. Tema, dil ve masaüstü arka planı ilk sayfalarda seçilir, çıkışta sisteme uygulanır. 1.2 sürümünde sayfa sayısı on birden on beşe çıktı.",
+      "İlk oturumda başlayan iki dilli tanıtım ve ilk yapılandırma sihirbazı. Tema, dil ve masaüstü arka planı seçimi; ayarlar çıkışta sisteme uygulanır. 1.2 sürümünde sayfa sayısı 11'den 15'e çıkarılmıştır.",
   },
   {
     baslik: "Sistem Sağlığı",
     metin:
-      "Altı kategoride yirmi denetim. Sağlık puanı üretir, on iki sorunu tek tıkla düzeltir, sonucu rapor olarak kaydeder.",
+      "Altı kategoride yirmi denetim içeren sistem durumu aracı. Sağlık puanı hesaplama, on iki sorunda tek tıkla düzeltme ve sonuçların rapor olarak kaydedilmesi.",
   },
   {
     baslik: "USB Denetimi",
     metin:
-      "Bağlanan aygıtı otomatik denetler: autorun.inf, çift uzantı, gizlenmiş uzantı, klasör görünümlü kısayol. Dosya içeriği okunmaz; yalnızca ad, uzantı ve konum incelenir. 1.2 sürümünden itibaren oturum açılışında arka planda başlar.",
+      "Bağlanan USB aygıtların otomatik denetimi: autorun.inf, çift uzantı, gizlenmiş uzantı ve klasör görünümlü kısayol tespiti. Dosya içeriği okunmaz; yalnızca ad, uzantı ve konum bilgisi incelenir. 1.2 sürümünden itibaren oturum açılışında arka planda başlatılır.",
   },
   {
     baslik: "CarotOS Poligon",
     metin:
-      "Öğrenci uygulaması. İzole bir ortamda hydra, nmap, john, sqlmap ve tshark ile gerçek görevler çözülür; ufw ve fail2ban ile savunma pratiği de yapılır.",
+      "Öğrenciler için sızma testi uygulama ortamı. İzole ortamda hydra, nmap, john, sqlmap ve tshark ile görev tabanlı çalışma; ufw ve fail2ban ile savunma uygulamaları.",
   },
   {
     baslik: "CarotOS Poligon Öğretmen",
     metin:
-      "Öğretmen uygulaması. Tek tıkla bir sınıf odası açar, öğrencilerin ilerlemesini gösterir, göreve yönlendirir ve ihtiyacı olana özel ipucu gönderir.",
+      "Öğretmenler için sınıf yönetim uygulaması. Tek adımda sınıf odası oluşturma, öğrenci ilerlemesinin izlenmesi, görev yönlendirme ve öğrenciye özel ipucu gönderimi.",
   },
   {
     baslik: "CarotOS Mağaza",
     yeni: "1.2",
     metin:
-      "Debian depolarındaki 51 uygulamayı yedi kategoride sunan grafik mağaza. Kurulum ve kaldırma apt üzerinden yürütülür, yetki pkexec ile istenir. Açık ve koyu tema, Türkçe ve İngilizce arayüz.",
+      "Debian depolarındaki 51 uygulamaya yedi kategoride erişim sağlayan grafik yazılım mağazası. Kurulum ve kaldırma işlemleri apt ile yapılır, yetkilendirme pkexec üzerinden alınır. Açık ve koyu tema; Türkçe ve İngilizce arayüz.",
   },
 ];
 
@@ -228,7 +228,7 @@ const poligonUygulamalari = [
     ekran: "/ekranlar/poligon-ogrenci.webp",
     alt: "CarotOS Poligon öğrenci uygulaması: misafir girişi, kullanıcı oluşturma ve kullanıcı girişi seçenekleri",
     metin:
-      "Misafir olarak hesap açmadan başlanabilir ya da kullanıcı hesabıyla giriş yapılır. Hesapla girişte ilerleme kaydedilir; görevler bireysel olarak veya bir sınıf odasına katılarak çözülür.",
+      "Misafir modunda hesapsız kullanım veya kullanıcı hesabıyla giriş. Hesapla girişte ilerleme kaydı tutulur. Görevler bireysel olarak ya da sınıf odasına katılarak tamamlanır.",
   },
   {
     baslik: "CarotOS Poligon Öğretmen",
@@ -236,7 +236,7 @@ const poligonUygulamalari = [
     ekran: "/ekranlar/poligon-ogretmen.webp",
     alt: "CarotOS Poligon öğretmen uygulaması: oda kodu, oda şifresi, öğrenci listesi ve ipucu alanı",
     metin:
-      "Oda kodu ve şifresi tek tıkla üretilir. Öğrenci ve sınıf görünümleri, soru oluşturma ve kaydedilmiş sorular ayrı sekmelerdedir. İpucu tek öğrenciye ya da tüm sınıfa gönderilebilir.",
+      "Tek tıkla oda kodu ve şifresi oluşturma. Öğrenci ve sınıf görünümleri, soru oluşturma ve kayıtlı sorular ayrı sekmelerde yer alır. İpucu tek bir öğrenciye veya tüm sınıfa iletilebilir.",
   },
 ];
 

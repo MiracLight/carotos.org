@@ -16,6 +16,7 @@ const t = {
   tr: {
     label: "Gizli oyun: Denize ulaş",
     close: "Kapat",
+    mute: "Sesi aç/kapat",
     level: "Bölüm",
     hint: "← → veya kaydır",
     reached: "Denize ulaşıldı!",
@@ -47,6 +48,7 @@ const t = {
   en: {
     label: "Hidden game: Reach the sea",
     close: "Close",
+    mute: "Toggle sound",
     level: "Level",
     hint: "← → or swipe",
     reached: "You reached the sea!",
@@ -94,6 +96,17 @@ const veri = {
     <button class="mg__close" type="button" id="mg-close" aria-label={t.close}>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"></path>
+      </svg>
+    </button>
+
+    <button class="mg__mute" type="button" id="mg-mute" aria-pressed="false" aria-label={t.mute}>
+      <svg class="mg__ic-on" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5H4z" fill="currentColor"></path>
+        <path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+      </svg>
+      <svg class="mg__ic-off" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5H4z" fill="currentColor"></path>
+        <path d="M16 9.5l5 5M21 9.5l-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
       </svg>
     </button>
 
@@ -165,6 +178,28 @@ const veri = {
       }
     };
 
+    const MKEY = "carotos-oyun-sessiz";
+    let muted = false;
+    try {
+      muted = localStorage.getItem(MKEY) === "1";
+    } catch {
+      /* depolama kapalı olabilir */
+    }
+    const muteBtn = document.getElementById("mg-mute") as HTMLButtonElement;
+    const paintMute = () => muteBtn.setAttribute("aria-pressed", String(muted));
+    paintMute();
+    muteBtn.addEventListener("click", () => {
+      muted = !muted;
+      paintMute();
+      try {
+        localStorage.setItem(MKEY, muted ? "1" : "0");
+      } catch {
+        /* yok say */
+      }
+      if (game) game.setMuted(muted);
+      btn.focus();
+    });
+
     let game: any = null;
     let level = 1;
     let mode: "intro" | "done" | "over" = "intro";
@@ -222,6 +257,7 @@ const veri = {
       if (!game) {
         const mod = await import("../scripts/minigame.js");
         game = mod.createGame(canvas, {
+          muted,
           strings: { level: data.level, hint: data.hint, reached: data.reached },
           onComplete: (r: any) => {
             level = r.level;
@@ -324,6 +360,40 @@ const veri = {
     background: var(--deep);
     color: var(--on-dark);
     cursor: pointer;
+  }
+
+  .mg__mute {
+    position: absolute;
+    top: -14px;
+    left: -14px;
+    z-index: 3;
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 2px solid var(--on-dark);
+    background: var(--deep);
+    color: var(--on-dark);
+    cursor: pointer;
+  }
+
+  .mg__mute:hover {
+    background: var(--current);
+  }
+
+  .mg__mute:focus-visible {
+    outline: 3px solid var(--kelp);
+    outline-offset: 3px;
+  }
+
+  .mg__mute .mg__ic-off,
+  .mg__mute[aria-pressed="true"] .mg__ic-on {
+    display: none;
+  }
+
+  .mg__mute[aria-pressed="true"] .mg__ic-off {
+    display: block;
   }
 
   .mg__close:hover {
@@ -443,6 +513,12 @@ const veri = {
       right: 12px;
       width: 38px;
       height: 38px;
+    }
+
+    .mg__mute {
+      top: auto;
+      bottom: 12px;
+      left: 12px;
     }
   }
 </style>

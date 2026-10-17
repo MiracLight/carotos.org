@@ -13,6 +13,18 @@ const t = {
     heading: "İletişim",
     lede: "Hata bildirimleri ve katkılar GitHub üzerinden, sorular ve tartışma Reddit'te. Diğer konular için e-posta.",
     made: "Yapımcılar",
+    team: [
+      {
+        name: "Yusuf Miraç Üzümcüler",
+        title: "Kurucu ve Baş Sistem Mimarı",
+        role: "Çekirdek sistem geliştirme, mimari ve tasarım, altyapı yönetimi.",
+      },
+      {
+        name: "Metin Ege Boyar",
+        title: "Kurucu Ortak, Topluluk ve Büyüme",
+        role: "Topluluk yönetimi, iletişim stratejisi ve proje koordinasyonu.",
+      },
+    ],
     licence: "GPL-3.0 lisansı altında yayımlanır. Debian 13 “trixie” tabanlıdır.",
     channels: [
       { key: "github", label: "GitHub", sub: "Kaynak kod, sürümler, hata kaydı" },
@@ -27,6 +39,18 @@ const t = {
     heading: "Contact",
     lede: "Bug reports and contributions go through GitHub, questions and discussion on Reddit. Everything else by email.",
     made: "Built by",
+    team: [
+      {
+        name: "Yusuf Miraç Üzümcüler",
+        title: "Founder & Lead System Architect",
+        role: "Core system development, architecture and design, infrastructure management.",
+      },
+      {
+        name: "Metin Ege Boyar",
+        title: "Co-Founder, Community & Growth",
+        role: "Community management, communications strategy and project coordination.",
+      },
+    ],
     licence: "Released under the GPL-3.0 licence. Based on Debian 13 “trixie”.",
     channels: [
       { key: "github", label: "GitHub", sub: "Source, releases, issue tracker" },
@@ -61,7 +85,6 @@ const urls: Record<string, { href: string; display: string }> = {
   },
 };
 
-const makers = ["Yusuf Miraç Üzümcüler", "Metin Ege Boyar"];
 const year = new Date().getFullYear();
 ---
 
@@ -211,16 +234,17 @@ const year = new Date().getFullYear();
     <div class="foot__base">
       <div class="foot__makers">
         <p class="foot__makers-label">{t.made}</p>
-        <p class="foot__makers-names">
+        <ul class="foot__team">
           {
-            makers.map((m, i) => (
-              <>
-                <span>{m}</span>
-                {i < makers.length - 1 && <span class="foot__dot"> · </span>}
-              </>
+            t.team.map((m) => (
+              <li class="foot__member">
+                <span class="foot__member-name">{m.name}</span>
+                <span class="foot__member-title">{m.title}</span>
+                <span class="foot__member-role">{m.role}</span>
+              </li>
             ))
           }
-        </p>
+        </ul>
       </div>
       <p class="foot__legal">
         © {year} CarotOS. {t.licence}
@@ -403,11 +427,31 @@ const year = new Date().getFullYear();
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: rgba(169, 198, 224, 0.6);
-    margin: 0 0 0.45rem;
+    margin: 0 0 1rem;
   }
 
-  .foot__makers-names {
+  .foot__makers {
+    flex: 1 1 100%;
+  }
+
+  .foot__team {
+    list-style: none;
     margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 1.6rem 2.5rem;
+  }
+
+  .foot__member {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--kelp);
+  }
+
+  .foot__member-name {
     font-family: var(--font-display);
     font-weight: 700;
     font-size: clamp(1.05rem, 2vw, 1.3rem);
@@ -415,12 +459,23 @@ const year = new Date().getFullYear();
     color: var(--on-dark);
   }
 
-  .foot__dot {
+  .foot__member-title {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     color: var(--kelp);
   }
 
+  .foot__member-role {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: rgba(169, 198, 224, 0.75);
+    max-width: 44ch;
+  }
+
   .foot__legal {
-    margin: 0;
+    margin: 0.6rem 0 0;
     font-size: 0.82rem;
     color: rgba(169, 198, 224, 0.55);
     max-width: 44ch;

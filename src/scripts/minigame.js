@@ -166,7 +166,77 @@ export function createGame(canvas, opt) {
     slow: 0,
     shake: 0,
     world: null,
+    lean: 0, // şerit değiştirirken yana yatma
+    squash: 0, // çarpınca ezilme
+    heartFlash: 0,
+    partsBump: 0,
+    vig: 0, // çarpma kızıllığı
+    prints: [], // kumdaki ayak izleri
+    printT: 0,
+    printSide: 1,
+    dustT: 0,
+    fx: [], // parçacıklar ve uçan yazılar
+    splashed: false,
   };
+
+  // ---------- Ses (küçük, sentezlenmiş; ilk dokunuştan sonra) ----------
+  let ac = null;
+  let muted = !!opt.muted;
+  function tone(freq, dur, type = "sine", vol = 0.08, slide = 0, when = 0) {
+    if (muted || !ac) return;
+    const t0 = ac.currentTime + when;
+    const o = ac.createOscillator();
+    const gn = ac.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(freq, t0);
+    if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(30, freq * slide), t0 + dur);
+    gn.gain.setValueAtTime(vol, t0);
+    gn.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(gn);
+    gn.connect(ac.destination);
+    o.start(t0);
+    o.stop(t0 + dur + 0.02);
+  }
+  const sfx = {
+    move: () => tone(440, 0.05, "sine", 0.025),
+    collect: () => {
+      tone(660, 0.09, "triangle", 0.09);
+      tone(990, 0.15, "triangle", 0.09, 0, 0.07);
+    },
+    heart: () => [523, 659, 784].forEach((f, i) => tone(f, 0.12, "triangle", 0.08, 0, i * 0.07)),
+    hit: () => {
+      tone(190, 0.28, "sawtooth", 0.11, 0.4);
+      tone(90, 0.3, "sine", 0.14, 0.5);
+    },
+    win: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.22, "triangle", 0.1, 0, i * 0.11)),
+    over: () => [392, 330, 262, 196].forEach((f, i) => tone(f, 0.25, "sine", 0.1, 0, i * 0.15)),
+    tick: () => tone(520, 0.08, "sine", 0.05),
+    go: () => tone(780, 0.18, "triangle", 0.08),
+  };
+
+  // ---------- Parçacıklar ----------
+  function burst(x, y, n, colors, speed, life, opts = {}) {
+    for (let i = 0; i < n; i++) {
+      const a = opts.up ? -Math.PI / 2 + (Math.random() - 0.5) * 2.2 : Math.random() * 6.283;
+      const v = speed * (0.4 + Math.random() * 0.8);
+      g.fx.push({
+        kind: "dot",
+        x,
+        y,
+        vx: Math.cos(a) * v,
+        vy: Math.sin(a) * v,
+        r: 1.6 + Math.random() * 2.4,
+        life: life * (0.6 + Math.random() * 0.6),
+        max: life,
+        c: colors[(Math.random() * colors.length) | 0],
+        grav: opts.grav || 0,
+        world: !!opts.world,
+      });
+    }
+  }
+  function floater(x, y, str) {
+    g.fx.push({ kind: "text", x, y, vx: 0, vy: -46, life: 0.9, max: 0.9, str, world: false });
+  }
 
   function fit() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -189,12 +259,28 @@ export function createGame(canvas, opt) {
     g.pool = 0;
     g.invuln = 0;
     g.slow = 0;
+    g.prints = [];
+    g.fx = [];
+    g.splashed = false;
+    g.lean = 0;
+    g.squash = 0;
+    if (!ac && !opt.noSound) {
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (AC) ac = new AC();
+      } catch (_) {
+        ac = null;
+      }
+    }
+    if (ac && ac.state === "suspended") ac.resume();
     opt.onStart && opt.onStart(level);
   }
 
   function move(dir) {
     if (g.phase !== "run" && g.phase !== "ready") return;
-    g.lane = Math.max(0, Math.min(LANES - 1, g.lane + dir));
+    const next = Math.max(0, Math.min(LANES - 1, g.lane + dir));
+    if (next !== g.lane) sfx.move();
+    g.lane = next;
   }
 
   // ---------- Girdi ----------
@@ -259,9 +345,15 @@ export function createGame(canvas, opt) {
     g.invuln = 1.4;
     g.slow = 0.5;
     g.shake = 0.25;
+    g.squash = 1;
+    g.heartFlash = 1;
+    g.vig = 1;
+    burst(g.x, PY, 16, ["#fff6e0", "#ff9a8a", "#ffd36b", "#8a6a43"], 170, 0.6, { grav: 260 });
+    sfx.hit();
     if (g.hearts <= 0) {
       g.phase = "over";
       g.phaseT = 0;
+      sfx.over();
       opt.onOver && opt.onOver({ level: g.level });
     }
   }
@@ -269,15 +361,39 @@ export function createGame(canvas, opt) {
   function update(dt) {
     g.t += dt;
     g.phaseT += dt;
-    g.x += (laneCenter(g.lane) - g.x) * Math.min(1, dt * 18);
+    const targetX = laneCenter(g.lane);
+    g.x += (targetX - g.x) * Math.min(1, dt * 18);
+    const leanTarget = Math.max(-1, Math.min(1, (targetX - g.x) / 45)) * 0.42;
+    g.lean += (leanTarget - g.lean) * Math.min(1, dt * 14);
     if (g.invuln > 0) g.invuln -= dt;
     if (g.slow > 0) g.slow -= dt;
     if (g.shake > 0) g.shake -= dt;
+    if (g.squash > 0) g.squash = Math.max(0, g.squash - dt * 2.6);
+    if (g.heartFlash > 0) g.heartFlash = Math.max(0, g.heartFlash - dt * 2.2);
+    if (g.partsBump > 0) g.partsBump = Math.max(0, g.partsBump - dt * 4);
+    if (g.vig > 0) g.vig = Math.max(0, g.vig - dt * 2.4);
+
+    // parçacıkları ilerlet
+    const sp = curSpeed();
+    for (const f of g.fx) {
+      f.x += f.vx * dt;
+      f.y += f.vy * dt + (f.world ? sp * dt : 0);
+      if (f.grav) f.vy += f.grav * dt;
+      f.life -= dt;
+    }
+    g.fx = g.fx.filter((f) => f.life > 0);
 
     if (g.phase === "ready") {
-      if (g.phaseT >= 1.1) {
+      const n = 3 - Math.min(2, Math.floor(g.phaseT / 0.5));
+      if (g.lastCount !== n) {
+        g.lastCount = n;
+        sfx.tick();
+      }
+      if (g.phaseT >= 1.5) {
         g.phase = "run";
         g.phaseT = 0;
+        g.lastCount = 0;
+        sfx.go();
       }
       return;
     }
@@ -287,6 +403,31 @@ export function createGame(canvas, opt) {
 
     if (g.phase === "run") {
       const py = PY;
+      // ayak izi ve toz
+      g.printT += dt;
+      if (g.printT > 0.2) {
+        g.printT = 0;
+        g.printSide *= -1;
+        g.prints.push({ z: g.d, x: g.x + g.printSide * 10, side: g.printSide });
+        if (g.prints.length > 40) g.prints.shift();
+      }
+      g.dustT += dt;
+      if (g.dustT > 0.06) {
+        g.dustT = 0;
+        g.fx.push({
+          kind: "dot",
+          x: g.x + (Math.random() - 0.5) * 18,
+          y: PY + 26,
+          vx: (Math.random() - 0.5) * 24,
+          vy: 20 + Math.random() * 20,
+          r: 2 + Math.random() * 2,
+          life: 0.45,
+          max: 0.45,
+          c: "#d8c590",
+          grav: 0,
+          world: false,
+        });
+      }
       for (const o of g.world.obstacles) {
         const sy = py - (o.z - g.d);
         if (sy < -60 || sy > H + 60) continue;
@@ -306,20 +447,35 @@ export function createGame(canvas, opt) {
           it.taken = true;
           g.parts += 1;
           g.pool += 1;
+          g.partsBump = 1;
+          burst(it.x, sy, 9, ["#a9dbc4", "#f4f9fd", "#4a9c78"], 110, 0.5, { world: true });
           if (g.pool >= PARTS_PER_HEART) {
             g.pool = 0;
-            g.hearts = Math.min(MAX_HEARTS, g.hearts + 1);
+            if (g.hearts < MAX_HEARTS) {
+              g.hearts += 1;
+              g.heartFlash = 1;
+              floater(g.x, PY - 40, "+♥");
+              sfx.heart();
+            } else {
+              floater(g.x, PY - 40, "+1");
+              sfx.collect();
+            }
+          } else {
+            floater(g.x, PY - 40, "+1");
+            sfx.collect();
           }
         }
       }
       if (g.d >= g.world.length) {
         g.phase = "sea";
         g.phaseT = 0;
+        burst(g.x, PY - 10, 26, ["#f4f9fd", "#a9cfea", "#6db2f0"], 190, 0.9, { up: true, grav: 340 });
       }
     } else if (g.phase === "sea") {
       if (g.phaseT >= 1.6) {
         g.phase = "done";
         g.phaseT = 0;
+        sfx.win();
         opt.onComplete &&
           opt.onComplete({
             level: g.level,
@@ -355,6 +511,23 @@ export function createGame(canvas, opt) {
       ctx.arc(p.x, y, p.r, 0, 6.283);
       ctx.fill();
     }
+    // Rüzgârın kumda bıraktığı hafif dalgalar
+    ctx.lineCap = "round";
+    ctx.lineWidth = 2;
+    for (let k = 0; k < 9; k++) {
+      const y = ((k * 83 + g.d * 0.55) % (H + 60)) - 30;
+      const x = (k * 97) % (W - 60);
+      ctx.strokeStyle = "rgba(255,248,225,0.32)";
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.quadraticCurveTo(x + 28, y - 7, x + 60, y);
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(120,95,50,0.07)";
+      ctx.beginPath();
+      ctx.moveTo(x + 4, y + 4);
+      ctx.quadraticCurveTo(x + 30, y - 2, x + 56, y + 4);
+      ctx.stroke();
+    }
     // Şerit çizgileri çok silik
     ctx.strokeStyle = "rgba(120,95,50,0.07)";
     ctx.lineWidth = 2;
@@ -388,6 +561,19 @@ export function createGame(canvas, opt) {
     }
     ctx.closePath();
     ctx.fill();
+    // su pırıltıları
+    for (let i = 0; i < 16; i++) {
+      const sy = (i * 41) % Math.max(shoreY - 20, 1);
+      const sx = (i * 59 + g.t * (6 + (i % 4) * 3)) % W;
+      const al = 0.25 + 0.3 * Math.sin(g.t * 2.6 + i * 1.7);
+      if (al <= 0.05) continue;
+      ctx.strokeStyle = `rgba(244,249,253,${al})`;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(sx + 9 + (i % 3) * 3, sy);
+      ctx.stroke();
+    }
     // köpük
     ctx.strokeStyle = "rgba(244,249,253,0.95)";
     ctx.lineWidth = 5;
@@ -410,7 +596,7 @@ export function createGame(canvas, opt) {
   function drawEggshell() {
     // Bölüm 1'in başında yumurta kabuğu yarımları
     if (g.level !== 1) return;
-    const sy = PY - (40 - g.d);
+    const sy = PY - (-38 - g.d); // kaplumbağanın arkasında kalır
     if (sy > H + 40) return;
     for (const s of [-1, 1]) {
       ctx.save();
@@ -557,70 +743,139 @@ export function createGame(canvas, opt) {
     ctx.restore();
   }
 
-  function drawTurtle(x, y, t, swimming) {
+  function drawTurtle(x, y, t, swimming, lean = 0, squash = 0) {
     ctx.save();
     ctx.translate(x, y);
-    const f = swimming ? 9 : 14;
-    const amp = swimming ? 0.5 : 0.38;
-    // ayaklar
-    ctx.fillStyle = "#185fa5";
-    const flip = [
-      [-15, -10, -0.7],
-      [15, -10, 0.7],
-      [-14, 11, -2.3],
-      [14, 11, 2.3],
-    ];
-    flip.forEach(([fx, fy, rot], i) => {
+    ctx.rotate(lean);
+    const sq = squash > 0 ? Math.sin(squash * Math.PI) * 0.2 : 0;
+    ctx.scale(1 + sq, 1 - sq);
+
+    if (!swimming) {
+      // zemin gölgesi
       ctx.save();
-      ctx.translate(fx, fy);
-      ctx.rotate(rot + Math.sin(t * f + i * 1.6) * amp);
+      ctx.rotate(-lean);
+      ctx.fillStyle = "rgba(90,70,30,0.22)";
       ctx.beginPath();
-      ctx.ellipse(0, -8, 5.5, 12, 0, 0, 6.283);
+      ctx.ellipse(4, 9, 23, 27, 0, 0, 6.283);
       ctx.fill();
       ctx.restore();
-    });
+    }
+
+    const f = swimming ? 8 : 13;
+    const amp = swimming ? 0.55 : 0.4;
+    const skin = "#1b6bb8";
+    const skinLight = "#4a97e0";
+
+    // ayaklar: çapraz yürüyüş (sol ön + sağ arka birlikte)
+    const flippers = [
+      [-1, -1],
+      [1, -1],
+      [-1, 1],
+      [1, 1],
+    ];
+    for (const [side, row] of flippers) {
+      const px = side * (row < 0 ? 15 : 13);
+      const py = row < 0 ? -9 : 13;
+      const base = side * (row < 0 ? 0.95 : 2.25);
+      const phase = t * f + (side * row > 0 ? 0 : Math.PI);
+      ctx.save();
+      ctx.translate(px, py);
+      ctx.rotate(base + Math.sin(phase) * amp);
+      const len = row < 0 ? 15 : 11;
+      ctx.beginPath();
+      ctx.moveTo(-3.5, 0);
+      ctx.bezierCurveTo(-8, -len * 0.5, -5, -len, 0, -len - 3);
+      ctx.bezierCurveTo(5, -len, 8, -len * 0.5, 3.5, 0);
+      ctx.closePath();
+      ctx.fillStyle = skin;
+      ctx.fill();
+      ctx.fillStyle = skinLight;
+      ctx.beginPath();
+      ctx.ellipse(-1.2, -len * 0.55, 1.8, len * 0.32, 0, 0, 6.283);
+      ctx.fill();
+      ctx.restore();
+    }
+
     // kuyruk
+    ctx.fillStyle = skin;
     ctx.beginPath();
-    ctx.moveTo(-4, 17);
-    ctx.lineTo(4, 17);
-    ctx.lineTo(0, 27);
+    ctx.moveTo(-3.5, 18);
+    ctx.quadraticCurveTo(0, 22, 0, 29);
+    ctx.quadraticCurveTo(0, 22, 3.5, 18);
     ctx.closePath();
     ctx.fill();
-    // baş
+
+    // boyun ve baş
+    const bob = Math.sin(t * f * 0.5) * 1.1;
+    ctx.beginPath();
+    ctx.ellipse(0, -17, 5, 6.5, 0, 0, 6.283);
+    ctx.fill();
     ctx.save();
-    ctx.translate(0, -23 + Math.sin(t * f * 0.5) * 1.2);
+    ctx.translate(lean * 4, -26 + bob);
+    ctx.fillStyle = skin;
     ctx.beginPath();
-    ctx.ellipse(0, 0, 7.5, 10, 0, 0, 6.283);
+    ctx.ellipse(0, 0, 9, 10.5, 0, 0, 6.283);
     ctx.fill();
-    ctx.fillStyle = "#fff";
+    ctx.fillStyle = skinLight;
     ctx.beginPath();
-    ctx.arc(-3.2, -3, 1.9, 0, 6.283);
-    ctx.arc(3.2, -3, 1.9, 0, 6.283);
+    ctx.ellipse(-2.5, -5.5, 4.2, 2.4, -0.3, 0, 6.283);
     ctx.fill();
-    ctx.fillStyle = "#0a2440";
+    // gözler
+    for (const sx of [-4.4, 4.4]) {
+      ctx.fillStyle = "#fff";
+      ctx.beginPath();
+      ctx.arc(sx, -2.4, 3.2, 0, 6.283);
+      ctx.fill();
+      ctx.fillStyle = "#0a2440";
+      ctx.beginPath();
+      ctx.arc(sx + lean * 2, -3.0, 1.7, 0, 6.283);
+      ctx.fill();
+      ctx.fillStyle = "#fff";
+      ctx.beginPath();
+      ctx.arc(sx + lean * 2 - 0.5, -3.7, 0.65, 0, 6.283);
+      ctx.fill();
+    }
+    // gülümseme
+    ctx.strokeStyle = "rgba(10,36,64,0.55)";
+    ctx.lineWidth = 1.2;
+    ctx.lineCap = "round";
     ctx.beginPath();
-    ctx.arc(-3.2, -3.2, 0.9, 0, 6.283);
-    ctx.arc(3.2, -3.2, 0.9, 0, 6.283);
-    ctx.fill();
+    ctx.arc(0, 3.2, 3, 0.15 * Math.PI, 0.85 * Math.PI);
+    ctx.stroke();
     ctx.restore();
-    // kabuk
-    hexPath(0, 0, 19, Math.PI / 6);
-    ctx.fillStyle = "#378ada";
+
+    // kabuk: gradyanlı, logodaki gibi altıgen + altı dilim
+    const R = 20.5;
+    const shell = ctx.createRadialGradient(-6, -8, 2, 0, 0, R + 2);
+    shell.addColorStop(0, "#7ebdf3");
+    shell.addColorStop(0.55, "#378ada");
+    shell.addColorStop(1, "#2a72c2");
+    hexPath(0, 0, R, Math.PI / 6);
+    ctx.fillStyle = shell;
     ctx.fill();
-    ctx.lineWidth = 2.5;
+    ctx.lineJoin = "round";
+    ctx.lineWidth = 3;
     ctx.strokeStyle = "#185fa5";
     ctx.stroke();
-    ctx.strokeStyle = "rgba(244,249,253,0.8)";
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = "rgba(244,249,253,0.9)";
+    ctx.lineWidth = 1.7;
     for (let i = 0; i < 6; i++) {
-      const a = Math.PI / 6 + (Math.PI / 3) * i;
+      const ang = Math.PI / 6 + (Math.PI / 3) * i;
       ctx.beginPath();
-      ctx.moveTo(Math.cos(a) * 8, Math.sin(a) * 8);
-      ctx.lineTo(Math.cos(a) * 19, Math.sin(a) * 19);
+      ctx.moveTo(Math.cos(ang) * 8.5, Math.sin(ang) * 8.5);
+      ctx.lineTo(Math.cos(ang) * R, Math.sin(ang) * R);
       ctx.stroke();
     }
-    hexPath(0, 0, 8, Math.PI / 6);
+    hexPath(0, 0, 8.5, Math.PI / 6);
     ctx.fillStyle = "#185fa5";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(244,249,253,0.9)";
+    ctx.lineWidth = 1.7;
+    ctx.stroke();
+    // parlama
+    ctx.fillStyle = "rgba(255,255,255,0.3)";
+    ctx.beginPath();
+    ctx.ellipse(-8.5, -11, 6.5, 3, -0.7, 0, 6.283);
     ctx.fill();
     ctx.restore();
   }
@@ -654,7 +909,10 @@ export function createGame(canvas, opt) {
 
   function drawHud() {
     text(`${S.level} ${g.level}`, 14, 30, 17, "left");
-    for (let i = 0; i < MAX_HEARTS; i++) heart(W - 20 - i * 24, 25, 1.2, i < g.hearts);
+    for (let i = 0; i < MAX_HEARTS; i++) {
+      const pulse = 1 + 0.35 * Math.sin(g.heartFlash * Math.PI);
+      heart(W - 20 - i * 24, 25, 1.2 * (i < g.hearts ? pulse : 1), i < g.hearts);
+    }
     // ilerleme çubuğu
     const prog = Math.min(1, g.d / g.world.length);
     const bx = 92;
@@ -668,7 +926,7 @@ export function createGame(canvas, opt) {
     ctx.roundRect(bx, 22, Math.max(7, bw * prog), 7, 4);
     ctx.fill();
     // parça sayacı
-    hexPath(W - 14, 54, 7, 0.52);
+    hexPath(W - 14, 54, 7 * (1 + g.partsBump * 0.5), 0.52);
     ctx.fillStyle = "#a9dbc4";
     ctx.fill();
     text(String(g.parts), W - 28, 60, 14, "right");
@@ -682,10 +940,21 @@ export function createGame(canvas, opt) {
     drawSand();
     if (!g.world) {
       // Oyun başlamadan önce bekleyen yavru
-      drawTurtle(laneCenter(1), PY, performance.now() / 1000, false);
+      drawTurtle(laneCenter(1), PY, performance.now() / 1000, false, 0, 0);
       return;
     }
     drawEggshell();
+
+    // ayak izleri
+    for (const pr of g.prints) {
+      const sy = PY - (pr.z - g.d);
+      if (sy < PY - 5 || sy > H + 10) continue;
+      const al = Math.max(0, 1 - (sy - PY) / 240) * 0.3;
+      ctx.fillStyle = `rgba(110,85,45,${al})`;
+      ctx.beginPath();
+      ctx.ellipse(pr.x, sy, 2.8, 5.2, pr.side * 0.4, 0, 6.283);
+      ctx.fill();
+    }
 
     for (const it of g.world.items) {
       if (it.taken) continue;
@@ -714,14 +983,47 @@ export function createGame(canvas, opt) {
           ctx.stroke();
         }
       }
-      drawTurtle(g.x, py, g.t, sea);
+      drawTurtle(g.x, py, g.t, sea, g.lean, g.squash);
+    }
+
+    // parçacıklar
+    for (const f of g.fx) {
+      const k = Math.max(0, f.life / f.max);
+      if (f.kind === "text") {
+        ctx.globalAlpha = Math.min(1, k * 1.6);
+        text(f.str, f.x, f.y, 20);
+        ctx.globalAlpha = 1;
+      } else {
+        ctx.globalAlpha = Math.min(1, k * 1.4);
+        ctx.fillStyle = f.c;
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.r * (0.5 + 0.5 * k), 0, 6.283);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    // kenarlarda hafif karartma, çarpınca kırmızı parlama
+    const vg = ctx.createRadialGradient(W / 2, H / 2, H * 0.32, W / 2, H / 2, H * 0.78);
+    vg.addColorStop(0, "rgba(10,36,64,0)");
+    vg.addColorStop(1, "rgba(10,36,64,0.22)");
+    ctx.fillStyle = vg;
+    ctx.fillRect(0, 0, W, H);
+    if (g.vig > 0) {
+      ctx.fillStyle = `rgba(255,70,70,${g.vig * 0.28})`;
+      ctx.fillRect(0, 0, W, H);
     }
 
     drawHud();
 
     if (g.phase === "ready") {
-      text(`${S.level} ${g.level}`, W / 2, 250, 42);
-      if (g.level === 1) text(S.hint, W / 2, 292, 16, "center", 600);
+      const n = 3 - Math.min(2, Math.floor(g.phaseT / 0.5));
+      const fr = (g.phaseT % 0.5) / 0.5;
+      text(`${S.level} ${g.level}`, W / 2, 200, 34);
+      ctx.globalAlpha = Math.min(1, 1.4 - fr);
+      text(String(n), W / 2, 300, 84 * (1 + 0.28 * (1 - fr)));
+      ctx.globalAlpha = 1;
+      if (g.level === 1) text(S.hint, W / 2, 346, 16, "center", 600);
     }
     if (g.phase === "sea" && g.phaseT > 0.25) {
       text(S.reached, W / 2, 210, 30);
@@ -743,7 +1045,18 @@ export function createGame(canvas, opt) {
   return {
     start,
     fit,
+    setMuted(m) {
+      muted = !!m;
+    },
     destroy() {
+      if (ac) {
+        try {
+          ac.close();
+        } catch (_) {
+          /* yok say */
+        }
+        ac = null;
+      }
       alive = false;
       cancelAnimationFrame(raf);
       window.removeEventListener("keydown", onKey);

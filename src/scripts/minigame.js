@@ -39,6 +39,11 @@ export function levelParams(n) {
   };
 }
 
+/** Yengecin o anki x konumu: iki şeridin merkezleri arasında salınır. */
+export function crabX(o, t) {
+  return o.x + Math.sin(t * o.freq + o.phase) * (LANE_W / 2);
+}
+
 const OBSTACLE_SIZE = {
   rock: { w: 40, h: 30 },
   crab: { w: 38, h: 28 },
@@ -60,7 +65,7 @@ export function buildLevel(n, rand = Math.random) {
 
   const pickType = () => {
     const pool = ["rock"];
-    if (n >= 2) pool.push("crab", "rock");
+    if (n >= 2) pool.push("rock");
     if (n >= 3) pool.push("weed");
     return pool[Math.floor(rand() * pool.length)];
   };
@@ -70,10 +75,18 @@ export function buildLevel(n, rand = Math.random) {
 
     if (rand() > 0.12) {
       for (let tries = 0; tries < 6 && !row; tries++) {
+        // Yengeç satırı: orta şerit ile bir yan şerit arasında gidip gelir.
+        // İki şerit de kapalı sayılır; boş kalan tek şerit uzak kenardır.
+        const crabRow = n >= 2 && rand() < Math.min(0.35, 0.18 + 0.03 * (n - 2));
         const two = rand() < p.doubleChance;
         let blocked;
         let wood = false;
-        if (!two) {
+        let crab = null;
+        if (crabRow) {
+          const side = rand() < 0.5 ? 0 : 2;
+          blocked = [1, side];
+          crab = { side };
+        } else if (!two) {
           blocked = [Math.floor(rand() * LANES)];
         } else if (n >= 2 && rand() < 0.5) {
           const a = Math.floor(rand() * 2); // 0-1 veya 1-2
@@ -85,12 +98,23 @@ export function buildLevel(n, rand = Math.random) {
         }
         const free = [0, 1, 2].filter((l) => !blocked.includes(l));
         const reachable = free.some((f) => prevFree.some((q) => Math.abs(f - q) <= 1));
-        if (reachable) row = { blocked, free, wood };
+        if (reachable) row = { blocked, free, wood, crab };
       }
     }
 
     if (row) {
-      if (row.wood) {
+      if (row.crab) {
+        const side = row.crab.side;
+        obstacles.push({
+          type: "crab",
+          lanes: [1, side],
+          z,
+          x: (laneCenter(1) + laneCenter(side)) / 2, // iki şeridin ortası
+          ...OBSTACLE_SIZE.crab,
+          phase: rand() * 6.28,
+          freq: Math.min(2.2 + 0.15 * (n - 2), 4), // gidip gelme hızı
+        });
+      } else if (row.wood) {
         const a = row.blocked[0];
         obstacles.push({
           type: "wood",
@@ -432,7 +456,7 @@ export function createGame(canvas, opt) {
         const sy = py - (o.z - g.d);
         if (sy < -60 || sy > H + 60) continue;
         let ox = o.x;
-        if (o.type === "crab") ox += Math.sin(g.t * 2.2 + o.phase) * LANE_W * 0.3;
+        if (o.type === "crab") ox = crabX(o, g.t);
         const hw = (o.w / 2) * 0.82 + 10;
         const hh = (o.h / 2) * 0.85 + 14;
         if (g.invuln <= 0 && Math.abs(g.x - ox) < hw && Math.abs(py - sy) < hh) {
@@ -619,6 +643,26 @@ export function createGame(canvas, opt) {
   function drawObstacle(o, sy) {
     ctx.save();
     ctx.translate(o.x, sy);
+    if (o.type === "crab") {
+      // devriye yolu: iki şerit arasında silik bir iz
+      ctx.strokeStyle = "rgba(120,95,50,0.13)";
+      ctx.lineWidth = 16;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(-LANE_W / 2, 4);
+      ctx.lineTo(LANE_W / 2, 4);
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(120,95,50,0.2)";
+      ctx.lineWidth = 2;
+      ctx.setLineDash([3, 9]);
+      ctx.beginPath();
+      ctx.moveTo(-LANE_W / 2, 4);
+      ctx.lineTo(LANE_W / 2, 4);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      // gölge ve yengeç birlikte kayar
+      ctx.translate(crabX(o, g.t) - o.x, 0);
+    }
     // gölge
     ctx.fillStyle = "rgba(90,70,30,0.18)";
     ctx.beginPath();
@@ -648,9 +692,8 @@ export function createGame(canvas, opt) {
       ctx.closePath();
       ctx.fill();
     } else if (o.type === "crab") {
-      const cx = Math.sin(g.t * 2.2 + o.phase) * LANE_W * 0.3;
-      ctx.translate(cx, 0);
-      const wig = Math.sin(g.t * 10 + o.phase) * 2;
+      // yürüyüş hızıyla bacak hareketi
+      const wig = Math.sin(g.t * (o.freq * 5 + 6) + o.phase) * 2.5;
       ctx.strokeStyle = "#c2512f";
       ctx.lineWidth = 3;
       ctx.lineCap = "round";

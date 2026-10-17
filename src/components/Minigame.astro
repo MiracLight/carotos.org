@@ -1,0 +1,435 @@
+---
+/**
+ * Gizli mini oyun penceresi.
+ *
+ * Menüde ya da sayfada görünür bir bağlantısı yoktur. data-minigame-trigger
+ * özniteliği olan bir öğeye kısa sürede 5 kez tıklanınca açılır.
+ * Oyun kodu ancak o zaman indirilir (dinamik import).
+ */
+interface Props {
+  lang: "tr" | "en";
+}
+
+const { lang } = Astro.props;
+
+const t = {
+  tr: {
+    label: "Gizli oyun: Denize ulaş",
+    close: "Kapat",
+    level: "Bölüm",
+    hint: "← → veya kaydır",
+    reached: "Denize ulaşıldı!",
+    introTitle: "Yumurtadan çıktı, deniz ileride.",
+    introText: "Yavru kaplumbağayı engellerden kaçırarak denize ulaştır. Her bölüm bir öncekinden daha uzun ve hızlı.",
+    start: "Başla",
+    doneTitle: (n: number) => `Bölüm ${n} tamamlandı`,
+    doneLead: "Denize ulaşıldı!",
+    tipLabel: "Güvenlik ipucu",
+    parts: "Toplanan kabuk parçası",
+    next: "Sonraki bölüm",
+    overTitle: "Yavru denize ulaşamadı",
+    overText: "Bütün canlar tükendi. Aynı bölümü yeniden deneyebilirsin.",
+    retry: "Tekrar dene",
+    best: "En iyi",
+    tips: [
+      "Her hesap için ayrı ve uzun bir parola kullanın.",
+      "Şüpheli bağlantılara tıklamadan önce adresi kontrol edin.",
+      "Mümkün olan her yerde iki adımlı doğrulamayı açın.",
+      "Yazılım güncellemelerini ertelemeyin.",
+      "Bilmediğiniz USB belleği bilgisayara takmayın.",
+      "Ortak Wi-Fi ağlarında önemli hesaplara giriş yapmaktan kaçının.",
+      "Yazılımı yalnızca resmî depolardan kurun.",
+      "Önemli dosyaların yedeğini farklı bir yerde tutun.",
+      "Ekli dosyayı açmadan önce göndericiyi doğrulayın.",
+      "Bir parolayı ya da kodu kimseyle paylaşmayın.",
+    ],
+  },
+  en: {
+    label: "Hidden game: Reach the sea",
+    close: "Close",
+    level: "Level",
+    hint: "← → or swipe",
+    reached: "You reached the sea!",
+    introTitle: "Hatched. The sea is ahead.",
+    introText: "Guide the hatchling past the obstacles to the sea. Each level is longer and faster than the last.",
+    start: "Start",
+    doneTitle: (n: number) => `Level ${n} complete`,
+    doneLead: "You reached the sea!",
+    tipLabel: "Security tip",
+    parts: "Shell pieces collected",
+    next: "Next level",
+    overTitle: "The hatchling didn't make it",
+    overText: "All lives are gone. You can try the same level again.",
+    retry: "Try again",
+    best: "Best",
+    tips: [
+      "Use a separate, long password for every account.",
+      "Check the address before you click a suspicious link.",
+      "Turn on two-factor authentication wherever it is available.",
+      "Do not postpone software updates.",
+      "Do not plug in a USB drive you do not recognize.",
+      "Avoid signing in to important accounts on public Wi-Fi.",
+      "Install software only from official repositories.",
+      "Keep a backup of important files in a separate place.",
+      "Verify the sender before opening an attachment.",
+      "Never share a password or a code with anyone.",
+    ],
+  },
+}[lang];
+
+// Fonksiyonlar istemciye JSON ile gidemez; metinleri düz veriye çeviriyoruz.
+const veri = {
+  level: t.level,
+  hint: t.hint,
+  reached: t.reached,
+  tips: t.tips,
+  doneTitle: lang === "tr" ? "Bölüm {n} tamamlandı" : "Level {n} complete",
+  best: t.best,
+  parts: t.parts,
+};
+---
+
+<dialog class="mg" id="mg" aria-label={t.label}>
+  <div class="mg__frame">
+    <button class="mg__close" type="button" id="mg-close" aria-label={t.close}>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"></path>
+      </svg>
+    </button>
+
+    <div class="mg__stage">
+      <canvas class="mg__canvas" id="mg-canvas" aria-hidden="true"></canvas>
+
+      <div class="mg__panel" id="mg-panel" data-mode="intro">
+        <div class="mg__card">
+          <h2 class="mg__title" id="mg-title">{t.introTitle}</h2>
+          <p class="mg__text" id="mg-text">{t.introText}</p>
+          <div class="mg__tip" id="mg-tip" hidden>
+            <span class="mg__tip-label">{t.tipLabel}</span>
+            <span id="mg-tip-text"></span>
+          </div>
+          <p class="mg__meta" id="mg-meta" hidden></p>
+          <button class="btn btn--solid mg__btn" type="button" id="mg-btn">{t.start}</button>
+        </div>
+      </div>
+
+      <p class="visually-hidden" id="mg-live" aria-live="polite"></p>
+    </div>
+  </div>
+</dialog>
+
+<script
+  type="application/json"
+  id="mg-data"
+  set:html={JSON.stringify({
+    ...veri,
+    start: t.start,
+    next: t.next,
+    retry: t.retry,
+    introTitle: t.introTitle,
+    introText: t.introText,
+    overTitle: t.overTitle,
+    overText: t.overText,
+  })}
+/>
+
+<script>
+  const dlg = document.getElementById("mg") as HTMLDialogElement | null;
+  const triggers = document.querySelectorAll<HTMLElement>("[data-minigame-trigger]");
+
+  if (dlg && triggers.length) {
+    const data = JSON.parse(document.getElementById("mg-data")!.textContent || "{}");
+    const canvas = document.getElementById("mg-canvas") as HTMLCanvasElement;
+    const panel = document.getElementById("mg-panel")!;
+    const title = document.getElementById("mg-title")!;
+    const text = document.getElementById("mg-text")!;
+    const tip = document.getElementById("mg-tip")!;
+    const tipText = document.getElementById("mg-tip-text")!;
+    const meta = document.getElementById("mg-meta")!;
+    const btn = document.getElementById("mg-btn") as HTMLButtonElement;
+    const live = document.getElementById("mg-live")!;
+
+    const KEY = "carotos-oyun-en-iyi";
+    const readBest = (): number => {
+      try {
+        return Number(localStorage.getItem(KEY)) || 0;
+      } catch {
+        return 0;
+      }
+    };
+    const writeBest = (n: number) => {
+      try {
+        localStorage.setItem(KEY, String(n));
+      } catch {
+        /* depolama kapalı olabilir */
+      }
+    };
+
+    let game: any = null;
+    let level = 1;
+    let mode: "intro" | "done" | "over" = "intro";
+
+    const showPanel = (m: "intro" | "done" | "over", o: any = {}) => {
+      mode = m;
+      panel.dataset.mode = m;
+      tip.hidden = m !== "done";
+      meta.hidden = true;
+      if (m === "intro") {
+        title.textContent = data.introTitle;
+        text.textContent = data.introText;
+        btn.textContent = data.start;
+        const best = readBest();
+        if (best > 1) {
+          meta.hidden = false;
+          meta.textContent = `${data.best}: ${data.level} ${best}`;
+        }
+      } else if (m === "done") {
+        title.textContent = data.doneTitle.replace("{n}", String(o.level));
+        text.textContent = data.reached;
+        tipText.textContent = data.tips[(o.level - 1) % data.tips.length];
+        meta.hidden = false;
+        meta.textContent = `${data.parts}: ${o.parts} / ${o.total}`;
+        btn.textContent = data.next;
+        live.textContent = `${data.doneTitle.replace("{n}", String(o.level))}. ${data.reached}`;
+      } else {
+        title.textContent = data.overTitle;
+        text.textContent = data.overText;
+        btn.textContent = data.retry;
+        live.textContent = data.overTitle;
+      }
+      panel.hidden = false;
+      btn.focus();
+    };
+
+    const begin = (n: number) => {
+      level = n;
+      panel.hidden = true;
+      live.textContent = `${data.level} ${n}`;
+      game.start(n);
+    };
+
+    btn.addEventListener("click", () => {
+      if (!game) return;
+      if (mode === "intro") begin(1);
+      else if (mode === "done") begin(level + 1);
+      else begin(level);
+    });
+
+    const open = async () => {
+      if (dlg.open) return;
+      dlg.showModal();
+      document.documentElement.style.overflow = "hidden";
+      if (!game) {
+        const mod = await import("../scripts/minigame.js");
+        game = mod.createGame(canvas, {
+          strings: { level: data.level, hint: data.hint, reached: data.reached },
+          onComplete: (r: any) => {
+            level = r.level;
+            if (r.level + 1 > readBest()) writeBest(r.level + 1);
+            showPanel("done", r);
+          },
+          onOver: () => showPanel("over"),
+        });
+      }
+      game.fit();
+      showPanel("intro");
+    };
+
+    const close = () => {
+      if (dlg.open) dlg.close();
+    };
+    dlg.addEventListener("close", () => {
+      document.documentElement.style.overflow = "";
+      if (game) {
+        game.destroy();
+        game = null;
+      }
+    });
+    document.getElementById("mg-close")!.addEventListener("click", close);
+    dlg.addEventListener("click", (e) => {
+      if (e.target === dlg) close();
+    });
+
+    // Gizli tetikleyici: aralıkları 1,6 sn'yi geçmeyen 5 tıklama
+    triggers.forEach((el) => {
+      let count = 0;
+      let lastTap = 0;
+      el.addEventListener("click", () => {
+        const now = Date.now();
+        count = now - lastTap < 1600 ? count + 1 : 1;
+        lastTap = now;
+        if (count >= 5) {
+          count = 0;
+          open();
+        }
+      });
+    });
+  }
+</script>
+
+<style>
+  .mg {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    max-width: none;
+    max-height: none;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .mg:not([open]) {
+    display: none;
+  }
+
+  .mg::backdrop {
+    background: rgba(5, 22, 40, 0.82);
+    backdrop-filter: blur(3px);
+  }
+
+  .mg[open] {
+    display: grid;
+    place-items: center;
+  }
+
+  .mg__frame {
+    position: relative;
+  }
+
+  .mg__close {
+    position: absolute;
+    top: -14px;
+    right: -14px;
+    z-index: 3;
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 2px solid var(--on-dark);
+    background: var(--deep);
+    color: var(--on-dark);
+    cursor: pointer;
+  }
+
+  .mg__close:hover {
+    background: var(--current);
+  }
+
+  .mg__close:focus-visible,
+  .mg__btn:focus-visible {
+    outline: 3px solid var(--kelp);
+    outline-offset: 3px;
+  }
+
+  .mg__stage {
+    position: relative;
+    width: min(94vw, calc(88vh * 0.5625), 405px);
+    aspect-ratio: 9 / 16;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    border: 3px solid var(--on-dark);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    background: #ecdcae;
+    touch-action: none;
+  }
+
+  .mg__canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .mg__panel {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 1.2rem;
+    background: rgba(5, 22, 40, 0.55);
+  }
+
+  .mg__panel[hidden] {
+    display: none;
+  }
+
+  .mg__card {
+    width: 100%;
+    background: var(--foam);
+    border-radius: var(--r-md);
+    padding: 1.4rem 1.3rem 1.3rem;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  .mg__title {
+    margin: 0 0 0.55rem;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.35rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--deep);
+  }
+
+  .mg__text {
+    margin: 0 0 1.1rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+  }
+
+  .mg__tip {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0 0 0.9rem;
+    padding: 0.7rem 0.8rem;
+    border-radius: var(--r-sm);
+    background: var(--shallow);
+    border-left: 3px solid var(--kelp-dark);
+    text-align: left;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+
+  .mg__tip[hidden],
+  .mg__meta[hidden] {
+    display: none;
+  }
+
+  .mg__tip-label {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--kelp-dark);
+  }
+
+  .mg__meta {
+    margin: 0 0 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+  }
+
+  .mg__btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  @media (max-width: 480px) {
+    /* Küçük ekranda üst köşe canlara ait; kapat düğmesi alt köşede */
+    .mg__close {
+      top: auto;
+      bottom: 12px;
+      right: 12px;
+      width: 38px;
+      height: 38px;
+    }
+  }
+</style>

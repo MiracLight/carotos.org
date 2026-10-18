@@ -229,6 +229,18 @@ export function buildLevel(n, rand = Math.random, variant = 0) {
   return { params: p, obstacles, items, length: p.length, variant };
 }
 
+/**
+ * Bölüm yıldızı:
+ *   1 yıldız  bölümü bitirmek
+ *   2 yıldız  en fazla 1 çarpma
+ *   3 yıldız  hiç çarpmadan ve kabuk parçalarının en az yarısı
+ */
+export function starsFor(hits, parts, total) {
+  if (hits === 0 && parts >= Math.ceil(total * 0.5)) return 3;
+  if (hits <= 1) return 2;
+  return 1;
+}
+
 /** Gizli oyunu bir canvas üzerinde başlatır. */
 export function createGame(canvas, opt) {
   const ctx = canvas.getContext("2d");
@@ -257,6 +269,7 @@ export function createGame(canvas, opt) {
     x: laneCenter(1),
     hearts: MAX_HEARTS,
     parts: 0,
+    hits: 0, // bu bölümdeki çarpma sayısı
     pool: 0, // kalan kabuk parçası sayacı (can için)
     invuln: 0,
     slow: 0,
@@ -367,6 +380,7 @@ export function createGame(canvas, opt) {
     g.x = laneCenter(1);
     g.hearts = MAX_HEARTS;
     g.parts = 0;
+    g.hits = 0;
     g.pool = 0;
     g.invuln = 0;
     g.slow = 0;
@@ -453,6 +467,7 @@ export function createGame(canvas, opt) {
 
   function hit() {
     g.hearts -= 1;
+    g.hits += 1;
     g.invuln = 1.4;
     g.slow = 0.5;
     g.shake = 0.25;
@@ -592,6 +607,8 @@ export function createGame(canvas, opt) {
             level: g.level,
             parts: g.parts,
             total: g.world.items.length,
+            hits: g.hits,
+            stars: starsFor(g.hits, g.parts, g.world.items.length),
           });
       }
     }

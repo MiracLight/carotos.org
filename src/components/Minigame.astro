@@ -442,7 +442,25 @@ const veri = {
 </script>
 
 <style is:global>
-  /* Kaplumbağa kendini gösterdikten sonra imleç tıklanabilir olur */
+  /* Fareyle üzerine gelince kaplumbağa tıklanabilir olduğunu belli eder:
+     imleç el olur, kaplumbağa hafifçe büyüyüp ışır. */
+  [data-minigame-trigger] svg {
+    transition:
+      transform 0.25s ease,
+      filter 0.25s ease;
+  }
+
+  @media (hover: hover) {
+    [data-minigame-trigger] {
+      cursor: pointer;
+    }
+    [data-minigame-trigger]:hover svg {
+      transform: scale(1.04) rotate(-2deg);
+      filter: drop-shadow(0 0 16px rgba(55, 138, 218, 0.7));
+    }
+  }
+
+  /* İpucu sonrası dokunmatik cihazlarda da imleç/etkileşim durumu korunur */
   [data-minigame-trigger].mg-hinted {
     cursor: pointer;
   }

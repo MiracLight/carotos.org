@@ -501,9 +501,10 @@ export function createGame(canvas, opt) {
     scale = canvas.width / W;
   }
 
-  // Aynı bölümde art arda aynı düzen gelmez; yalnızca o bölümde açılmış düzenler çıkar
+  // 1. bölüm her zaman Kumsal. Sonrakilerde art arda aynı düzen gelmez; yalnızca açılmış düzenler çıkar
   function pickVariant(level) {
     if (opt.variant != null) return opt.variant;
+    if (level === 1) return 0; // oyun her zaman Kumsal ile başlar
     const prev = g.lastVariant[level];
     const pool = variantsFor(level);
     const cand = pool.length > 1 ? pool.filter((v) => v !== prev) : pool;

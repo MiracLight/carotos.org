@@ -16,6 +16,7 @@ export const laneCenter = (i) => LANE_W * (i + 0.5);
 
 const MAX_HEARTS = 3;
 const SHIELD_TIME = 6.5; // kalkan süresi (sn)
+const EGG_TAPS = 5; // yumurtayı kırmak için gereken dokunuş sayısı
 const PARTS_PER_HEART = 5;
 const LANE_MOVE_TIME = 0.11; // bir şerit değiştirme süresi (test için referans)
 
@@ -373,6 +374,10 @@ export function createGame(canvas, opt) {
     { shield: "Kalkan", shieldBreak: "Kalkan koruyor!", magnet: "Mıknatıs", surf: "Dalga ritmi", plastic: "Plastik: ağırlaştın" },
     S.pu || {},
   );
+  const EGG = Object.assign(
+    { l1: "Kabuğu kır", l2: "ve denize ulaşmasını sağla", tap: "Dokun / tıkla!" },
+    S.egg || {},
+  );
   const reduceMotion = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   const vibrate = (ms) => {
     try {
@@ -409,6 +414,10 @@ export function createGame(canvas, opt) {
     pool: 0, // kalan kabuk parçası sayacı (can için)
     invuln: 0,
     slow: 0,
+    hatched: false, // yumurta bu oyunda bir kez kırıldı mı
+    eggHits: 0, // yumurtaya dokunuş sayısı
+    eggShake: 0, // dokunuş sonrası sarsıntı
+    eggBreak: -1, // kırıldıktan sonra geçen süre (-1: sağlam)
     shield: 0, // kalkan: kalan süre; sürerken bir çarpmayı yok sayar
     magnet: 0, // mıknatıs süresi
     surf: 0, // dalga ritmi süresi
@@ -461,6 +470,21 @@ export function createGame(canvas, opt) {
     },
     win: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.22, "triangle", 0.1, 0, i * 0.11)),
     over: () => [392, 330, 262, 196].forEach((f, i) => tone(f, 0.25, "sine", 0.1, 0, i * 0.15)),
+    // yumurta: dokunuş başına tok bir vuruş ve çıtırtı; son vuruşta kırılma ve civciv sesi
+    eggTap: (n) => {
+      tone(150 + n * 22, 0.1, "sine", 0.12, 0.5);
+      for (let i = 0; i < 2 + n; i++) {
+        tone(900 + Math.random() * 1800, 0.03 + Math.random() * 0.03, "square", 0.035, 0.6, 0.01 + i * 0.022);
+      }
+    },
+    eggBreak: () => {
+      tone(110, 0.28, "sine", 0.17, 0.4);
+      for (let i = 0; i < 10; i++) {
+        tone(500 + Math.random() * 2200, 0.04 + Math.random() * 0.04, "sawtooth", 0.05, 0.5, i * 0.018);
+      }
+      tone(880, 0.1, "triangle", 0.09, 0, 0.3);
+      tone(1320, 0.16, "triangle", 0.09, 0, 0.38);
+    },
     power: () => [523, 784, 1047].forEach((f, i) => tone(f, 0.14, "triangle", 0.09, 0, i * 0.06)),
     shield: () => {
       tone(880, 0.12, "triangle", 0.09, 0.5);
@@ -494,6 +518,27 @@ export function createGame(canvas, opt) {
       });
     }
   }
+  // yumurta kabuğu kırıkları: dönen küçük üçgenler
+  function shards(x, y, n, speed, life) {
+    for (let i = 0; i < n; i++) {
+      const a = -Math.PI / 2 + (Math.random() - 0.5) * 2.7;
+      const v = speed * (0.4 + Math.random() * 0.8);
+      g.fx.push({
+        kind: "shard",
+        x,
+        y,
+        vx: Math.cos(a) * v,
+        vy: Math.sin(a) * v,
+        rot: Math.random() * 6.283,
+        vr: (Math.random() - 0.5) * 14,
+        s: 3 + Math.random() * 4,
+        life: life * (0.6 + Math.random() * 0.6),
+        max: life,
+        grav: 520,
+        world: false,
+      });
+    }
+  }
   function floater(x, y, str) {
     g.fx.push({ kind: "text", x, y, vx: 0, vy: -46, life: 0.9, max: 0.9, str, world: false });
   }
@@ -522,7 +567,13 @@ export function createGame(canvas, opt) {
     g.level = level;
     g.variant = variant != null ? variant : pickVariant(level);
     g.world = buildLevel(level, rand, g.variant);
-    g.phase = "ready";
+    // 1. bölümde yavru yumurtanın içindedir; kırılana kadar koşu başlamaz.
+    // Aynı oyunda yeniden denemede yumurta tekrar gelmez.
+    const egg = level === 1 && !g.hatched && !opt.skipHatch;
+    g.phase = egg ? "hatch" : "ready";
+    g.eggHits = 0;
+    g.eggShake = 0;
+    g.eggBreak = -1;
     g.phaseT = 0;
     g.d = 0;
     g.lane = 1;
@@ -561,8 +612,33 @@ export function createGame(canvas, opt) {
     g.lane = next;
   }
 
+  // Yumurtaya dokunuş: sarsılır, çatlar; son dokunuşta kırılır
+  function tapEgg() {
+    if (g.phase !== "hatch" || g.eggBreak >= 0 || g.phaseT < 0.25) return;
+    g.eggHits += 1;
+    g.eggShake = 1;
+    if (g.eggHits >= EGG_TAPS) {
+      g.eggBreak = 0;
+      shards(laneCenter(1), PY, 26, 230, 1.1);
+      burst(laneCenter(1), PY, 14, ["#fbf6ea", "#e8dcb8", "#a9cfea"], 190, 0.7, { grav: 300 });
+      sfx.eggBreak();
+      vibrate([30, 30, 60]);
+    } else {
+      shards(laneCenter(1), PY - 30, 2 + g.eggHits * 2, 120 + g.eggHits * 20, 0.8);
+      sfx.eggTap(g.eggHits);
+      vibrate(14);
+    }
+  }
+
   // ---------- Girdi ----------
   const onKey = (e) => {
+    if (g.phase === "hatch") {
+      if (!e.repeat && !(e.target && e.target.tagName === "BUTTON") && [" ", "Enter", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "a", "A", "d", "D"].includes(e.key)) {
+        tapEgg();
+        e.preventDefault();
+      }
+      return;
+    }
     if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") {
       move(-1);
       e.preventDefault();
@@ -575,6 +651,10 @@ export function createGame(canvas, opt) {
   let ptr = null;
   const onDown = (e) => {
     ptr = { x: e.clientX, y: e.clientY, t: performance.now(), moved: false };
+    if (g.phase === "hatch") {
+      tapEgg();
+      ptr.moved = true;
+    }
     try {
       canvas.setPointerCapture(e.pointerId);
     } catch (_) {
@@ -717,11 +797,25 @@ export function createGame(canvas, opt) {
     for (const f of g.fx) {
       f.x += f.vx * dt;
       f.y += f.vy * dt + (f.world ? sp * dt : 0);
+      if (f.vr) f.rot += f.vr * dt;
       if (f.grav) f.vy += f.grav * dt;
       f.life -= dt;
     }
     g.fx = g.fx.filter((f) => f.life > 0);
 
+    if (g.phase === "hatch") {
+      g.eggShake = Math.max(0, g.eggShake - dt * 3.2);
+      if (g.eggBreak >= 0) {
+        g.eggBreak += dt;
+        if (g.eggBreak >= 0.8) {
+          g.hatched = true;
+          g.phase = "ready";
+          g.phaseT = 0;
+          g.lastCount = 0;
+        }
+      }
+      return;
+    }
     if (g.phase === "ready") {
       const n = 3 - Math.min(2, Math.floor(g.phaseT / 0.5));
       if (g.lastCount !== n) {
@@ -1023,14 +1117,17 @@ export function createGame(canvas, opt) {
   }
 
   function drawEggshell() {
-    // Bölüm 1'in başında yumurta kabuğu yarımları
+    // Bölüm 1: kırılan yumurtanın kabuk yarımları, yavrunun arkasında kalır
     if (g.level !== 1) return;
-    const sy = PY - (-38 - g.d); // kaplumbağanın arkasında kalır
+    if (g.eggBreak < 0 && !g.hatched) return;
+    const p = g.hatched ? 1 : Math.min(1, g.eggBreak / 0.4);
+    const e = 1 - (1 - p) * (1 - p);
+    const sy = PY + (38 + g.d) * e;
     if (sy > H + 40) return;
     for (const s of [-1, 1]) {
       ctx.save();
-      ctx.translate(laneCenter(1) + s * 24, sy);
-      ctx.rotate(s * 0.4);
+      ctx.translate(laneCenter(1) + s * 24 * e, sy);
+      ctx.rotate(s * 0.4 * e);
       ctx.fillStyle = "#fbf6ea";
       ctx.strokeStyle = "#cbb98a";
       ctx.lineWidth = 2;
@@ -1042,6 +1139,125 @@ export function createGame(canvas, opt) {
       ctx.fill();
       ctx.stroke();
       ctx.restore();
+    }
+  }
+
+  // Yumurtanın çatlak çizgileri (yumurta koordinatlarında), dokunuş sayısına göre eklenir
+  const EGG_CRACKS = [
+    [[[2, -45], [-3, -36], [5, -29], [0, -21]]],
+    [[[0, -21], [-8, -15], [-6, -8]], [[5, -29], [14, -25], [18, -17]]],
+    [[[-34, 6], [-24, 1], [-18, 9], [-9, 3], [0, 10], [8, 2], [17, 9], [26, 2], [34, 8]]],
+    [[[-6, -8], [-2, 2]], [[18, -17], [24, -6], [20, 2]], [[-24, 1], [-28, -10], [-24, -20]]],
+  ];
+
+  function drawEgg() {
+    const cx = laneCenter(1);
+    const st = g.eggHits;
+    const sh = g.eggShake;
+    ctx.save();
+    ctx.translate(cx, PY + 4);
+    // yumurtanın gölgesi
+    ctx.fillStyle = "rgba(90,70,30,0.22)";
+    ctx.beginPath();
+    ctx.ellipse(4, 44, 34, 9, 0, 0, 6.283);
+    ctx.fill();
+    // sarsıntı: her dokunuşta ve çatlak arttıkça kendiliğinden hafifçe sallanır
+    const idle = st >= 2 ? Math.sin(g.t * 9) * 0.02 * st : 0;
+    const wob = reduceMotion ? 0 : Math.sin(g.t * 42) * 0.14 * sh + idle;
+    ctx.translate(0, 40);
+    ctx.rotate(wob);
+    ctx.scale(1 + 0.07 * sh, 1 - 0.07 * sh);
+    ctx.translate(0, -40);
+    const body = () => {
+      ctx.beginPath();
+      ctx.moveTo(0, -46);
+      ctx.bezierCurveTo(26, -46, 38, -6, 34, 14);
+      ctx.bezierCurveTo(30, 36, 14, 44, 0, 44);
+      ctx.bezierCurveTo(-14, 44, -30, 36, -34, 14);
+      ctx.bezierCurveTo(-38, -6, -26, -46, 0, -46);
+      ctx.closePath();
+    };
+    const eg = ctx.createRadialGradient(-12, -20, 4, 0, 0, 52);
+    eg.addColorStop(0, "#fffcf4");
+    eg.addColorStop(1, "#ecdfba");
+    body();
+    ctx.fillStyle = eg;
+    ctx.fill();
+    ctx.lineWidth = 2.4;
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = "#cbb98a";
+    ctx.stroke();
+    ctx.save();
+    body();
+    ctx.clip();
+    // benekler
+    ctx.fillStyle = "rgba(160,130,80,0.3)";
+    for (const [dx, dy, r] of [[-16, 18, 2.4], [10, 24, 2], [20, -4, 2.2], [-22, -6, 1.8], [4, 4, 1.6], [-6, 32, 1.8], [24, 16, 1.6]]) {
+      ctx.beginPath();
+      ctx.arc(dx, dy, r, 0, 6.283);
+      ctx.fill();
+    }
+    // çatlaklar: altı yavrunun mavisi, üstü kabuğun koyu çizgisi
+    ctx.lineCap = "round";
+    const cracks = [];
+    for (let k = 0; k < Math.min(st, EGG_CRACKS.length); k++) cracks.push(...EGG_CRACKS[k]);
+    const trace = () => {
+      for (const c of cracks) {
+        ctx.beginPath();
+        ctx.moveTo(c[0][0], c[0][1]);
+        for (let i = 1; i < c.length; i++) ctx.lineTo(c[i][0], c[i][1]);
+        ctx.stroke();
+      }
+    };
+    if (st >= 3) {
+      ctx.strokeStyle = "#2a72c2";
+      ctx.lineWidth = 4.5;
+      trace();
+    }
+    ctx.strokeStyle = "#8a7348";
+    ctx.lineWidth = 1.7;
+    trace();
+    if (st >= 4) {
+      // kopan parçalar: içeriden mavi görünür
+      ctx.fillStyle = "#378ada";
+      for (const [dx, dy] of [[-4, -30], [14, -12], [-26, -14]]) {
+        ctx.beginPath();
+        ctx.moveTo(dx - 4, dy + 3);
+        ctx.lineTo(dx, dy - 5);
+        ctx.lineTo(dx + 5, dy + 2);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = "#8a7348";
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+    // parlama
+    ctx.fillStyle = "rgba(255,255,255,0.55)";
+    ctx.beginPath();
+    ctx.ellipse(-14, -26, 6, 11, -0.4, 0, 6.283);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // Yumurta aşaması: başlık, "dokun" çağrısı ve ilerleme noktaları
+  function drawHatchUI() {
+    text(EGG.l1, W / 2, 190, 28);
+    text(EGG.l2, W / 2, 222, 18, "center", 600);
+    if (g.eggBreak >= 0) return;
+    const pulse = 0.65 + 0.35 * Math.sin(g.t * 5);
+    ctx.globalAlpha = g.eggHits === 0 ? pulse : 0.8;
+    text(EGG.tap, W / 2, PY + 92, 20);
+    ctx.globalAlpha = 1;
+    for (let i = 0; i < EGG_TAPS; i++) {
+      ctx.beginPath();
+      ctx.arc(W / 2 + (i - (EGG_TAPS - 1) / 2) * 20, PY + 112, 5, 0, 6.283);
+      ctx.fillStyle = i < g.eggHits ? "#f4f9fd" : "rgba(10,36,64,0.35)";
+      ctx.fill();
+      ctx.strokeStyle = "rgba(10,36,64,0.6)";
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
     }
   }
 
@@ -2685,11 +2901,25 @@ export function createGame(canvas, opt) {
     }
     drawSea();
 
+    // yumurta aşamasında yavru yumurtanın içindedir
+    const inEgg = g.phase === "hatch" && g.eggBreak < 0;
+    if (inEgg) drawEgg();
+
     // kaplumbağa
     const sea = g.phase === "sea" || g.phase === "done";
     const py = sea ? PY - 150 * Math.min(1, g.phaseT / 1.2) : PY;
     const blink = g.invuln > 0 && Math.floor(g.invuln * 12) % 2 === 0;
-    if (!blink) {
+    if (!blink && !inEgg) {
+      // yumurtadan çıkarken yavru küçükten büyüyerek belirir
+      let pop = 1;
+      if (g.phase === "hatch" && g.eggBreak >= 0) {
+        const u = Math.min(1, g.eggBreak / 0.35);
+        pop = 1 + 2.2 * Math.pow(u - 1, 3) + 1.2 * Math.pow(u - 1, 2);
+        ctx.save();
+        ctx.translate(g.x, py);
+        ctx.scale(pop, pop);
+        ctx.translate(-g.x, -py);
+      }
       if (sea) {
         ctx.fillStyle = "rgba(244,249,253,0.35)";
         for (let i = 0; i < 3; i++) {
@@ -2708,6 +2938,7 @@ export function createGame(canvas, opt) {
         if (g.magnet > 0) drawMagnetRing(py);
         if (g.drag > 0) drawDragBag(py);
       }
+      if (g.phase === "hatch" && g.eggBreak >= 0) ctx.restore();
     }
 
     // parçacıklar
@@ -2717,6 +2948,22 @@ export function createGame(canvas, opt) {
         ctx.globalAlpha = Math.min(1, k * 1.6);
         text(f.str, f.x, f.y, 20);
         ctx.globalAlpha = 1;
+      } else if (f.kind === "shard") {
+        ctx.save();
+        ctx.globalAlpha = Math.min(1, k * 1.6);
+        ctx.translate(f.x, f.y);
+        ctx.rotate(f.rot);
+        ctx.beginPath();
+        ctx.moveTo(0, -f.s);
+        ctx.lineTo(f.s * 0.9, f.s * 0.7);
+        ctx.lineTo(-f.s * 0.9, f.s * 0.7);
+        ctx.closePath();
+        ctx.fillStyle = "#fbf6ea";
+        ctx.fill();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "#cbb98a";
+        ctx.stroke();
+        ctx.restore();
       } else {
         ctx.globalAlpha = Math.min(1, k * 1.4);
         ctx.fillStyle = f.c;
@@ -2741,6 +2988,8 @@ export function createGame(canvas, opt) {
     }
 
     drawHud();
+
+    if (g.phase === "hatch") drawHatchUI();
 
     if (g.phase === "ready") {
       const n = 3 - Math.min(2, Math.floor(g.phaseT / 0.5));
@@ -2795,6 +3044,9 @@ export function createGame(canvas, opt) {
         level: g.level,
         variant: g.variant,
         phase: g.phase,
+        eggHits: g.eggHits,
+        eggBreak: g.eggBreak,
+        hatched: g.hatched,
         lane: g.lane,
         hearts: g.hearts,
         parts: g.parts,

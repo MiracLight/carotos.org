@@ -782,59 +782,165 @@ export function createGame(canvas, opt) {
     ctx.fill();
 
     if (o.type === "rock") {
-      ctx.fillStyle = "#7d8a96";
-      ctx.strokeStyle = "#566370";
+      const rg = ctx.createLinearGradient(-18, -14, 14, 14);
+      rg.addColorStop(0, "#a3afba");
+      rg.addColorStop(0.55, "#7d8a96");
+      rg.addColorStop(1, "#5d6a77");
+      ctx.fillStyle = rg;
+      ctx.strokeStyle = "#47535f";
       ctx.lineWidth = 2;
+      ctx.lineJoin = "round";
       ctx.beginPath();
-      ctx.moveTo(-20, 8);
-      ctx.lineTo(-15, -10);
-      ctx.lineTo(0, -15);
-      ctx.lineTo(16, -9);
-      ctx.lineTo(20, 8);
-      ctx.lineTo(0, 14);
+      ctx.moveTo(-21, 7);
+      ctx.quadraticCurveTo(-21, -6, -14, -11);
+      ctx.quadraticCurveTo(-6, -17, 3, -15);
+      ctx.quadraticCurveTo(14, -15, 18, -7);
+      ctx.quadraticCurveTo(23, 1, 20, 8);
+      ctx.quadraticCurveTo(10, 15, -2, 14);
+      ctx.quadraticCurveTo(-14, 14, -21, 7);
       ctx.closePath();
       ctx.fill();
       ctx.stroke();
-      ctx.fillStyle = "rgba(255,255,255,0.28)";
+      // alt gölge yüzü
+      ctx.save();
+      ctx.clip();
+      ctx.fillStyle = "rgba(30,40,55,0.2)";
       ctx.beginPath();
-      ctx.moveTo(-12, -7);
-      ctx.lineTo(0, -12);
-      ctx.lineTo(6, -6);
-      ctx.lineTo(-8, -2);
+      ctx.moveTo(-22, 6);
+      ctx.quadraticCurveTo(0, 2, 24, 4);
+      ctx.lineTo(24, 20);
+      ctx.lineTo(-22, 20);
       ctx.closePath();
       ctx.fill();
-    } else if (o.type === "crab") {
-      // yürüyüş hızıyla bacak hareketi
-      const wig = Math.sin(g.t * (o.freq * 5 + 6) + o.phase) * 2.5;
-      ctx.strokeStyle = "#c2512f";
-      ctx.lineWidth = 3;
+      ctx.restore();
+      // çatlaklar ve yüzey
+      ctx.strokeStyle = "rgba(40,52,66,0.55)";
+      ctx.lineWidth = 1.3;
       ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(4, -14);
+      ctx.lineTo(2, -6);
+      ctx.lineTo(7, -1);
+      ctx.moveTo(-12, 0);
+      ctx.lineTo(-6, 4);
+      ctx.lineTo(-7, 9);
+      ctx.stroke();
+      // ışık
+      ctx.fillStyle = "rgba(255,255,255,0.3)";
+      ctx.beginPath();
+      ctx.moveTo(-13, -7);
+      ctx.quadraticCurveTo(-6, -13, 1, -11);
+      ctx.quadraticCurveTo(-3, -6, -10, -3);
+      ctx.closePath();
+      ctx.fill();
+      // yosun lekesi
+      ctx.fillStyle = "rgba(95,174,134,0.8)";
+      ctx.beginPath();
+      ctx.ellipse(13, 9, 5, 2.2, -0.2, 0, 6.283);
+      ctx.ellipse(10, 11, 3, 1.6, 0.1, 0, 6.283);
+      ctx.fill();
+    } else if (o.type === "crab") {
+      // yürüyüş hızıyla bacak ve kıskaç hareketi
+      const wig = Math.sin(g.t * (o.freq * 5 + 6) + o.phase) * 2.5;
+      const clap = Math.sin(g.t * 3.2 + o.phase) * 0.18;
+      const shellC = "#e0643a";
+      const dark = "#9a3a1c";
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      // bacaklar: iki eklemli
       for (const s of [-1, 1]) {
         for (let i = 0; i < 3; i++) {
+          const y0 = -1 + i * 5.5;
+          const kx = s * (14 + i * 0.6);
+          const ky = y0 + 3 + wig * s * 0.4;
+          const fx = s * (19 - i * 1.2);
+          const fy = y0 + 9 + wig * s;
+          ctx.strokeStyle = dark;
+          ctx.lineWidth = 4;
           ctx.beginPath();
-          ctx.moveTo(s * 8, -2 + i * 6);
-          ctx.lineTo(s * 17, 2 + i * 6 + wig * s);
+          ctx.moveTo(s * 8, y0);
+          ctx.lineTo(kx, ky);
+          ctx.lineTo(fx, fy);
+          ctx.stroke();
+          ctx.strokeStyle = "#cf5a30";
+          ctx.lineWidth = 2.2;
           ctx.stroke();
         }
-        // kıskaç
-        ctx.fillStyle = "#e0643a";
-        ctx.beginPath();
-        ctx.arc(s * 15, -14, 6, 0, 6.283);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.moveTo(s * 9, -6);
-        ctx.lineTo(s * 14, -12);
-        ctx.stroke();
       }
-      ctx.fillStyle = "#e0643a";
+      // kollar ve kıskaçlar
+      for (const s of [-1, 1]) {
+        ctx.save();
+        ctx.translate(s * 9, -5);
+        ctx.strokeStyle = dark;
+        ctx.lineWidth = 4.4;
+        ctx.beginPath();
+        ctx.moveTo(0, 2);
+        ctx.lineTo(s * 5, -6);
+        ctx.stroke();
+        ctx.strokeStyle = "#cf5a30";
+        ctx.lineWidth = 2.6;
+        ctx.stroke();
+        ctx.translate(s * 6, -10);
+        ctx.rotate(s * 0.35);
+        // iki parçalı kıskaç
+        for (const k of [-1, 1]) {
+          ctx.save();
+          ctx.rotate(k * (0.28 + clap));
+          ctx.fillStyle = shellC;
+          ctx.strokeStyle = dark;
+          ctx.lineWidth = 1.6;
+          ctx.beginPath();
+          ctx.moveTo(-3.2, 2);
+          ctx.quadraticCurveTo(-5.6, -6, 0, -11);
+          ctx.quadraticCurveTo(5.6, -6, 3.2, 2);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+          ctx.restore();
+        }
+        ctx.restore();
+      }
+      // gövde
+      const cg = ctx.createRadialGradient(-4, -3, 2, 0, 2, 15);
+      cg.addColorStop(0, "#f58a5e");
+      cg.addColorStop(1, shellC);
+      ctx.fillStyle = cg;
+      ctx.strokeStyle = dark;
+      ctx.lineWidth = 1.8;
       ctx.beginPath();
-      ctx.ellipse(0, 2, 13, 10, 0, 0, 6.283);
+      ctx.ellipse(0, 2, 13.5, 10.5, 0, 0, 6.283);
       ctx.fill();
-      ctx.fillStyle = "#fff";
+      ctx.stroke();
+      ctx.fillStyle = "rgba(255,255,255,0.3)";
       ctx.beginPath();
-      ctx.arc(-4, -6, 2.2, 0, 6.283);
-      ctx.arc(4, -6, 2.2, 0, 6.283);
+      ctx.ellipse(-5, -3, 5, 2.2, -0.4, 0, 6.283);
       ctx.fill();
+      ctx.fillStyle = "rgba(154,58,28,0.55)";
+      for (const [bx, by] of [[-5, 6], [0, 8], [5, 6]]) {
+        ctx.beginPath();
+        ctx.arc(bx, by, 1.2, 0, 6.283);
+        ctx.fill();
+      }
+      // gözler: saplı
+      for (const s of [-1, 1]) {
+        ctx.strokeStyle = dark;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(s * 4, -5);
+        ctx.lineTo(s * 4.4, -9);
+        ctx.stroke();
+        ctx.fillStyle = "#fff";
+        ctx.strokeStyle = dark;
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.arc(s * 4.4, -10, 3, 0, 6.283);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = "#1a0e08";
+        ctx.beginPath();
+        ctx.arc(s * 4.4, -9.4, 1.5, 0, 6.283);
+        ctx.fill();
+      }
     } else if (o.type === "wood") {
       const hw = o.w / 2;
       // gövde: yukarıdan aşağıya koyulaşan kabuk
@@ -925,73 +1031,152 @@ export function createGame(canvas, opt) {
       ctx.stroke();
     } else if (o.type === "starfish") {
       ctx.rotate(o.phase * 0.5);
-      ctx.fillStyle = "#f08a4b";
-      ctx.strokeStyle = "#c4622a";
-      ctx.lineWidth = 2;
       ctx.lineJoin = "round";
+      const sg = ctx.createRadialGradient(-4, -5, 2, 0, 0, 20);
+      sg.addColorStop(0, "#ffae72");
+      sg.addColorStop(1, "#ee7f3f");
+      ctx.fillStyle = sg;
+      ctx.strokeStyle = "#b5551f";
+      ctx.lineWidth = 2;
       ctx.beginPath();
       for (let i = 0; i < 10; i++) {
         const ang = -Math.PI / 2 + (i * Math.PI) / 5;
-        const r = i % 2 ? 7.5 : 19;
+        const r = i % 2 ? 8.5 : 19.5;
         ctx.lineTo(Math.cos(ang) * r, Math.sin(ang) * r);
       }
       ctx.closePath();
       ctx.fill();
       ctx.stroke();
-      ctx.fillStyle = "#ffd3a8";
+      // kol ortası çizgileri ve benekler
+      ctx.strokeStyle = "rgba(181,85,31,0.45)";
+      ctx.lineWidth = 1.2;
+      ctx.lineCap = "round";
       for (let i = 0; i < 5; i++) {
         const ang = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
-        for (const r of [6, 11, 15]) {
-          ctx.beginPath();
-          ctx.arc(Math.cos(ang) * r, Math.sin(ang) * r, 1.3, 0, 6.283);
-          ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(ang) * 5, Math.sin(ang) * 5);
+        ctx.lineTo(Math.cos(ang) * 16, Math.sin(ang) * 16);
+        ctx.stroke();
+      }
+      ctx.fillStyle = "#ffe0bf";
+      for (let i = 0; i < 5; i++) {
+        const ang = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
+        for (const r of [8, 12, 16]) {
+          for (const off of [-0.16, 0.16]) {
+            ctx.beginPath();
+            ctx.arc(Math.cos(ang + off) * r, Math.sin(ang + off) * r, 1.15, 0, 6.283);
+            ctx.fill();
+          }
         }
       }
+      ctx.fillStyle = "#d9692f";
+      ctx.beginPath();
+      ctx.arc(0, 0, 3.4, 0, 6.283);
+      ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,0.4)";
+      ctx.beginPath();
+      ctx.ellipse(-5, -8, 3.2, 1.6, -0.9, 0, 6.283);
+      ctx.fill();
     } else if (o.type === "bottle") {
       ctx.rotate((o.phase % 1) - 0.5);
+      ctx.lineJoin = "round";
+      const bg = ctx.createLinearGradient(0, -8, 0, 8);
+      bg.addColorStop(0, "rgba(120,205,165,0.95)");
+      bg.addColorStop(1, "rgba(58,150,108,0.95)");
       ctx.strokeStyle = "#2d7a5a";
       ctx.lineWidth = 1.8;
-      ctx.fillStyle = "rgba(78,170,128,0.92)";
+      ctx.fillStyle = bg;
+      // boyun
       ctx.beginPath();
-      ctx.roundRect(-20, -7.5, 28, 15, 6);
+      ctx.roundRect(6, -4.2, 14, 8.4, 3);
       ctx.fill();
       ctx.stroke();
+      // gövde
       ctx.beginPath();
-      ctx.roundRect(6, -4, 14, 8, 3);
+      ctx.roundRect(-21, -8, 29, 16, 6);
       ctx.fill();
       ctx.stroke();
-      ctx.fillStyle = "#c9a23a";
-      ctx.fillRect(19, -4.5, 4.5, 9);
-      ctx.fillStyle = "rgba(244,249,253,0.85)";
-      ctx.fillRect(-11, -5.5, 12, 11);
-      ctx.strokeStyle = "rgba(255,255,255,0.7)";
-      ctx.lineWidth = 1.6;
+      // kapak
+      const cap = ctx.createLinearGradient(0, -5, 0, 5);
+      cap.addColorStop(0, "#e6c050");
+      cap.addColorStop(1, "#b88a22");
+      ctx.fillStyle = cap;
+      ctx.strokeStyle = "#8a6616";
+      ctx.lineWidth = 1.4;
       ctx.beginPath();
-      ctx.moveTo(-16, -4);
-      ctx.lineTo(-13, -4);
+      ctx.roundRect(19, -5, 5, 10, 1.5);
+      ctx.fill();
+      ctx.stroke();
+      // etiket ve dalga deseni
+      ctx.fillStyle = "rgba(244,249,253,0.9)";
+      ctx.fillRect(-12, -6, 13, 12);
+      ctx.strokeStyle = "rgba(45,122,90,0.7)";
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(-10.5, -1);
+      ctx.quadraticCurveTo(-8, -3.5, -5.5, -1);
+      ctx.quadraticCurveTo(-3, 1.5, -0.5, -1);
+      ctx.moveTo(-10.5, 3);
+      ctx.quadraticCurveTo(-8, 0.5, -5.5, 3);
+      ctx.quadraticCurveTo(-3, 5.5, -0.5, 3);
+      ctx.stroke();
+      // parlama
+      ctx.strokeStyle = "rgba(255,255,255,0.75)";
+      ctx.lineWidth = 1.8;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(-18, -4.5);
+      ctx.lineTo(-14, -5.5);
+      ctx.moveTo(7, -2);
+      ctx.lineTo(16, -2);
       ctx.stroke();
     } else if (o.type === "urchin") {
       ctx.rotate(Math.sin(g.t * 1.6 + o.phase) * 0.12);
-      ctx.strokeStyle = "#3a2c63";
-      ctx.lineWidth = 2.4;
       ctx.lineCap = "round";
-      for (let i = 0; i < 22; i++) {
-        const ang = (i * 2 * Math.PI) / 22;
-        const r2 = i % 2 ? 17 : 20;
+      for (let i = 0; i < 24; i++) {
+        const ang = (i * 2 * Math.PI) / 24;
+        const r2 = i % 2 ? 17 : 21;
+        const x1 = Math.cos(ang) * 9;
+        const y1 = Math.sin(ang) * 9;
+        const x2 = Math.cos(ang) * r2;
+        const y2 = Math.sin(ang) * r2;
+        ctx.strokeStyle = "#2c2150";
+        ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.moveTo(Math.cos(ang) * 9, Math.sin(ang) * 9);
-        ctx.lineTo(Math.cos(ang) * r2, Math.sin(ang) * r2);
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
         ctx.stroke();
+        ctx.strokeStyle = "#6a58a8";
+        ctx.lineWidth = 1.4;
+        ctx.stroke();
+        ctx.fillStyle = "#c9bdf2";
+        ctx.beginPath();
+        ctx.arc(x2, y2, 0.9, 0, 6.283);
+        ctx.fill();
       }
-      ctx.fillStyle = "#5b4a94";
+      const ug = ctx.createRadialGradient(-4, -4, 1, 0, 0, 13);
+      ug.addColorStop(0, "#8a77c8");
+      ug.addColorStop(1, "#4a3a86");
+      ctx.fillStyle = ug;
+      ctx.strokeStyle = "#2c2150";
+      ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.arc(0, 0, 11.5, 0, 6.283);
       ctx.fill();
       ctx.stroke();
-      ctx.fillStyle = "rgba(255,255,255,0.35)";
+      ctx.fillStyle = "rgba(255,255,255,0.4)";
       ctx.beginPath();
-      ctx.arc(-4, -4, 3.2, 0, 6.283);
+      ctx.ellipse(-4.5, -5, 3.6, 2, -0.7, 0, 6.283);
       ctx.fill();
+      // öfkeli iki göz çizgisi: tehlikeli olduğu belli olsun
+      ctx.strokeStyle = "#e9e1ff";
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(-5, 1);
+      ctx.lineTo(-1.5, 2.2);
+      ctx.moveTo(5, 1);
+      ctx.lineTo(1.5, 2.2);
+      ctx.stroke();
     } else if (o.type === "sandcastle") {
       ctx.fillStyle = "#e0bf78";
       ctx.strokeStyle = "#a98b4a";
@@ -1032,16 +1217,19 @@ export function createGame(canvas, opt) {
       ctx.closePath();
       ctx.fill();
     } else if (o.type === "net") {
-      ctx.beginPath();
-      ctx.moveTo(-23, -4);
-      ctx.lineTo(-14, -15);
-      ctx.lineTo(6, -17);
-      ctx.lineTo(22, -8);
-      ctx.lineTo(24, 8);
-      ctx.lineTo(8, 16);
-      ctx.lineTo(-14, 15);
-      ctx.lineTo(-24, 6);
-      ctx.closePath();
+      const netShape = () => {
+        ctx.beginPath();
+        ctx.moveTo(-23, -4);
+        ctx.lineTo(-14, -15);
+        ctx.lineTo(6, -17);
+        ctx.lineTo(22, -8);
+        ctx.lineTo(24, 8);
+        ctx.lineTo(8, 16);
+        ctx.lineTo(-14, 15);
+        ctx.lineTo(-24, 6);
+        ctx.closePath();
+      };
+      netShape();
       ctx.fillStyle = "rgba(120,150,170,0.28)";
       ctx.fill();
       ctx.save();
@@ -1057,6 +1245,7 @@ export function createGame(canvas, opt) {
         ctx.stroke();
       }
       ctx.restore();
+      netShape();
       ctx.strokeStyle = "#4c687c";
       ctx.lineWidth = 2.2;
       ctx.stroke();
@@ -1071,22 +1260,33 @@ export function createGame(canvas, opt) {
         ctx.fill();
       }
     } else if (o.type === "weed") {
-      ctx.strokeStyle = "#3f7f5e";
-      ctx.lineWidth = 5;
       ctx.lineCap = "round";
-      for (let i = -3; i <= 3; i++) {
-        const sway = Math.sin(g.t * 3 + i + o.phase) * 3;
-        ctx.beginPath();
-        ctx.moveTo(i * 5, 14);
-        ctx.quadraticCurveTo(i * 7 + sway, 0, i * 4 + sway * 1.5, -20 + Math.abs(i) * 3);
-        ctx.stroke();
+      const blades = [
+        [-3, "#35735a"], [3, "#35735a"], [-2, "#3f8467"], [2, "#3f8467"], [0, "#4a9474"],
+      ];
+      for (let pass = 0; pass < 2; pass++) {
+        for (let i = -3; i <= 3; i++) {
+          const sway = Math.sin(g.t * 3 + i + o.phase) * 3;
+          const tx = i * 4 + sway * 1.5;
+          const ty = -20 + Math.abs(i) * 3;
+          ctx.strokeStyle = pass ? "#5fae86" : "#2f6a52";
+          ctx.lineWidth = pass ? 2.2 : 5.4;
+          const off = pass ? 0.8 : 0;
+          ctx.beginPath();
+          ctx.moveTo(i * 5 - off, 14);
+          ctx.quadraticCurveTo(i * 7 + sway - off, 0, tx - off, ty);
+          ctx.stroke();
+        }
       }
-      ctx.strokeStyle = "#5fae86";
-      ctx.lineWidth = 2.5;
-      for (let i = -2; i <= 2; i++) {
+      void blades;
+      // taban taşları
+      ctx.fillStyle = "#9a8f7c";
+      ctx.strokeStyle = "#6d6455";
+      ctx.lineWidth = 1.2;
+      for (const [bx, br] of [[-9, 3.2], [-2, 2.4], [8, 3]]) {
         ctx.beginPath();
-        ctx.moveTo(i * 6, 12);
-        ctx.quadraticCurveTo(i * 8, -2, i * 5, -16);
+        ctx.ellipse(bx, 15, br, br * 0.7, 0, 0, 6.283);
+        ctx.fill();
         ctx.stroke();
       }
     }
@@ -1099,16 +1299,43 @@ export function createGame(canvas, opt) {
     ctx.translate(it.x, sy + bob);
     ctx.fillStyle = "rgba(90,70,30,0.15)";
     ctx.beginPath();
-    ctx.ellipse(0, 12, 10, 4, 0, 0, 6.283);
+    ctx.ellipse(0, 13 - bob * 0.5, 10 - bob * 0.3, 4, 0, 0, 6.283);
     ctx.fill();
+    // yumuşak ışıltı
+    const glow = ctx.createRadialGradient(0, 0, 4, 0, 0, 22);
+    glow.addColorStop(0, "rgba(169,219,196,0.5)");
+    glow.addColorStop(1, "rgba(169,219,196,0)");
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(0, 0, 22, 0, 6.283);
+    ctx.fill();
+    ctx.lineJoin = "round";
+    const ig = ctx.createLinearGradient(-8, -10, 8, 10);
+    ig.addColorStop(0, "#d3f3e4");
+    ig.addColorStop(1, "#8fd0b4");
     hexPath(0, 0, 12, 0.52);
-    ctx.fillStyle = "#a9dbc4";
+    ctx.fillStyle = ig;
     ctx.fill();
     ctx.lineWidth = 2.5;
-    ctx.strokeStyle = "#4a9c78";
+    ctx.strokeStyle = "#3f9272";
     ctx.stroke();
+    ctx.strokeStyle = "rgba(255,255,255,0.7)";
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 6; i++) {
+      const a = 0.52 + (Math.PI / 3) * i;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(a) * 5, Math.sin(a) * 5);
+      ctx.lineTo(Math.cos(a) * 12, Math.sin(a) * 12);
+      ctx.stroke();
+    }
     hexPath(0, 0, 5, 0.52);
-    ctx.fillStyle = "#4a9c78";
+    ctx.fillStyle = "#3f9272";
+    ctx.fill();
+    // kıvılcım
+    const tw = (Math.sin(g.t * 5 + it.z) + 1) / 2;
+    ctx.fillStyle = `rgba(255,255,255,${0.5 + tw * 0.5})`;
+    ctx.beginPath();
+    ctx.arc(-5, -6, 1.1 + tw * 0.7, 0, 6.283);
     ctx.fill();
     ctx.restore();
   }
@@ -1133,8 +1360,11 @@ export function createGame(canvas, opt) {
 
     const f = swimming ? 8 : 13;
     const amp = swimming ? 0.55 : 0.4;
-    const skin = "#1b6bb8";
-    const skinLight = "#4a97e0";
+    const skin = "#1f72c0";
+    const skinLight = "#58a2e6";
+    const skinDark = "#124a85";
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
 
     // ayaklar: çapraz yürüyüş (sol ön + sağ arka birlikte)
     const flippers = [
@@ -1153,81 +1383,149 @@ export function createGame(canvas, opt) {
       ctx.rotate(base + Math.sin(phase) * amp);
       const len = row < 0 ? 15 : 11;
       ctx.beginPath();
-      ctx.moveTo(-3.5, 0);
-      ctx.bezierCurveTo(-8, -len * 0.5, -5, -len, 0, -len - 3);
-      ctx.bezierCurveTo(5, -len, 8, -len * 0.5, 3.5, 0);
+      ctx.moveTo(-3.8, 0);
+      ctx.bezierCurveTo(-9, -len * 0.45, -6.5, -len, 0, -len - 3.5);
+      ctx.bezierCurveTo(6.5, -len, 9, -len * 0.45, 3.8, 0);
       ctx.closePath();
-      ctx.fillStyle = skin;
+      const fg = ctx.createLinearGradient(-6, 0, 6, -len);
+      fg.addColorStop(0, skin);
+      fg.addColorStop(1, skinLight);
+      ctx.fillStyle = fg;
       ctx.fill();
-      ctx.fillStyle = skinLight;
+      ctx.lineWidth = 1.4;
+      ctx.strokeStyle = skinDark;
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(18,74,133,0.55)";
+      ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.ellipse(-1.2, -len * 0.55, 1.8, len * 0.32, 0, 0, 6.283);
+      ctx.arc(0, -len + 1.5, 3.2, 0.2 * Math.PI, 0.8 * Math.PI);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(255,255,255,0.35)";
+      ctx.beginPath();
+      ctx.ellipse(-2, -len * 0.55, 1.4, len * 0.28, 0.12, 0, 6.283);
       ctx.fill();
       ctx.restore();
     }
 
     // kuyruk
-    ctx.fillStyle = skin;
     ctx.beginPath();
-    ctx.moveTo(-3.5, 18);
-    ctx.quadraticCurveTo(0, 22, 0, 29);
-    ctx.quadraticCurveTo(0, 22, 3.5, 18);
+    ctx.moveTo(-4, 17);
+    ctx.quadraticCurveTo(-2.5, 24, 0, 30);
+    ctx.quadraticCurveTo(2.5, 24, 4, 17);
     ctx.closePath();
+    ctx.fillStyle = skin;
     ctx.fill();
+    ctx.lineWidth = 1.3;
+    ctx.strokeStyle = skinDark;
+    ctx.stroke();
 
     // boyun ve baş
     const bob = Math.sin(t * f * 0.5) * 1.1;
     ctx.beginPath();
-    ctx.ellipse(0, -17, 5, 6.5, 0, 0, 6.283);
+    ctx.ellipse(0, -17, 5.6, 7, 0, 0, 6.283);
+    ctx.fillStyle = skin;
     ctx.fill();
+    ctx.lineWidth = 1.4;
+    ctx.strokeStyle = skinDark;
+    ctx.stroke();
     ctx.save();
     ctx.translate(lean * 4, -26 + bob);
-    ctx.fillStyle = skin;
+    const hg = ctx.createRadialGradient(-3, -5, 1, 0, 0, 12);
+    hg.addColorStop(0, skinLight);
+    hg.addColorStop(0.6, skin);
+    hg.addColorStop(1, "#1a63ad");
     ctx.beginPath();
-    ctx.ellipse(0, 0, 9, 10.5, 0, 0, 6.283);
+    ctx.ellipse(0, 0, 9.4, 10.6, 0, 0, 6.283);
+    ctx.fillStyle = hg;
     ctx.fill();
-    ctx.fillStyle = skinLight;
-    ctx.beginPath();
-    ctx.ellipse(-2.5, -5.5, 4.2, 2.4, -0.3, 0, 6.283);
-    ctx.fill();
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = skinDark;
+    ctx.stroke();
+    // yanaklar
+    ctx.fillStyle = "rgba(255,139,139,0.38)";
+    for (const sx of [-6.3, 6.3]) {
+      ctx.beginPath();
+      ctx.ellipse(sx, 3, 2.3, 1.5, 0, 0, 6.283);
+      ctx.fill();
+    }
     // gözler
     for (const sx of [-4.4, 4.4]) {
       ctx.fillStyle = "#fff";
       ctx.beginPath();
-      ctx.arc(sx, -2.4, 3.2, 0, 6.283);
+      ctx.arc(sx, -2.4, 3.4, 0, 6.283);
       ctx.fill();
+      ctx.lineWidth = 0.9;
+      ctx.strokeStyle = "rgba(10,36,64,0.6)";
+      ctx.stroke();
       ctx.fillStyle = "#0a2440";
       ctx.beginPath();
-      ctx.arc(sx + lean * 2, -3.0, 1.7, 0, 6.283);
+      ctx.arc(sx + lean * 2, -2.9, 1.9, 0, 6.283);
       ctx.fill();
       ctx.fillStyle = "#fff";
       ctx.beginPath();
-      ctx.arc(sx + lean * 2 - 0.5, -3.7, 0.65, 0, 6.283);
+      ctx.arc(sx + lean * 2 - 0.55, -3.7, 0.7, 0, 6.283);
+      ctx.arc(sx + lean * 2 + 0.7, -2.2, 0.35, 0, 6.283);
       ctx.fill();
     }
-    // gülümseme
-    ctx.strokeStyle = "rgba(10,36,64,0.55)";
+    // burun delikleri ve gülümseme
+    ctx.fillStyle = "rgba(10,36,64,0.4)";
+    for (const sx of [-1.2, 1.2]) {
+      ctx.beginPath();
+      ctx.arc(sx, 1.4, 0.55, 0, 6.283);
+      ctx.fill();
+    }
+    ctx.strokeStyle = "rgba(10,36,64,0.65)";
     ctx.lineWidth = 1.2;
-    ctx.lineCap = "round";
     ctx.beginPath();
     ctx.arc(0, 3.2, 3, 0.15 * Math.PI, 0.85 * Math.PI);
     ctx.stroke();
     ctx.restore();
 
-    // kabuk: gradyanlı, logodaki gibi altıgen + altı dilim
+    // kabuk gölgesi (gövdeye oturması için)
+    hexPath(0, 1.6, 21.5, Math.PI / 6);
+    ctx.fillStyle = "rgba(10,36,64,0.22)";
+    ctx.fill();
+
+    // kabuk kenar pulları: dış halka
     const R = 20.5;
+    hexPath(0, 0, R + 2.2, Math.PI / 6);
+    ctx.fillStyle = "#1d5fa8";
+    ctx.fill();
+    ctx.lineWidth = 1.6;
+    ctx.strokeStyle = skinDark;
+    ctx.stroke();
+
+    // kabuk: gradyanlı, logodaki gibi altıgen + altı dilim
     const shell = ctx.createRadialGradient(-6, -8, 2, 0, 0, R + 2);
-    shell.addColorStop(0, "#7ebdf3");
-    shell.addColorStop(0.55, "#378ada");
+    shell.addColorStop(0, "#8cc6f6");
+    shell.addColorStop(0.5, "#3f93e0");
     shell.addColorStop(1, "#2a72c2");
     hexPath(0, 0, R, Math.PI / 6);
     ctx.fillStyle = shell;
     ctx.fill();
-    ctx.lineJoin = "round";
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 2;
     ctx.strokeStyle = "#185fa5";
     ctx.stroke();
-    ctx.strokeStyle = "rgba(244,249,253,0.9)";
+    // dilimlere hafif ton farkı: ışık sol üstten
+    for (let i = 0; i < 6; i++) {
+      const a0 = Math.PI / 6 + (Math.PI / 3) * i;
+      const a1 = a0 + Math.PI / 3;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(a0) * 8.5, Math.sin(a0) * 8.5);
+      ctx.lineTo(Math.cos(a0) * R, Math.sin(a0) * R);
+      ctx.lineTo(Math.cos(a1) * R, Math.sin(a1) * R);
+      ctx.lineTo(Math.cos(a1) * 8.5, Math.sin(a1) * 8.5);
+      ctx.closePath();
+      const mid = (a0 + a1) / 2;
+      const lit = -Math.cos(mid + 2.2);
+      ctx.fillStyle = lit > 0 ? `rgba(255,255,255,${0.06 + lit * 0.1})` : `rgba(10,36,64,${-lit * 0.12})`;
+      ctx.fill();
+      ctx.fillStyle = "rgba(244,249,253,0.28)";
+      ctx.beginPath();
+      ctx.arc(Math.cos(mid) * 14.7, Math.sin(mid) * 14.7, 1.3, 0, 6.283);
+      ctx.fill();
+    }
+    ctx.strokeStyle = "rgba(244,249,253,0.92)";
     ctx.lineWidth = 1.7;
     for (let i = 0; i < 6; i++) {
       const ang = Math.PI / 6 + (Math.PI / 3) * i;
@@ -1236,16 +1534,23 @@ export function createGame(canvas, opt) {
       ctx.lineTo(Math.cos(ang) * R, Math.sin(ang) * R);
       ctx.stroke();
     }
+    const core = ctx.createRadialGradient(-2, -2, 1, 0, 0, 9);
+    core.addColorStop(0, "#2c78c4");
+    core.addColorStop(1, "#154f8e");
     hexPath(0, 0, 8.5, Math.PI / 6);
-    ctx.fillStyle = "#185fa5";
+    ctx.fillStyle = core;
     ctx.fill();
-    ctx.strokeStyle = "rgba(244,249,253,0.9)";
+    ctx.strokeStyle = "rgba(244,249,253,0.92)";
     ctx.lineWidth = 1.7;
     ctx.stroke();
     // parlama
-    ctx.fillStyle = "rgba(255,255,255,0.3)";
+    ctx.fillStyle = "rgba(255,255,255,0.38)";
     ctx.beginPath();
-    ctx.ellipse(-8.5, -11, 6.5, 3, -0.7, 0, 6.283);
+    ctx.ellipse(-9, -11.5, 6.5, 2.8, -0.7, 0, 6.283);
+    ctx.fill();
+    ctx.fillStyle = "rgba(255,255,255,0.5)";
+    ctx.beginPath();
+    ctx.arc(-4.5, -15.2, 1.1, 0, 6.283);
     ctx.fill();
     ctx.restore();
   }

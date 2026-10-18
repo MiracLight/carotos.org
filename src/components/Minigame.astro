@@ -41,18 +41,6 @@ const t = {
       record: "Yeni rekor!",
       total: "Toplam yıldız",
     },
-    tips: [
-      "Her hesap için ayrı ve uzun bir parola kullanın.",
-      "Şüpheli bağlantılara tıklamadan önce adresi kontrol edin.",
-      "Mümkün olan her yerde iki adımlı doğrulamayı açın.",
-      "Yazılım güncellemelerini ertelemeyin.",
-      "Bilmediğiniz USB belleği bilgisayara takmayın.",
-      "Ortak Wi-Fi ağlarında önemli hesaplara giriş yapmaktan kaçının.",
-      "Yazılımı yalnızca resmî depolardan kurun.",
-      "Önemli dosyaların yedeğini farklı bir yerde tutun.",
-      "Ekli dosyayı açmadan önce göndericiyi doğrulayın.",
-      "Bir parolayı ya da kodu kimseyle paylaşmayın.",
-    ],
   },
   en: {
     label: "Hidden game: Reach the sea",
@@ -82,18 +70,6 @@ const t = {
       record: "New best!",
       total: "Total stars",
     },
-    tips: [
-      "Use a separate, long password for every account.",
-      "Check the address before you click a suspicious link.",
-      "Turn on two-factor authentication wherever it is available.",
-      "Do not postpone software updates.",
-      "Do not plug in a USB drive you do not recognize.",
-      "Avoid signing in to important accounts on public Wi-Fi.",
-      "Install software only from official repositories.",
-      "Keep a backup of important files in a separate place.",
-      "Verify the sender before opening an attachment.",
-      "Never share a password or a code with anyone.",
-    ],
   },
 }[lang];
 
@@ -104,7 +80,7 @@ const veri = {
   reached: t.reached,
   variants: t.variants,
   pu: t.pu,
-  tips: t.tips,
+  lang,
   doneTitle: lang === "tr" ? "Bölüm {n} tamamlandı" : "Level {n} complete",
   best: t.best,
   parts: t.parts,
@@ -284,7 +260,18 @@ const veri = {
       } else if (m === "done") {
         title.textContent = data.doneTitle.replace("{n}", String(o.level));
         text.textContent = data.reached;
-        tipText.textContent = data.tips[(o.level - 1) % data.tips.length];
+        // İpuçları ayrı bir modülde; bölüm sonunda tembel yüklenir
+        tipText.textContent = "";
+        tip.hidden = true;
+        import("../scripts/minigame-tips.js")
+          .then((m) => {
+            if (mode !== "done") return;
+            tipText.textContent = m.pickTip(data.lang);
+            tip.hidden = false;
+          })
+          .catch(() => {
+            /* ipucu yüklenemezse panel ipucusuz da çalışır */
+          });
         const saved = readStars();
         const record = o.stars > (saved[o.level] || 0);
         if (record) {

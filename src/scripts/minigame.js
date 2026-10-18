@@ -688,10 +688,7 @@ export function createGame(canvas, opt) {
     burst(it.x, sy, 16, col, 150, 0.7, { world: true });
     if (it.kind === "shield") g.shield = SHIELD_TIME;
     else if (it.kind === "magnet") g.magnet = 7;
-    else if (it.kind === "surf") {
-      g.surf = 2.6;
-      g.invuln = 0;
-    }
+    else if (it.kind === "surf") g.surf = 2.6; // yalnızca hızlandırır, dokunulmazlık vermez
     floater(g.x, PY - 44, PU[it.kind]);
     sfx.power();
   }
@@ -708,10 +705,7 @@ export function createGame(canvas, opt) {
     if (g.magnet > 0) g.magnet -= dt;
     if (g.shield > 0) g.shield -= dt;
     if (g.drag > 0) g.drag -= dt;
-    if (g.surf > 0) {
-      g.surf -= dt;
-      if (g.surf <= 0) g.invuln = Math.max(g.invuln, 0.6); // bitişte kısa tolerans
-    }
+    if (g.surf > 0) g.surf -= dt;
     if (g.shake > 0) g.shake -= dt;
     if (g.squash > 0) g.squash = Math.max(0, g.squash - dt * 2.6);
     if (g.heartFlash > 0) g.heartFlash = Math.max(0, g.heartFlash - dt * 2.2);
@@ -780,7 +774,7 @@ export function createGame(canvas, opt) {
         if (o.type === "crab") ox = crabX(o, g.t);
         const hw = (o.w / 2) * 0.82 + 10;
         const hh = (o.h / 2) * 0.85 + 14;
-        if (g.invuln <= 0 && g.surf <= 0 && Math.abs(g.x - ox) < hw && Math.abs(py - sy) < hh) {
+        if (g.invuln <= 0 && Math.abs(g.x - ox) < hw && Math.abs(py - sy) < hh) {
           hit();
           break;
         }

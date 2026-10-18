@@ -33,6 +33,13 @@ const t = {
     overText: "Bütün canlar tükendi. Aynı bölümü yeniden deneyebilirsin.",
     retry: "Tekrar dene",
     best: "En iyi",
+    stars: {
+      aria: "3 yıldızdan {n} tanesi",
+      next2: "2. yıldız için: en fazla 1 çarpma",
+      next3: "3. yıldız için: hiç çarpmadan, parçaların yarısını topla",
+      record: "Yeni rekor!",
+      total: "Toplam yıldız",
+    },
     tips: [
       "Her hesap için ayrı ve uzun bir parola kullanın.",
       "Şüpheli bağlantılara tıklamadan önce adresi kontrol edin.",
@@ -66,6 +73,13 @@ const t = {
     overText: "All lives are gone. You can try the same level again.",
     retry: "Try again",
     best: "Best",
+    stars: {
+      aria: "{n} of 3 stars",
+      next2: "Next star: at most 1 hit",
+      next3: "Next star: no hits and collect half the shell pieces",
+      record: "New best!",
+      total: "Total stars",
+    },
     tips: [
       "Use a separate, long password for every account.",
       "Check the address before you click a suspicious link.",
@@ -91,6 +105,7 @@ const veri = {
   doneTitle: lang === "tr" ? "Bölüm {n} tamamlandı" : "Level {n} complete",
   best: t.best,
   parts: t.parts,
+  stars: t.stars,
 };
 ---
 
@@ -120,6 +135,14 @@ const veri = {
         <div class="mg__card">
           <h2 class="mg__title" id="mg-title">{t.introTitle}</h2>
           <p class="mg__text" id="mg-text">{t.introText}</p>
+          <div class="mg__stars" id="mg-stars" hidden role="img">
+            {[0, 1, 2].map((i) => (
+              <svg class="mg__star" style={`--i:${i}`} viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2.8l2.8 5.9 6.4.9-4.7 4.5 1.2 6.4L12 17.4 6.3 20.5l1.2-6.4L2.8 9.6l6.4-.9z" stroke-linejoin="round"></path>
+              </svg>
+            ))}
+          </div>
+          <p class="mg__starhint" id="mg-starhint" hidden></p>
           <div class="mg__tip" id="mg-tip" hidden>
             <span class="mg__tip-label">{t.tipLabel}</span>
             <span id="mg-tip-text"></span>
@@ -203,6 +226,38 @@ const veri = {
       btn.focus();
     });
 
+    // Bölüm başına en iyi yıldız sayısı
+    const SKEY = "carotos-oyun-yildiz";
+    const readStars = (): Record<string, number> => {
+      try {
+        return JSON.parse(localStorage.getItem(SKEY) || "{}") || {};
+      } catch {
+        return {};
+      }
+    };
+    const writeStars = (m: Record<string, number>) => {
+      try {
+        localStorage.setItem(SKEY, JSON.stringify(m));
+      } catch {
+        /* yok say */
+      }
+    };
+    const totalStars = () =>
+      Object.values(readStars()).reduce((a, b) => a + (Number(b) || 0), 0);
+    const starsEl = document.getElementById("mg-stars")!;
+    const starHint = document.getElementById("mg-starhint")!;
+    const paintStars = (n: number) => {
+      starsEl.hidden = false;
+      starsEl.setAttribute("aria-label", data.stars.aria.replace("{n}", String(n)));
+      starsEl.querySelectorAll(".mg__star").forEach((el, i) => {
+        el.classList.remove("on");
+        // animasyonu yeniden başlatmak için bir kare bekle
+        requestAnimationFrame(() => el.classList.toggle("on", i < n));
+      });
+      starHint.hidden = n >= 3;
+      starHint.textContent = n === 1 ? data.stars.next2 : n === 2 ? data.stars.next3 : "";
+    };
+
     let game: any = null;
     let level = 1;
     let mode: "intro" | "done" | "over" = "intro";
@@ -211,6 +266,8 @@ const veri = {
       mode = m;
       panel.dataset.mode = m;
       tip.hidden = m !== "done";
+      starsEl.hidden = true;
+      starHint.hidden = true;
       meta.hidden = true;
       if (m === "intro") {
         title.textContent = data.introTitle;
@@ -219,16 +276,23 @@ const veri = {
         const best = readBest();
         if (best > 1) {
           meta.hidden = false;
-          meta.textContent = `${data.best}: ${data.level} ${best}`;
+          meta.textContent = `${data.best}: ${data.level} ${best} · ${data.stars.total}: ${totalStars()}`;
         }
       } else if (m === "done") {
         title.textContent = data.doneTitle.replace("{n}", String(o.level));
         text.textContent = data.reached;
         tipText.textContent = data.tips[(o.level - 1) % data.tips.length];
+        const saved = readStars();
+        const record = o.stars > (saved[o.level] || 0);
+        if (record) {
+          saved[o.level] = o.stars;
+          writeStars(saved);
+        }
+        paintStars(o.stars);
         meta.hidden = false;
-        meta.textContent = `${data.parts}: ${o.parts} / ${o.total}`;
+        meta.textContent = `${data.parts}: ${o.parts} / ${o.total}${record ? " · " + data.stars.record : ""}`;
         btn.textContent = data.next;
-        live.textContent = `${data.doneTitle.replace("{n}", String(o.level))}. ${data.reached}`;
+        live.textContent = `${data.doneTitle.replace("{n}", String(o.level))}. ${data.reached} ${data.stars.aria.replace("{n}", String(o.stars))}`;
       } else {
         title.textContent = data.overTitle;
         text.textContent = data.overText;
@@ -489,8 +553,57 @@ const veri = {
   }
 
   .mg__tip[hidden],
-  .mg__meta[hidden] {
+  .mg__meta[hidden],
+  .mg__stars[hidden],
+  .mg__starhint[hidden] {
     display: none;
+  }
+
+  .mg__stars {
+    display: flex;
+    justify-content: center;
+    gap: 0.35rem;
+    margin: 0 0 0.45rem;
+  }
+
+  .mg__star {
+    width: 40px;
+    height: 40px;
+    fill: none;
+    stroke: var(--ink-faint);
+    stroke-width: 1.6;
+    opacity: 0.55;
+    transition: fill 0.2s, stroke 0.2s, opacity 0.2s;
+  }
+
+  .mg__star.on {
+    fill: #f5b942;
+    stroke: #c98a1c;
+    opacity: 1;
+    animation: mg-star-pop 0.5s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+    animation-delay: calc(var(--i) * 0.18s + 0.15s);
+  }
+
+  @keyframes mg-star-pop {
+    0% {
+      transform: scale(0.2) rotate(-40deg);
+    }
+    100% {
+      transform: scale(1) rotate(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mg__star.on {
+      animation: none;
+    }
+  }
+
+  .mg__starhint {
+    margin: 0 0 0.9rem;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    color: var(--ink-soft);
   }
 
   .mg__tip-label {

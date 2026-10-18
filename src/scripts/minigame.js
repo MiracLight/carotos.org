@@ -15,6 +15,7 @@ export const PY = 500; // kaplumbağanın ekrandaki sabit y konumu
 export const laneCenter = (i) => LANE_W * (i + 0.5);
 
 const MAX_HEARTS = 3;
+const SHIELD_TIME = 6.5; // kalkan süresi (sn)
 const PARTS_PER_HEART = 5;
 const LANE_MOVE_TIME = 0.11; // bir şerit değiştirme süresi (test için referans)
 
@@ -39,8 +40,10 @@ export function levelParams(n) {
   };
 }
 
-/** Yengeçler bu bölümden itibaren üç şeridin tamamını tarar. */
+/** Yengeçler bu bölümden itibaren bazen üç şeridin tamamını tarar. */
 export const SWEEP_FROM = 6;
+/** O bölümlerde bir yengecin üç şeridi tarama ihtimali (kalanı iki şeritte gezer). */
+export const SWEEP_CHANCE = 0.5;
 
 /** Yengecin o anki x konumu: şeritler arasında salınır (amp: yarı genişlik). */
 export function crabX(o, t) {
@@ -197,8 +200,10 @@ export function buildLevel(n, rand = Math.random, variant = 0) {
     const a = rand() < 0.5 ? 0 : 1;
     return { blocked: [a, a + 1], build: () => wide(a) };
   };
+  const sweepRow = () => ({ blocked: [], sweep: true, crab: true, build: sweepCrab });
+  // SWEEP_FROM'dan sonra yengeçlerin yarısı üç şeridi tarar, yarısı iki şeritte kalır
   const crabRow = () => {
-    if (n >= SWEEP_FROM) return { blocked: [], sweep: true, crab: true, build: sweepCrab };
+    if (n >= SWEEP_FROM && rand() < SWEEP_CHANCE) return sweepRow();
     const side = rand() < 0.5 ? 0 : 2;
     return { blocked: [1, side], crab: true, build: () => crab(side) };
   };
@@ -240,7 +245,7 @@ export function buildLevel(n, rand = Math.random, variant = 0) {
     }
     f = nf;
     if (n >= 3 && (nf === 0 || nf === 2) && rand() < 0.22) {
-      if (n >= SWEEP_FROM) return crabRow();
+      if (n >= SWEEP_FROM && rand() < SWEEP_CHANCE) return sweepRow();
       const side = nf === 0 ? 2 : 0; // boş kalan şerit nf
       return { blocked: [1, side], crab: true, build: () => crab(side) };
     }
@@ -404,7 +409,7 @@ export function createGame(canvas, opt) {
     pool: 0, // kalan kabuk parçası sayacı (can için)
     invuln: 0,
     slow: 0,
-    shield: false, // kalkan: bir çarpmayı yok sayar
+    shield: 0, // kalkan: kalan süre; sürerken bir çarpmayı yok sayar
     magnet: 0, // mıknatıs süresi
     surf: 0, // dalga ritmi süresi
     drag: 0, // plastik ağırlaşması süresi
@@ -528,7 +533,7 @@ export function createGame(canvas, opt) {
     g.pool = 0;
     g.invuln = 0;
     g.slow = 0;
-    g.shield = false;
+    g.shield = 0;
     g.magnet = 0;
     g.surf = 0;
     g.drag = 0;
@@ -617,8 +622,8 @@ export function createGame(canvas, opt) {
   }
 
   function hit() {
-    if (g.shield) {
-      g.shield = false;
+    if (g.shield > 0) {
+      g.shield = 0;
       g.invuln = 1.0;
       g.shake = reduceMotion ? 0 : 0.12;
       burst(g.x, PY, 18, ["#bfdcff", "#ffffff", "#60a5fa"], 190, 0.6, { grav: 120 });
@@ -681,7 +686,7 @@ export function createGame(canvas, opt) {
     }
     const col = { shield: ["#bfdcff", "#60a5fa", "#fff"], magnet: ["#ffc0cc", "#fb7185", "#fff"], surf: ["#b6f0f5", "#22b8cf", "#fff"] }[it.kind];
     burst(it.x, sy, 16, col, 150, 0.7, { world: true });
-    if (it.kind === "shield") g.shield = true;
+    if (it.kind === "shield") g.shield = SHIELD_TIME;
     else if (it.kind === "magnet") g.magnet = 7;
     else if (it.kind === "surf") {
       g.surf = 2.6;
@@ -701,6 +706,7 @@ export function createGame(canvas, opt) {
     if (g.invuln > 0) g.invuln -= dt;
     if (g.slow > 0) g.slow -= dt;
     if (g.magnet > 0) g.magnet -= dt;
+    if (g.shield > 0) g.shield -= dt;
     if (g.drag > 0) g.drag -= dt;
     if (g.surf > 0) {
       g.surf -= dt;
@@ -2268,6 +2274,8 @@ export function createGame(canvas, opt) {
     const pulse = 0.6 + 0.4 * Math.sin(g.t * 5);
     ctx.save();
     ctx.translate(g.x, py);
+    // süre bitmeye yaklaşırken kalkan yanıp söner
+    if (g.shield < 1.5 && Math.floor(g.t * 9) % 2 === 0) ctx.globalAlpha = 0.35;
     const gr = ctx.createRadialGradient(-8, -10, 4, 0, 0, 38);
     gr.addColorStop(0, "rgba(220,238,255,0.35)");
     gr.addColorStop(1, `rgba(96,165,250,${0.16 + 0.08 * pulse})`);
@@ -2624,7 +2632,7 @@ export function createGame(canvas, opt) {
     text(String(g.parts), W - 28, 60, 14, "right");
     // etkin güçlendirici ve ağırlaşma göstergeleri
     const act = [];
-    if (g.shield) act.push(["shield", 1, "96,165,250"]);
+    if (g.shield > 0) act.push(["shield", g.shield / SHIELD_TIME, "96,165,250"]);
     if (g.magnet > 0) act.push(["magnet", g.magnet / 7, "251,113,133"]);
     if (g.surf > 0) act.push(["surf", g.surf / 2.6, "34,184,207"]);
     if (g.drag > 0) act.push(["plastic", g.drag / 3.5, "255,90,54"]);
@@ -2702,7 +2710,7 @@ export function createGame(canvas, opt) {
       if (!sea && g.surf > 0) drawSurfAura(py);
       drawTurtle(g.x, py, g.t, sea, g.lean, g.squash);
       if (!sea) {
-        if (g.shield) drawShield(py);
+        if (g.shield > 0) drawShield(py);
         if (g.magnet > 0) drawMagnetRing(py);
         if (g.drag > 0) drawDragBag(py);
       }

@@ -829,15 +829,32 @@ export function createGame(canvas, opt) {
 
   // düzene göre zemin rengi
   const PALETTE = [
-    { top: "#ecdcae", bot: "#e2cf9b", dot: "120,95,50", big: 1 }, // 0 Kumsal
-    { top: "#dcd4c0", bot: "#cbc1a8", dot: "80,80,92", big: 1.7 }, // 1 Kayalık
-    { top: "#dcc796", bot: "#c9b07a", dot: "96,70,36", big: 1.2 }, // 2 Sürüntü
-    { top: "#d8c9a2", bot: "#c0ab7f", dot: "70,100,130", big: 1.1 }, // 3 Gelgit Havuzu
-    { top: "#f2e3d1", bot: "#e6cdb3", dot: "200,110,120", big: 1.1 }, // 4 Mercan Kıyısı
-    { top: "#33436c", bot: "#212d4d", dot: "190,205,255", big: 1, night: true }, // 5 Gece
-    { top: "#c5cbd0", bot: "#aab3ba", dot: "60,78,96", big: 1.3 }, // 6 Fırtına
-    { top: "#d8d1bf", bot: "#c4bba4", dot: "70,66,60", big: 1.5 }, // 7 Atık
-    { top: "#f1dca8", bot: "#e4c485", dot: "140,100,40", big: 1 }, // 8 Kumul
+    { top: "#ecdcae", bot: "#e2cf9b", dot: "120,95,50", big: 1, wet: "#cdb882" }, // 0 Kumsal
+    { top: "#dcd4c0", bot: "#cbc1a8", dot: "80,80,92", big: 1.7, wet: "#b3aa93" }, // 1 Kayalık
+    { top: "#dcc796", bot: "#c9b07a", dot: "96,70,36", big: 1.2, wet: "#b39a63" }, // 2 Sürüntü
+    { top: "#d8c9a2", bot: "#c0ab7f", dot: "70,100,130", big: 1.1, wet: "#a8946a" }, // 3 Gelgit Havuzu
+    { top: "#f2e3d1", bot: "#e6cdb3", dot: "200,110,120", big: 1.1, wet: "#d6b99a" }, // 4 Mercan Kıyısı
+    {
+      top: "#33436c",
+      bot: "#212d4d",
+      dot: "190,205,255",
+      big: 1,
+      night: true,
+      wet: "#16213f",
+      sea: ["#050f2a", "#0d2d5e", "#2f5f94"],
+      foam: "190,215,245",
+    }, // 5 Gece
+    {
+      top: "#c5cbd0",
+      bot: "#aab3ba",
+      dot: "60,78,96",
+      big: 1.3,
+      wet: "#8e99a2",
+      sea: ["#1a334b", "#2f5878", "#7c9fb8"],
+      foam: "236,243,250",
+    }, // 6 Fırtına
+    { top: "#d8d1bf", bot: "#c4bba4", dot: "70,66,60", big: 1.5, wet: "#aaa18b" }, // 7 Atık
+    { top: "#f1dca8", bot: "#e4c485", dot: "140,100,40", big: 1, wet: "#cfb06e" }, // 8 Kumul
   ];
 
   function drawSand() {
@@ -947,14 +964,23 @@ export function createGame(canvas, opt) {
   function drawSea() {
     const shoreY = PY - (g.world.length - g.d);
     if (shoreY <= -10) return;
-    // ıslak kum
-    ctx.fillStyle = "#cdb882";
-    ctx.fillRect(0, Math.max(0, shoreY), W, 34);
+    const pal = PALETTE[g.variant] || PALETTE[0];
+    const sea = pal.sea || ["#185fa5", "#378ada", "#a9cfea"];
+    const foam = pal.foam || "244,249,253";
+    // ıslak kum: zeminle yumuşak geçiş
+    const ws = ctx.createLinearGradient(0, shoreY, 0, shoreY + 64);
+    const wet = pal.wet || "#cdb882";
+    const wrgb = [1, 3, 5].map((k) => parseInt(wet.slice(k, k + 2), 16)).join(",");
+    ws.addColorStop(0, wet);
+    ws.addColorStop(0.55, wet);
+    ws.addColorStop(1, `rgba(${wrgb},0)`);
+    ctx.fillStyle = ws;
+    ctx.fillRect(0, Math.max(0, shoreY), W, 64);
     // su
     const wg = ctx.createLinearGradient(0, 0, 0, Math.max(shoreY, 1));
-    wg.addColorStop(0, "#185fa5");
-    wg.addColorStop(0.6, "#378ada");
-    wg.addColorStop(1, "#a9cfea");
+    wg.addColorStop(0, sea[0]);
+    wg.addColorStop(0.6, sea[1]);
+    wg.addColorStop(1, sea[2]);
     ctx.fillStyle = wg;
     ctx.beginPath();
     ctx.moveTo(0, 0);
@@ -970,7 +996,7 @@ export function createGame(canvas, opt) {
       const sx = (i * 59 + g.t * (6 + (i % 4) * 3)) % W;
       const al = 0.25 + 0.3 * Math.sin(g.t * 2.6 + i * 1.7);
       if (al <= 0.05) continue;
-      ctx.strokeStyle = `rgba(244,249,253,${al})`;
+      ctx.strokeStyle = `rgba(${foam},${al})`;
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(sx, sy);
@@ -978,7 +1004,7 @@ export function createGame(canvas, opt) {
       ctx.stroke();
     }
     // köpük
-    ctx.strokeStyle = "rgba(244,249,253,0.95)";
+    ctx.strokeStyle = `rgba(${foam},0.95)`;
     ctx.lineWidth = 5;
     ctx.beginPath();
     for (let x = 0; x <= W; x += 10) {
@@ -986,7 +1012,7 @@ export function createGame(canvas, opt) {
       x ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
     }
     ctx.stroke();
-    ctx.strokeStyle = "rgba(244,249,253,0.4)";
+    ctx.strokeStyle = `rgba(${foam},0.4)`;
     ctx.lineWidth = 3;
     ctx.beginPath();
     for (let x = 0; x <= W; x += 10) {

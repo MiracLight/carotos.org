@@ -14,6 +14,7 @@ const { lang } = Astro.props;
 
 const t = {
   tr: {
+    consoleMsg: "Burada saklı bir şey var. Ana sayfadaki büyük kaplumbağaya art arda 5 kez bas.",
     label: "Gizli oyun: Denize ulaş",
     close: "Kapat",
     mute: "Sesi aç/kapat",
@@ -43,6 +44,7 @@ const t = {
     },
   },
   en: {
+    consoleMsg: "There is something hidden here. Press the big turtle on the home page 5 times in a row.",
     label: "Hidden game: Reach the sea",
     close: "Close",
     mute: "Toggle sound",
@@ -81,6 +83,7 @@ const veri = {
   variants: t.variants,
   pu: t.pu,
   lang,
+  consoleMsg: t.consoleMsg,
   doneTitle: lang === "tr" ? "Bölüm {n} tamamlandı" : "Level {n} complete",
   best: t.best,
   parts: t.parts,
@@ -307,8 +310,74 @@ const veri = {
       else begin(level);
     });
 
+    // Konsol mesajı: sayfayı inceleyen meraklılar için küçük bir davet
+    try {
+      console.log(
+        "%c🐢 CarotOS%c " + data.consoleMsg,
+        "background:#185fa5;color:#f4f9fd;padding:3px 8px;border-radius:4px;font-weight:700",
+        "color:#378ada;font-weight:600",
+      );
+    } catch {
+      /* konsol yoksa sorun değil */
+    }
+
+    // Bulunduktan sonra ipucu gösterilmez
+    const FKEY = "carotos-oyun-bulundu";
+    const found = (): boolean => {
+      try {
+        return localStorage.getItem(FKEY) === "1";
+      } catch {
+        return false;
+      }
+    };
+    const markFound = () => {
+      try {
+        localStorage.setItem(FKEY, "1");
+      } catch {
+        /* depolama kapalı olabilir */
+      }
+      triggers.forEach((el) => el.classList.remove("mg-hint", "mg-hinted"));
+    };
+
+    // Kaplumbağa bir süre sonra kendini tıklanabilir olarak gösterir:
+    // 20 sn'den sonra kısa bir sallanma ve halka; sonra 30 sn'de bir, en çok 5 kez.
+    // Yalnızca görünürken ve sekme açıkken çalışır. Oyun bir kez açıldıysa durur.
+    if (!found()) {
+      const el = triggers[0];
+      let visible = false;
+      let shown = 0;
+      let timer = 0;
+      if ("IntersectionObserver" in window) {
+        new IntersectionObserver(
+          (entries) => {
+            visible = entries.some((e) => e.isIntersecting);
+          },
+          { threshold: 0.4 },
+        ).observe(el);
+      } else {
+        visible = true;
+      }
+      const hint = () => {
+        if (found() || shown >= 5) return;
+        if (!visible || document.hidden || dlg.open) {
+          timer = window.setTimeout(hint, 4000); // uygun an gelene kadar bekle
+          return;
+        }
+        shown += 1;
+        el.classList.add("mg-hinted");
+        el.classList.remove("mg-hint");
+        void el.offsetWidth; // animasyonu yeniden başlat
+        el.classList.add("mg-hint");
+        window.setTimeout(() => el.classList.remove("mg-hint"), 2200);
+        timer = window.setTimeout(hint, 30000);
+      };
+      timer = window.setTimeout(hint, 20000);
+      window.addEventListener("pagehide", () => window.clearTimeout(timer));
+    }
+
     const open = async () => {
       if (dlg.open) return;
+      markFound();
       dlg.showModal();
       document.documentElement.style.overflow = "hidden";
       if (!game) {
@@ -373,6 +442,83 @@ const veri = {
 </script>
 
 <style is:global>
+  /* Kaplumbağa kendini gösterdikten sonra imleç tıklanabilir olur */
+  [data-minigame-trigger].mg-hinted {
+    cursor: pointer;
+  }
+
+  [data-minigame-trigger].mg-hint svg {
+    animation: mg-hint-wiggle 1.8s ease-in-out both;
+  }
+
+  [data-minigame-trigger].mg-hint::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 92%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 3px solid #378ada;
+    translate: -50% -50%;
+    opacity: 0;
+    pointer-events: none;
+    animation: mg-hint-ring 1.8s ease-out both;
+  }
+
+  @keyframes mg-hint-wiggle {
+    0% {
+      transform: none;
+      filter: none;
+    }
+    12% {
+      transform: rotate(-5deg) scale(1.05);
+    }
+    28% {
+      transform: rotate(5deg) scale(1.07);
+    }
+    44% {
+      transform: rotate(-4deg) scale(1.05);
+    }
+    60% {
+      transform: rotate(3deg) scale(1.04);
+      filter: drop-shadow(0 0 16px rgba(55, 138, 218, 0.85));
+    }
+    100% {
+      transform: none;
+      filter: none;
+    }
+  }
+
+  @keyframes mg-hint-ring {
+    0% {
+      opacity: 0.85;
+      scale: 0.8;
+    }
+    100% {
+      opacity: 0;
+      scale: 1.55;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-minigame-trigger].mg-hint svg {
+      animation: mg-hint-glow 1.8s ease-in-out both;
+    }
+    [data-minigame-trigger].mg-hint::after {
+      animation: none;
+    }
+    @keyframes mg-hint-glow {
+      0%,
+      100% {
+        filter: none;
+      }
+      50% {
+        filter: drop-shadow(0 0 16px rgba(55, 138, 218, 0.85));
+      }
+    }
+  }
+
   [data-minigame-trigger] {
     touch-action: manipulation;
     user-select: none;

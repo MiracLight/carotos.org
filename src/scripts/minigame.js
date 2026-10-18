@@ -470,20 +470,16 @@ export function createGame(canvas, opt) {
     },
     win: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.22, "triangle", 0.1, 0, i * 0.11)),
     over: () => [392, 330, 262, 196].forEach((f, i) => tone(f, 0.25, "sine", 0.1, 0, i * 0.15)),
-    // yumurta: dokunuş başına tok bir vuruş ve çıtırtı; son vuruşta kırılma ve civciv sesi
+    // yumurta: dokunuşta kısa, kuru bir "tık"; kırılmada alçak, yumuşak bir çatırtı
     eggTap: (n) => {
-      tone(150 + n * 22, 0.1, "sine", 0.12, 0.5);
-      for (let i = 0; i < 2 + n; i++) {
-        tone(900 + Math.random() * 1800, 0.03 + Math.random() * 0.03, "square", 0.035, 0.6, 0.01 + i * 0.022);
-      }
+      tone(210 + n * 25, 0.05, "triangle", 0.07, 0.6);
+      tone(1400 + Math.random() * 600, 0.02, "square", 0.018, 0.7, 0.012);
     },
     eggBreak: () => {
-      tone(110, 0.28, "sine", 0.17, 0.4);
-      for (let i = 0; i < 10; i++) {
-        tone(500 + Math.random() * 2200, 0.04 + Math.random() * 0.04, "sawtooth", 0.05, 0.5, i * 0.018);
+      tone(130, 0.16, "sine", 0.1, 0.55);
+      for (let i = 0; i < 4; i++) {
+        tone(700 + Math.random() * 900, 0.025, "square", 0.02, 0.6, i * 0.03);
       }
-      tone(880, 0.1, "triangle", 0.09, 0, 0.3);
-      tone(1320, 0.16, "triangle", 0.09, 0, 0.38);
     },
     power: () => [523, 784, 1047].forEach((f, i) => tone(f, 0.14, "triangle", 0.09, 0, i * 0.06)),
     shield: () => {
@@ -518,23 +514,32 @@ export function createGame(canvas, opt) {
       });
     }
   }
-  // yumurta kabuğu kırıkları: dönen küçük üçgenler
+  // yumurta kabuğu kırıkları: küçük, düzensiz parçalar; çıkıp aşağı düşer ve solar
   function shards(x, y, n, speed, life) {
     for (let i = 0; i < n; i++) {
-      const a = -Math.PI / 2 + (Math.random() - 0.5) * 2.7;
-      const v = speed * (0.4 + Math.random() * 0.8);
+      const a = -Math.PI / 2 + (Math.random() - 0.5) * 2.4;
+      const v = speed * (0.35 + Math.random() * 0.65);
+      const pts = [];
+      const k = 4 + Math.floor(Math.random() * 2);
+      for (let j = 0; j < k; j++) {
+        const ang = (j / k) * 6.283 + Math.random() * 0.6;
+        const r = 0.55 + Math.random() * 0.6;
+        pts.push([Math.cos(ang) * r, Math.sin(ang) * r * 0.8]);
+      }
       g.fx.push({
         kind: "shard",
-        x,
-        y,
+        x: x + (Math.random() - 0.5) * 30,
+        y: y + (Math.random() - 0.5) * 30,
         vx: Math.cos(a) * v,
         vy: Math.sin(a) * v,
         rot: Math.random() * 6.283,
-        vr: (Math.random() - 0.5) * 14,
-        s: 3 + Math.random() * 4,
-        life: life * (0.6 + Math.random() * 0.6),
+        vr: (Math.random() - 0.5) * 9,
+        s: 2.2 + Math.random() * 3,
+        pts,
+        tone: Math.random(),
+        life: life * (0.7 + Math.random() * 0.5),
         max: life,
-        grav: 520,
+        grav: 480,
         world: false,
       });
     }
@@ -574,6 +579,7 @@ export function createGame(canvas, opt) {
     g.eggHits = 0;
     g.eggShake = 0;
     g.eggBreak = -1;
+    g.cracks = egg ? makeCracks() : null;
     g.phaseT = 0;
     g.d = 0;
     g.lane = 1;
@@ -619,12 +625,11 @@ export function createGame(canvas, opt) {
     g.eggShake = 1;
     if (g.eggHits >= EGG_TAPS) {
       g.eggBreak = 0;
-      shards(laneCenter(1), PY, 26, 230, 1.1);
-      burst(laneCenter(1), PY, 14, ["#fbf6ea", "#e8dcb8", "#a9cfea"], 190, 0.7, { grav: 300 });
+      shards(laneCenter(1), PY, 16, 150, 0.9);
       sfx.eggBreak();
-      vibrate([30, 30, 60]);
+      vibrate([20, 30, 40]);
     } else {
-      shards(laneCenter(1), PY - 30, 2 + g.eggHits * 2, 120 + g.eggHits * 20, 0.8);
+      shards(laneCenter(1), PY - 8, 1 + g.eggHits, 70 + g.eggHits * 12, 0.7);
       sfx.eggTap(g.eggHits);
       vibrate(14);
     }
@@ -1142,13 +1147,46 @@ export function createGame(canvas, opt) {
     }
   }
 
-  // Yumurtanın çatlak çizgileri (yumurta koordinatlarında), dokunuş sayısına göre eklenir
-  const EGG_CRACKS = [
-    [[[2, -45], [-3, -36], [5, -29], [0, -21]]],
-    [[[0, -21], [-8, -15], [-6, -8]], [[5, -29], [14, -25], [18, -17]]],
-    [[[-34, 6], [-24, 1], [-18, 9], [-9, 3], [0, 10], [8, 2], [17, 9], [26, 2], [34, 8]]],
-    [[[-6, -8], [-2, 2]], [[18, -17], [24, -6], [20, 2]], [[-24, 1], [-28, -10], [-24, -20]]],
-  ];
+  // Doğal görünen çatlaklar: her yumurtada rastgele, kıvrık ve dallanan hatlar.
+  // Dönüş: aşamalara göre { lines: [[x,y],...][], chip: [[x,y],...] | null }
+  function makeCracks() {
+    const R = (a, b) => a + Math.random() * (b - a);
+    const jag = (x0, y0, x1, y1, step, amp) => {
+      const n = Math.max(2, Math.round(Math.hypot(x1 - x0, y1 - y0) / step));
+      const pts = [[x0, y0]];
+      for (let i = 1; i < n; i++) {
+        const u = i / n;
+        const off = R(-amp, amp) * (1 - Math.abs(u - 0.5) * 0.6);
+        pts.push([x0 + (x1 - x0) * u + off, y0 + (y1 - y0) * u + R(-1.5, 1.5)]);
+      }
+      pts.push([x1, y1]);
+      return pts;
+    };
+    const mx = R(-5, 5);
+    const a = jag(mx, -45, mx + R(-8, 2), -16, 6, 3.2);
+    const aEnd = a[a.length - 1];
+    const b = jag(aEnd[0], aEnd[1], aEnd[0] + R(-8, 4), 8, 6, 3.2);
+    const bEnd = b[b.length - 1];
+    const sideY = -28;
+    const side = jag(mx - 1, sideY, R(16, 24), sideY + R(8, 14), 5, 2.4);
+    const ring = jag(-34, R(2, 8), R(8, 22), R(8, 14), 6, 3.4);
+    const ring2 = jag(ring[ring.length - 1][0], ring[ring.length - 1][1], 34, R(2, 9), 6, 3.4);
+    const down = jag(bEnd[0], bEnd[1], R(-26, -12), R(26, 34), 6, 3);
+    const up = jag(ring[3][0], ring[3][1], ring[3][0] - R(2, 8), -R(12, 22), 5, 2.4);
+    const chipC = [mx + R(-9, -3), R(-30, -22)];
+    const chip = [];
+    for (let k = 0; k < 6; k++) {
+      const ang = (k / 6) * 6.283 + R(-0.3, 0.3);
+      const r = R(3.5, 6.5);
+      chip.push([chipC[0] + Math.cos(ang) * r, chipC[1] + Math.sin(ang) * r * 0.85]);
+    }
+    return [
+      { lines: [a], chip: null },
+      { lines: [b, side], chip: null },
+      { lines: [ring], chip: null },
+      { lines: [ring2, down, up], chip },
+    ];
+  }
 
   function drawEgg() {
     const cx = laneCenter(1);
@@ -1197,40 +1235,40 @@ export function createGame(canvas, opt) {
       ctx.arc(dx, dy, r, 0, 6.283);
       ctx.fill();
     }
-    // çatlaklar: altı yavrunun mavisi, üstü kabuğun koyu çizgisi
+    // çatlaklar: kıvrık, ince, koyu kahve çizgi; hafif açık kenar ışığı derinlik verir
     ctx.lineCap = "round";
-    const cracks = [];
-    for (let k = 0; k < Math.min(st, EGG_CRACKS.length); k++) cracks.push(...EGG_CRACKS[k]);
-    const trace = () => {
-      for (const c of cracks) {
-        ctx.beginPath();
-        ctx.moveTo(c[0][0], c[0][1]);
-        for (let i = 1; i < c.length; i++) ctx.lineTo(c[i][0], c[i][1]);
-        ctx.stroke();
+    ctx.lineJoin = "round";
+    const stages = (g.cracks || []).slice(0, st);
+    const trace = (dx, dy) => {
+      for (const sg of stages) {
+        for (const c of sg.lines) {
+          ctx.beginPath();
+          ctx.moveTo(c[0][0] + dx, c[0][1] + dy);
+          for (let i = 1; i < c.length; i++) ctx.lineTo(c[i][0] + dx, c[i][1] + dy);
+          ctx.stroke();
+        }
       }
     };
-    if (st >= 3) {
-      ctx.strokeStyle = "#2a72c2";
-      ctx.lineWidth = 4.5;
-      trace();
-    }
-    ctx.strokeStyle = "#8a7348";
-    ctx.lineWidth = 1.7;
-    trace();
-    if (st >= 4) {
-      // kopan parçalar: içeriden mavi görünür
-      ctx.fillStyle = "#378ada";
-      for (const [dx, dy] of [[-4, -30], [14, -12], [-26, -14]]) {
-        ctx.beginPath();
-        ctx.moveTo(dx - 4, dy + 3);
-        ctx.lineTo(dx, dy - 5);
-        ctx.lineTo(dx + 5, dy + 2);
-        ctx.closePath();
-        ctx.fill();
-        ctx.strokeStyle = "#8a7348";
-        ctx.lineWidth = 1.2;
-        ctx.stroke();
-      }
+    ctx.strokeStyle = "rgba(255,252,240,0.85)";
+    ctx.lineWidth = 1;
+    trace(1.1, 1.1);
+    ctx.strokeStyle = "rgba(95,75,42,0.28)";
+    ctx.lineWidth = 3;
+    trace(0, 0);
+    ctx.strokeStyle = "#6a5430";
+    ctx.lineWidth = 1.25;
+    trace(0, 0);
+    // son aşamada kopmuş bir kabuk parçası: içi koyu görünür
+    const lastStage = stages[3];
+    if (lastStage && lastStage.chip) {
+      ctx.beginPath();
+      lastStage.chip.forEach((q, i) => (i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1])));
+      ctx.closePath();
+      ctx.fillStyle = "#6f5a38";
+      ctx.fill();
+      ctx.strokeStyle = "rgba(255,252,240,0.8)";
+      ctx.lineWidth = 0.9;
+      ctx.stroke();
     }
     ctx.restore();
     // parlama
@@ -2950,18 +2988,16 @@ export function createGame(canvas, opt) {
         ctx.globalAlpha = 1;
       } else if (f.kind === "shard") {
         ctx.save();
-        ctx.globalAlpha = Math.min(1, k * 1.6);
+        ctx.globalAlpha = Math.min(1, k * 1.8);
         ctx.translate(f.x, f.y);
         ctx.rotate(f.rot);
         ctx.beginPath();
-        ctx.moveTo(0, -f.s);
-        ctx.lineTo(f.s * 0.9, f.s * 0.7);
-        ctx.lineTo(-f.s * 0.9, f.s * 0.7);
+        f.pts.forEach((q, i) => (i ? ctx.lineTo(q[0] * f.s, q[1] * f.s) : ctx.moveTo(q[0] * f.s, q[1] * f.s)));
         ctx.closePath();
-        ctx.fillStyle = "#fbf6ea";
+        ctx.fillStyle = f.tone > 0.5 ? "#f3ead0" : "#e4d6ae";
         ctx.fill();
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = "#cbb98a";
+        ctx.lineWidth = 0.8;
+        ctx.strokeStyle = "rgba(150,125,80,0.6)";
         ctx.stroke();
         ctx.restore();
       } else {

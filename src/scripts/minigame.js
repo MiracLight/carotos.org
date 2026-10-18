@@ -2911,8 +2911,10 @@ export function createGame(canvas, opt) {
     }
     drawSand();
     if (!g.world) {
-      // Oyun başlamadan önce bekleyen yavru
-      drawTurtle(laneCenter(1), PY, performance.now() / 1000, false, 0, 0);
+      // Oyun başlamadan önce (bilgi paneli arkasında) yavru yumurtanın içinde bekler;
+      // yumurta bu oyunda kırıldıysa yavru açıkta durur
+      if (!g.hatched && !opt.skipHatch) drawEgg();
+      else drawTurtle(laneCenter(1), PY, performance.now() / 1000, false, 0, 0);
       return;
     }
     drawEggshell();

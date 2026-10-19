@@ -400,6 +400,10 @@ export function createGame(canvas, opt) {
     a: 0.08 + Math.random() * 0.14,
   }));
 
+  // Kum noktalarını saydamlığa göre 4 gruba ayır (çizim sırasında tek yol olarak doldurulur)
+  const SAND_BUCKETS = [[], [], [], []];
+  for (const p of sandDots) SAND_BUCKETS[Math.min(3, Math.floor((p.a - 0.08) / 0.055))].push(p);
+
   const g = {
     level: 1,
     phase: "idle", // idle | ready | run | sea | done | over
@@ -548,8 +552,11 @@ export function createGame(canvas, opt) {
     g.fx.push({ kind: "text", x, y, vx: 0, vy: -46, life: 0.9, max: 0.9, str, world: false });
   }
 
+  // Çözünürlük: varsayılan en çok 1,5x; cihaz yavaşsa kare süresine göre kademeli düşer.
+  const QUALITY = [1, 0.75, 0.55];
+  let qi = 0;
   function fit() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5) * QUALITY[qi];
     const cw = canvas.clientWidth || W;
     canvas.width = Math.round(cw * dpr);
     canvas.height = Math.round(cw * (H / W) * dpr);
@@ -958,16 +965,24 @@ export function createGame(canvas, opt) {
 
   function drawSand() {
     const pal = PALETTE[g.variant] || PALETTE[0];
-    const grd = ctx.createLinearGradient(0, 0, 0, H);
-    grd.addColorStop(0, pal.top);
-    grd.addColorStop(1, pal.bot);
-    ctx.fillStyle = grd;
+    if (!pal._grd) {
+      pal._grd = ctx.createLinearGradient(0, 0, 0, H);
+      pal._grd.addColorStop(0, pal.top);
+      pal._grd.addColorStop(1, pal.bot);
+      pal._fills = SAND_BUCKETS.map((_, i) => `rgba(${pal.dot},${(0.08 + (i + 0.5) * 0.055).toFixed(3)})`);
+    }
+    ctx.fillStyle = pal._grd;
     ctx.fillRect(0, 0, W, H);
-    for (const p of sandDots) {
-      const y = (p.y + g.d) % H;
-      ctx.fillStyle = `rgba(${pal.dot},${p.a})`;
+    // 90 nokta, 4 saydamlık grubunda: 90 yerine 4 doldurma
+    for (let b = 0; b < SAND_BUCKETS.length; b++) {
+      ctx.fillStyle = pal._fills[b];
       ctx.beginPath();
-      ctx.arc(p.x, y, p.r * pal.big, 0, 6.283);
+      for (const p of SAND_BUCKETS[b]) {
+        const r = p.r * pal.big;
+        const y = (p.y + g.d) % H;
+        ctx.moveTo(p.x + r, y);
+        ctx.arc(p.x, y, r, 0, 6.283);
+      }
       ctx.fill();
     }
     // Rüzgârın kumda bıraktığı hafif dalgalar
@@ -2844,15 +2859,47 @@ export function createGame(canvas, opt) {
     ctx.restore();
   }
 
+  // Metin çizimi (kontur + dolgu) pahalıdır; aynı metin her karede yeniden çizilmesin diye
+  // bir kez ekran dışı tuvale çizilip önbellekten basılır.
+  const textCache = new Map();
+  const FONT = (w, z) => `${w} ${z}px Archivo, "Segoe UI", system-ui, sans-serif`;
+  function textSprite(str, size, align, weight) {
+    const pad = Math.max(3, size / 5) + 2;
+    ctx.font = FONT(weight, size);
+    const w = Math.ceil(ctx.measureText(str).width);
+    const lw = w + pad * 2;
+    const lh = Math.ceil(size * 1.5) + pad * 2;
+    const oc = document.createElement("canvas");
+    oc.width = Math.ceil(lw * scale);
+    oc.height = Math.ceil(lh * scale);
+    const c = oc.getContext("2d");
+    c.scale(scale, scale);
+    c.font = FONT(weight, size);
+    c.textAlign = "left";
+    c.lineJoin = "round";
+    c.lineWidth = Math.max(3, size / 5);
+    c.strokeStyle = "rgba(10,36,64,0.75)";
+    const ax = pad;
+    const ay = pad + size * 1.1;
+    c.strokeText(str, ax, ay);
+    c.fillStyle = "#f4f9fd";
+    c.fillText(str, ax, ay);
+    const ox = align === "center" ? -w / 2 - pad : align === "right" ? -w - pad : -pad;
+    return { c: oc, ox, oy: -(size * 1.1) - pad, w: lw, h: lh };
+  }
   function text(str, x, y, size, align = "center", weight = 700) {
-    ctx.font = `${weight} ${size}px Archivo, "Segoe UI", system-ui, sans-serif`;
-    ctx.textAlign = align;
-    ctx.lineJoin = "round";
-    ctx.lineWidth = Math.max(3, size / 5);
-    ctx.strokeStyle = "rgba(10,36,64,0.75)";
-    ctx.strokeText(str, x, y);
-    ctx.fillStyle = "#f4f9fd";
-    ctx.fillText(str, x, y);
+    // Büyük, animasyonla değişen boyutlar için ölçek 6 px'lik kademelere yuvarlanır
+    const qs = size < 30 ? size : Math.round(size / 6) * 6;
+    const k = size / qs;
+    const ready = !document.fonts || document.fonts.status === "loaded" ? 1 : 0;
+    const key = `${weight}|${qs}|${align}|${scale.toFixed(2)}|${ready}|${str}`;
+    let e = textCache.get(key);
+    if (!e) {
+      if (textCache.size > 140) textCache.clear();
+      e = textSprite(str, qs, align, weight);
+      textCache.set(key, e);
+    }
+    ctx.drawImage(e.c, x + e.ox * k, y + e.oy * k, e.w * k, e.h * k);
   }
 
   function drawHud() {
@@ -3044,12 +3091,29 @@ export function createGame(canvas, opt) {
     }
   }
 
+  let ema = 16.7;
+  let emaN = 0;
+  let skip = 0;
   function frame(ts) {
     if (!alive) return;
-    const dt = Math.min(0.05, (ts - (last || ts)) / 1000);
+    const raw = ts - (last || ts);
+    const dt = Math.min(0.05, raw / 1000);
     last = ts;
+    // Oyun sürerken kare süresi uzun kalıyorsa çözünürlüğü düşür (yavaş cihazlar)
+    if (g.phase === "run" && raw > 0 && raw < 250) {
+      ema += (raw - ema) * 0.08;
+      if (++emaN > 50 && ema > 26 && qi < QUALITY.length - 1) {
+        qi += 1;
+        fit();
+        ema = 16.7;
+        emaN = 0;
+      }
+    }
     if (g.world) update(dt);
-    render();
+    // Bilgi paneli açıkken (başlangıç, bölüm sonu, bitiş) sahne neredeyse durgundur:
+    // her karede değil, her 3. karede çiz
+    const idle = !g.world || g.phase === "done" || g.phase === "over";
+    if (!idle || ++skip % 3 === 0) render();
     raf = requestAnimationFrame(frame);
   }
 

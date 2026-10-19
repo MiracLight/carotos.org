@@ -383,6 +383,7 @@ const veri = {
       markFound();
       dlg.showModal();
       document.documentElement.style.overflow = "hidden";
+      document.documentElement.classList.add("mg-open");
       if (!game) {
         const mod = await import("../scripts/minigame.js");
         game = mod.createGame(canvas, {
@@ -412,6 +413,7 @@ const veri = {
     };
     dlg.addEventListener("close", () => {
       document.documentElement.style.overflow = "";
+      document.documentElement.classList.remove("mg-open");
       if (game) {
         game.destroy();
         game = null;
@@ -584,8 +586,14 @@ const veri = {
   }
 
   .mg::backdrop {
-    background: rgba(5, 22, 40, 0.82);
-    backdrop-filter: blur(3px);
+    /* Bulanıklaştırma (backdrop-filter) yavaş cihazlarda her karede yeniden hesaplandığı için
+       kullanılmıyor; biraz daha koyu düz bir zemin aynı görünümü ucuza verir. */
+    background: rgba(5, 22, 40, 0.9);
+  }
+
+  /* Oyun açıkken arkadaki sayfa animasyonları (süzülen kaplumbağa vb.) durur */
+  html.mg-open body *:not(.mg):not(.mg *) {
+    animation-play-state: paused !important;
   }
 
   .mg[open] {

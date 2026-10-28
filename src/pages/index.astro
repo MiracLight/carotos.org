@@ -151,11 +151,51 @@ const slaytlar = [
     baslik: "CarotOS Mağaza",
     aciklama: "Yedi kategoride 51 uygulama; kurulum ve kaldırma apt ile yapılır.",
   },
+  {
+    src: "/ekranlar/carotpot.webp",
+    kucuk: "/ekranlar/kucuk/carotpot.webp",
+    alt: "CarotPot: sahte servise yapılan port taraması ve SSH kaba kuvvet denemelerinin günlüğü",
+    grup: "Uygulama · 1.3",
+    baslik: "CarotPot",
+    aciklama: "Günlüğe kaydedilen tarama ve kaba kuvvet denemeleri, kaynak IP ve zaman damgasıyla.",
+  },
+  {
+    src: "/ekranlar/carotene.webp",
+    kucuk: "/ekranlar/kucuk/carotene.webp",
+    alt: "Carotene: klasör taraması sırasında tespit edilen bir trojan imzası",
+    grup: "Uygulama · 1.3",
+    baslik: "Carotene",
+    aciklama: "ClamAV veritabanıyla klasör taraması; bulunan tehditler imza adıyla listelenir.",
+  },
+  {
+    src: "/ekranlar/filenor.webp",
+    kucuk: "/ekranlar/kucuk/filenor.webp",
+    alt: "Filenor: görsel, belge, ses ve video dosyalarının toplu dönüştürme listesi",
+    grup: "Uygulama · 1.3",
+    baslik: "Filenor",
+    aciklama: "Birden çok dosyanın tek pencereden toplu biçim dönüştürmesi.",
+  },
+  {
+    src: "/ekranlar/former.webp",
+    kucuk: "/ekranlar/kucuk/former.webp",
+    alt: "Former: güvenlik uygulamalarını adım adım tanıtan rehber",
+    grup: "Uygulama · 1.3",
+    baslik: "Former",
+    aciklama: "CarotPot, Carotene ve diğer güvenlik araçlarını sırayla tanıtan adım adım rehber.",
+  },
+  {
+    src: "/ekranlar/gsd.webp",
+    kucuk: "/ekranlar/kucuk/gsd.webp",
+    alt: "GSD: güvenlik ve Linux terimleri için iki dilli sözlük",
+    grup: "Uygulama · 1.3",
+    baslik: "GSD",
+    aciklama: "Güvenlik ve Linux terimlerinin kısa, sade tanımlarıyla iki dilli sözlük.",
+  },
 ];
 
 const gercekler = [
   { sayi: "10", etiket: "seçilmiş güvenlik aracı" },
-  { sayi: "7", etiket: "özgün uygulama" },
+  { sayi: "12", etiket: "özgün uygulama" },
   { sayi: "~600 MB", etiket: "boşta bellek kullanımı" },
   { sayi: "13", etiket: "Debian sürümü — trixie" },
 ];
@@ -220,6 +260,36 @@ const uygulamalar = [
     metin:
       "Debian depolarındaki 51 uygulamaya yedi kategoride erişim sağlayan grafik yazılım mağazası. Kurulum ve kaldırma işlemleri apt ile yapılır, yetkilendirme pkexec üzerinden alınır. Açık ve koyu tema; Türkçe ve İngilizce arayüz.",
   },
+  {
+    baslik: "CarotPot",
+    yeni: "1.3",
+    metin:
+      "Düşük etkileşimli bal küpü (honeypot) uygulaması. Sahte bir servis dinleyerek port taraması ve SSH kaba kuvvet denemelerini kaynak IP, zaman ve ayrıntısıyla günlüğe kaydeder; günlük dışa aktarılabilir.",
+  },
+  {
+    baslik: "Carotene",
+    yeni: "1.3",
+    metin:
+      "ClamAV veritabanını kullanan virüs ve zararlı yazılım tarayıcısı. Seçili klasörleri tarar, bulunan tehditleri imza adıyla listeler; karantina veya silme seçeneği sunar.",
+  },
+  {
+    baslik: "Filenor",
+    yeni: "1.3",
+    metin:
+      "Görsel, belge, ses ve video dosyalarını toplu dönüştüren araç. HEIC'ten PNG'ye, DOCX'ten PDF'ye gibi sık kullanılan biçim değişimlerini tek pencereden, komut satırı bilgisi gerektirmeden yapar.",
+  },
+  {
+    baslik: "Former",
+    yeni: "1.3",
+    metin:
+      "Sistemdeki güvenlik uygulamalarını adım adım tanıtan rehber. CarotPot, Carotene, ufw ve fail2ban gibi araçları sırayla açıklar; her adımda çalıştırılacak örnek komutları gösterir.",
+  },
+  {
+    baslik: "GSD",
+    yeni: "1.3",
+    metin:
+      "Genel Sistem Sözlüğü: güvenlik ve Linux terimleri için iki dilli bir sözlük. Kaba kuvvet saldırısı, hash fonksiyonu, simetrik şifreleme gibi kavramları kısa ve sade tanımlarla açıklar.",
+  },
 ];
 
 const poligonUygulamalari = [
@@ -258,7 +328,7 @@ const araclar = [
 <Base
   lang="tr"
   title="CarotOS — Siber güvenlik öğrenmek için bir Linux dağıtımı"
-  description="Debian 13 tabanlı, Türkçe arayüzlü, eğitim odaklı Linux dağıtımı. On güvenlik aracı ve yedi özgün uygulama içerir."
+  description="Debian 13 tabanlı, Türkçe arayüzlü, eğitim odaklı Linux dağıtımı. On güvenlik aracı ve on iki özgün uygulama içerir."
 >
   {/* ============================================================
       KAHRAMAN
@@ -271,7 +341,7 @@ const araclar = [
         <p class="lede hero__lede">
           CarotOS, siber güvenlik eğitimi için hazırlanmış bir Linux
           dağıtımıdır. On güvenlik aracı ve bu araçları kullanmak için yazılmış
-          yedi uygulama içerir.
+          on iki uygulama içerir.
         </p>
 
         <div class="hero__actions">
@@ -352,7 +422,7 @@ const araclar = [
       <p class="eyebrow">Uygulamalar</p>
       <h2 class="sec__title">Uygulamalar ve araçlar</h2>
       <p class="lede sec__lede">
-        Bu proje için yazılan yedi uygulama. Python ve GTK3 ile geliştirildi,
+        Bu proje için yazılan on iki uygulama. Python ve GTK3 ile geliştirildi,
         GPL-3.0 ile dağıtılıyor.
       </p>
 

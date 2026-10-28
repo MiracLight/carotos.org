@@ -151,11 +151,51 @@ const slides = [
     baslik: "CarotOS Store",
     aciklama: "51 applications in seven categories; installation and removal use apt.",
   },
+  {
+    src: "/ekranlar/carotpot.webp",
+    kucuk: "/ekranlar/kucuk/carotpot.webp",
+    alt: "CarotPot: log of port scans and SSH brute-force attempts against a fake service",
+    grup: "Application · 1.3",
+    baslik: "CarotPot",
+    aciklama: "Logged scan and brute-force attempts, with source IP and timestamp.",
+  },
+  {
+    src: "/ekranlar/carotene.webp",
+    kucuk: "/ekranlar/kucuk/carotene.webp",
+    alt: "Carotene: a trojan signature found during a folder scan",
+    grup: "Application · 1.3",
+    baslik: "Carotene",
+    aciklama: "Folder scanning with the ClamAV database; threats found are listed by signature name.",
+  },
+  {
+    src: "/ekranlar/filenor.webp",
+    kucuk: "/ekranlar/kucuk/filenor.webp",
+    alt: "Filenor: a batch conversion list of image, document, audio and video files",
+    grup: "Application · 1.3",
+    baslik: "Filenor",
+    aciklama: "Batch format conversion for several files from a single window.",
+  },
+  {
+    src: "/ekranlar/former.webp",
+    kucuk: "/ekranlar/kucuk/former.webp",
+    alt: "Former: a step-by-step guide introducing the security applications",
+    grup: "Application · 1.3",
+    baslik: "Former",
+    aciklama: "A step-by-step guide introducing CarotPot, Carotene and the other security tools in turn.",
+  },
+  {
+    src: "/ekranlar/gsd.webp",
+    kucuk: "/ekranlar/kucuk/gsd.webp",
+    alt: "GSD: a bilingual dictionary of security and Linux terms",
+    grup: "Application · 1.3",
+    baslik: "GSD",
+    aciklama: "A bilingual dictionary explaining security and Linux terms in short, plain definitions.",
+  },
 ];
 
 const facts = [
   { num: "10", label: "hand-picked security tools" },
-  { num: "7", label: "original applications" },
+  { num: "12", label: "original applications" },
   { num: "~600 MB", label: "memory use when idle" },
   { num: "13", label: "Debian release — trixie" },
 ];
@@ -209,6 +249,31 @@ const apps = [
     yeni: "1.2",
     text: "Graphical software store providing access to 51 Debian repository applications in seven categories. Installation and removal use apt; authorization is requested through pkexec. Light and dark themes; Turkish and English interface.",
   },
+  {
+    title: "CarotPot",
+    yeni: "1.3",
+    text: "A low-interaction honeypot application. It listens on a fake service and logs port scans and SSH brute-force attempts with source IP, time and detail; the log can be exported.",
+  },
+  {
+    title: "Carotene",
+    yeni: "1.3",
+    text: "A virus and malware scanner built on the ClamAV database. It scans chosen folders and lists any threats found by signature name, with an option to quarantine or delete them.",
+  },
+  {
+    title: "Filenor",
+    yeni: "1.3",
+    text: "A batch converter for image, document, audio and video files. It handles common format changes such as HEIC to PNG or DOCX to PDF from a single window, with no command-line knowledge required.",
+  },
+  {
+    title: "Former",
+    yeni: "1.3",
+    text: "A step-by-step guide to the system's security applications. It walks through tools such as CarotPot, Carotene, ufw and fail2ban in order, showing the example commands to run at each step.",
+  },
+  {
+    title: "GSD",
+    yeni: "1.3",
+    text: "A bilingual dictionary of security and Linux terms. It explains concepts such as brute-force attack, hash function and symmetric encryption in short, plain definitions.",
+  },
 ];
 
 const poligonApps = [
@@ -245,7 +310,7 @@ const tools = [
 <Base
   lang="en"
   title="CarotOS — A Linux distribution for learning cybersecurity"
-  description="A Debian 13 based, education-focused Linux distribution with ten security tools and seven original applications."
+  description="A Debian 13 based, education-focused Linux distribution with ten security tools and twelve original applications."
 >
   {/* ============================================================
       HERO
@@ -257,7 +322,7 @@ const tools = [
         <h1>Few, explained well.</h1>
         <p class="lede hero__lede">
           CarotOS is a Linux distribution built for cybersecurity education. It
-          ships ten security tools and seven applications written to operate
+          ships ten security tools and twelve applications written to operate
           them.
         </p>
 
@@ -338,7 +403,7 @@ const tools = [
       <p class="eyebrow">Applications</p>
       <h2 class="sec__title">Applications and tools</h2>
       <p class="lede sec__lede">
-        Seven applications written for this project in Python and GTK3,
+        Twelve applications written for this project in Python and GTK3,
         distributed under the GPL-3.0.
       </p>
 

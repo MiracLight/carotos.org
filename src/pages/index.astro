@@ -10,15 +10,15 @@ import "../styles/anasayfa.css";
    Sürüm bilgileri — yeni sürüm çıktığında SADECE burayı güncelle.
    ------------------------------------------------------------------ */
 const surum = {
-  etiket: "1.2",
+  etiket: "1.3",
   kodAdi: "Eggshell",
-  tarih: "17 Ekim 2026",
-  dosya: "carotos-1.2-amd64.iso",
-  boyut: "2,26 GB",
-  bayt: "2.256.076.800",
-  sha256: "2c97e3d2e1c888b7dc5e2df4f92833e9f0983bd6278b5edeb205ce8e62a73a69",
-  url: "https://download.carotos.org/carotos-1.2-amd64.iso",
-  shaUrl: "https://download.carotos.org/carotos-1.2-amd64.iso.sha256",
+  tarih: "29 Ekim 2026",
+  dosya: "carotos-1.3-amd64.iso",
+  boyut: "2,53 GB",
+  bayt: "2.528.411.648",
+  sha256: "b25b128bb901aec00343fcf79230e9b5f18b49d14cfafade25542d7d8dc3236e",
+  url: "https://download.carotos.org/carotos-1.3-amd64.iso",
+  shaUrl: "https://download.carotos.org/carotos-1.3-amd64.iso.sha256",
 };
 
 /* Debian 13 "trixie" amd64 kurulum kılavuzu, Tablo 3.2 —
@@ -37,14 +37,14 @@ const slaytlar = [
     alt: "CarotOS masaüstü: XFCE üst paneli, altta uygulama çubuğu",
     grup: "Sistem",
     baslik: "Masaüstü",
-    aciklama: "XFCE 4, iki panelli düzen ve CarotOS duvar kâğıdı.",
+    aciklama: "XFCE 4 ile iki panelli masaüstü düzeni ve CarotOS duvar kâğıdı.",
   },
   {
     src: "/ekranlar/karsilama-1.webp",
     kucuk: "/ekranlar/kucuk/karsilama-1.webp",
     alt: "Karşılama Sihirbazı açılış sayfası",
     grup: "Karşılama Sihirbazı",
-    baslik: "CarotOS 1.0 “Eggshell”",
+    baslik: "CarotOS 1.3 “Eggshell”",
     aciklama: "İlk oturumda açılan, Linux'u ilk kez kullananlar için kısa tanıtım.",
   },
   {
@@ -53,15 +53,15 @@ const slaytlar = [
     alt: "Karşılama Sihirbazı görünüm ve dil seçim sayfası",
     grup: "Karşılama Sihirbazı",
     baslik: "Görünüm ve dil",
-    aciklama: "Açık veya koyu tema ve sistem dili seçimi; ayarlar çıkışta uygulanır.",
+    aciklama: "Açık veya koyu tema ile sistem dilini seçersiniz. Ayarlar çıkışta uygulanır.",
   },
   {
     src: "/ekranlar/karsilama-duvar.webp",
     kucuk: "/ekranlar/kucuk/karsilama-duvar.webp",
     alt: "Karşılama Sihirbazı: üç seçenekli masaüstü arka planı sayfası",
-    grup: "Karşılama Sihirbazı · 1.2",
+    grup: "Karşılama Sihirbazı",
     baslik: "Masaüstü arka planı",
-    aciklama: "Üç CarotOS arka planı arasından seçim; seçilen arka plan çıkışta masaüstüne uygulanır.",
+    aciklama: "Üç CarotOS arka planından birini seçersiniz. Seçilen arka plan çıkışta masaüstüne uygulanır.",
   },
   {
     src: "/ekranlar/karsilama-3.webp",
@@ -69,7 +69,7 @@ const slaytlar = [
     alt: "Karşılama Sihirbazı: Linux ve dağıtımlar sayfası",
     grup: "Karşılama Sihirbazı",
     baslik: "Linux ve dağıtımlar",
-    aciklama: "CarotOS'un tanımı ve tabanı: Debian 13, Xfce ve APT.",
+    aciklama: "CarotOS'un ne olduğunu ve Debian 13, Xfce, APT tabanını anlatır.",
   },
   {
     src: "/ekranlar/karsilama-4.webp",
@@ -77,7 +77,7 @@ const slaytlar = [
     alt: "Karşılama Sihirbazı: masaüstü düzeni sayfası",
     grup: "Karşılama Sihirbazı",
     baslik: "Masaüstü",
-    aciklama: "İki panelli masaüstü düzeninin kullanımı.",
+    aciklama: "İki panelli masaüstü düzeninin nasıl kullanıldığını gösterir.",
   },
   {
     src: "/ekranlar/karsilama-5.webp",
@@ -85,7 +85,7 @@ const slaytlar = [
     alt: "Karşılama Sihirbazı: dosya sistemi sayfası",
     grup: "Karşılama Sihirbazı",
     baslik: "Dosya sistemi",
-    aciklama: "Linux dosya sistemi: sürücü harfi bulunmaz, tüm dizinler tek bir ağaçta yer alır.",
+    aciklama: "Linux'ta sürücü harfi yoktur, tüm dizinler tek bir ağaçta toplanır.",
   },
   {
     src: "/ekranlar/karsilama-6.webp",
@@ -93,7 +93,7 @@ const slaytlar = [
     alt: "Karşılama Sihirbazı: ev klasörü sayfası",
     grup: "Karşılama Sihirbazı",
     baslik: "Ev klasörünüz",
-    aciklama: "Kişisel dosyaların bulunduğu ev klasörü.",
+    aciklama: "Kişisel dosyalarınızın bulunduğu ev klasörü.",
   },
   {
     src: "/ekranlar/karsilama-7.webp",
@@ -101,7 +101,7 @@ const slaytlar = [
     alt: "Karşılama Sihirbazı: yazılım kurma sayfası",
     grup: "Karşılama Sihirbazı",
     baslik: "Yazılım kurmak",
-    aciklama: "Depolar üzerinden merkezî ve güvenli yazılım kurulumu; internetten .exe indirilmez.",
+    aciklama: "Yazılımlar internetten .exe indirilerek değil, güvenli depolardan kurulur.",
   },
   {
     src: "/ekranlar/karsilama-8.webp",
@@ -109,7 +109,7 @@ const slaytlar = [
     alt: "Karşılama Sihirbazı: Güvenlik Paneli tanıtım sayfası",
     grup: "Karşılama Sihirbazı",
     baslik: "CarotOS Güvenlik Paneli",
-    aciklama: "Güvenlik araçlarının komut satırı bilgisi gerektirmeden kullanımı.",
+    aciklama: "Güvenlik araçlarını komut yazmadan kullanabilirsiniz.",
   },
   {
     src: "/ekranlar/karsilama-9.webp",
@@ -117,7 +117,7 @@ const slaytlar = [
     alt: "Karşılama Sihirbazı: kurulu güvenlik araçları listesi",
     grup: "Karşılama Sihirbazı",
     baslik: "Kurulu güvenlik araçları",
-    aciklama: "Kurulu on güvenlik aracı; tümü panel üzerinden kullanılabilir.",
+    aciklama: "CarotOS ile gelen on güvenlik aracının hepsi panelden kullanılabilir.",
   },
   {
     src: "/ekranlar/guvenlik-paneli.webp",
@@ -125,37 +125,101 @@ const slaytlar = [
     alt: "CarotOS Güvenlik Paneli: solda araç listesi, sağda nmap formu",
     grup: "Uygulama",
     baslik: "Güvenlik Paneli",
-    aciklama: "Alan başına işlev açıklaması ve canlı komut çıktısı.",
+    aciklama: "Her aracın açıklaması ve komut çıktısı aynı ekranda görünür.",
   },
   {
     src: "/ekranlar/sistem-sagligi.webp",
     kucuk: "/ekranlar/kucuk/sistem-sagligi.webp",
-    alt: "CarotOS Sistem Sağlığı: yüzde 88 sağlık puanı ve denetim listesi",
+    alt: "CarotOS Sistem Sağlığı: sağlık puanı, denetim kategorileri ve dikkat gerektiren bulgular",
     grup: "Uygulama",
     baslik: "Sistem Sağlığı",
-    aciklama: "Altı kategoride yirmi denetim, sağlık puanı ve tek tıkla düzeltme.",
+    aciklama: "Sistem durumu 23 denetimle kontrol edilir ve bir sağlık puanı olarak gösterilir.",
   },
   {
     src: "/ekranlar/usb-denetimi.webp",
     kucuk: "/ekranlar/kucuk/usb-denetimi.webp",
-    alt: "CarotOS USB Denetimi: bir bellekte dört şüpheli bulgu, önem derecesine göre listelenmiş",
+    alt: "CarotOS USB Denetimi: bir bellekte beş şüpheli bulgu, önem derecesine göre listelenmiş",
     grup: "Uygulama",
     baslik: "USB Denetimi",
-    aciklama: "Bulguların önem derecesine göre sıralı listesi; her bulgu için gerekçe ve dosya yolu.",
+    aciklama: "Bulgular önem derecesine göre sıralanır. Her bulgunun gerekçesi ve dosya yolu görünür.",
   },
   {
     src: "/ekranlar/magaza.webp",
     kucuk: "/ekranlar/kucuk/magaza.webp",
-    alt: "CarotOS Mağaza: solda kategoriler, sağda uygulama kartları ve Kur düğmeleri",
-    grup: "Uygulama · 1.2",
+    alt: "CarotOS Mağaza: solda kategoriler, sağda öne çıkan uygulama kartları",
+    grup: "Uygulama",
     baslik: "CarotOS Mağaza",
-    aciklama: "Yedi kategoride 51 uygulama; kurulum ve kaldırma apt ile yapılır.",
+    aciklama: "On kategorideki 153 uygulama tek tıkla kurulur ve kaldırılır.",
+  },
+  {
+    src: "/ekranlar/carotene-tarama.webp",
+    kucuk: "/ekranlar/kucuk/carotene-tarama.webp",
+    alt: "Carotene: tarama sürerken taranan dosya sayısı, bulgu sayısı ve o an taranan yol",
+    grup: "Uygulama",
+    baslik: "Carotene · tarama",
+    aciklama: "Hızlı, ana klasör ve özel tarama. Taranan dosya sayısı ve bulgular canlı görünür.",
+  },
+  {
+    src: "/ekranlar/carotene.webp",
+    kucuk: "/ekranlar/kucuk/carotene.webp",
+    alt: "Carotene: iki tehdit bulunmuş bir tarama sonucu; karantinaya al, sil ve yok say düğmeleri",
+    grup: "Uygulama",
+    baslik: "Carotene · sonuç",
+    aciklama: "Bulunan her dosya karantinaya alınabilir, silinebilir ya da yok sayılabilir.",
+  },
+  {
+    src: "/ekranlar/carotpot.webp",
+    kucuk: "/ekranlar/kucuk/carotpot.webp",
+    alt: "CarotPot panosu: tuzak durumu, saatlik etkinlik grafiği, tuzak başına olay sayıları ve canlı akış",
+    grup: "Uygulama",
+    baslik: "CarotPot · pano",
+    aciklama: "Pano saatlik etkinliği, tuzak başına olay sayısını ve en etkin saldırganları gösterir.",
+  },
+  {
+    src: "/ekranlar/carotpot-saldirgan.webp",
+    kucuk: "/ekranlar/kucuk/carotpot-saldirgan.webp",
+    alt: "CarotPot saldırgan profili: risk puanı, zaman çizelgesi, denenen kullanıcı adları ve maskeli parolalar",
+    grup: "Uygulama",
+    baslik: "CarotPot · saldırgan profili",
+    aciklama: "Saldırganın risk puanı, zaman çizelgesi, denediği kullanıcı adları ve maskeli parolaları.",
+  },
+  {
+    src: "/ekranlar/carotpot-tuzaklar.webp",
+    kucuk: "/ekranlar/kucuk/carotpot-tuzaklar.webp",
+    alt: "CarotPot tuzaklar sayfası: sekiz tuzak, her biri için port ve cihaz kimliği seçimi",
+    grup: "Uygulama",
+    baslik: "CarotPot · tuzaklar",
+    aciklama: "Sekiz tuzak. Her biri için port ve cihaz kimliği seçilir.",
+  },
+  {
+    src: "/ekranlar/filenor.webp",
+    kucuk: "/ekranlar/kucuk/filenor.webp",
+    alt: "Filenor: dört görsel dosyalık bir liste, hedef biçim seçimi ve dönüştürme seçenekleri",
+    grup: "Uygulama",
+    baslik: "Filenor",
+    aciklama: "Eklenen dosyalar için hedef biçim seçilir ve dönüştürme ayarları yapılır.",
+  },
+  {
+    src: "/ekranlar/former.webp",
+    kucuk: "/ekranlar/kucuk/former.webp",
+    alt: "CarotOS Former: nmap konusunda adım adım canlandırmalı anlatım",
+    grup: "Uygulama",
+    baslik: "CarotOS Former",
+    aciklama: "Güvenlik araçlarını animasyonlarla ve adım adım anlatan rehber.",
+  },
+  {
+    src: "/ekranlar/gsd.webp",
+    kucuk: "/ekranlar/kucuk/gsd.webp",
+    alt: "CarotOS GSD: nmap terimi, örnek komut ve ilgili terimler",
+    grup: "Uygulama",
+    baslik: "CarotOS GSD",
+    aciklama: "161 terimlik, aranabilir, Türkçe ve İngilizce sözlük.",
   },
 ];
 
 const gercekler = [
   { sayi: "10", etiket: "seçilmiş güvenlik aracı" },
-  { sayi: "7", etiket: "özgün uygulama" },
+  { sayi: "12", etiket: "özgün uygulama" },
   { sayi: "~600 MB", etiket: "boşta bellek kullanımı" },
   { sayi: "13", etiket: "Debian sürümü — trixie" },
 ];
@@ -186,39 +250,81 @@ const felsefe = [
 const uygulamalar = [
   {
     baslik: "Güvenlik Paneli",
+    ikon: "/ikonlar/ikon-guvenlik-paneli.webp",
     metin:
-      "Seçili on güvenlik aracı için grafik arayüz. Alan başına işlev açıklaması, canlı komut çıktısı ve yetki gerektiren işlemlerde pkexec ile yetkilendirme.",
+      "nmap, tcpdump ve hydra gibi on güvenlik aracını komut yazmadan kullanabileceğiniz grafik arayüz. Her aracın ne işe yaradığı ekranda anlatılır, sonuçlar canlı olarak izlenir.",
   },
   {
     baslik: "Karşılama Sihirbazı",
+    ikon: "/ikonlar/ikon-karsilama.webp",
     metin:
-      "İlk oturumda başlayan iki dilli tanıtım ve ilk yapılandırma sihirbazı. Tema, dil ve masaüstü arka planı seçimi; ayarlar çıkışta sisteme uygulanır. 1.2 sürümünde sayfa sayısı 11'den 15'e çıkarılmıştır.",
+      "CarotOS'u ilk açtığınızda karşınıza gelen tanıtım rehberi. Linux'un temel kavramlarını, masaüstünü ve CarotOS ile gelen uygulamaları 21 sayfada Türkçe ve İngilizce anlatır. Tema, dil ve masaüstü arka planını da buradan seçebilirsiniz.",
   },
   {
     baslik: "Sistem Sağlığı",
+    ikon: "/ikonlar/ikon-sistem-sagligi.webp",
     metin:
-      "Altı kategoride yirmi denetim içeren sistem durumu aracı. Sağlık puanı hesaplama, on iki sorunda tek tıkla düzeltme ve sonuçların rapor olarak kaydedilmesi.",
+      "Bilgisayarınızın genel durumunu kontrol eden araç. Sistem, güncellemeler, ağ ve güvenlik duvarı, koruma katmanları, hesaplar ve disk gibi alanlarda 23 denetim yapar, sonucu bir sağlık puanı olarak gösterir. Sorunların çoğu tek tıkla düzeltilebilir, ayrıntılı tarama yapılabilir ve sonuçlar rapor olarak kaydedilir.",
   },
   {
     baslik: "USB Denetimi",
+    ikon: "/ikonlar/ikon-usb-denetimi.webp",
     metin:
-      "Bağlanan USB aygıtların otomatik denetimi: autorun.inf, çift uzantı, gizlenmiş uzantı ve klasör görünümlü kısayol tespiti. Dosya içeriği okunmaz; yalnızca ad, uzantı ve konum bilgisi incelenir. 1.2 sürümünden itibaren oturum açılışında arka planda başlatılır.",
+      "USB belleklerde zararlı yazılım belirtilerini arayan araç. Oturum açıldığında arka planda başlar, bir bellek takıldığında autorun.inf dosyalarını, çift uzantılı dosyaları ve klasör gibi görünen kısayolları kontrol eder. Bu kontrol dosyaların içini okumaz. İsterseniz ClamAV ile ayrıntılı bir tarama da başlatabilirsiniz. Bulunan dosyalara dokunulmaz, yalnızca raporlanır.",
   },
   {
     baslik: "CarotOS Poligon",
+    ikon: "/ikonlar/ikon-poligon-ogrenci.webp",
     metin:
-      "Öğrenciler için sızma testi uygulama ortamı. İzole ortamda hydra, nmap, john, sqlmap ve tshark ile görev tabanlı çalışma; ufw ve fail2ban ile savunma uygulamaları.",
+      "Öğrencilerin sızma testini güvenli bir ortamda öğrendiği uygulama. Görevler hydra, nmap, john, sqlmap ve tshark ile çözülür, ufw ve fail2ban ile savunma da denenir. Tüm çalışma kendi bilgisayarınızda kalır.",
   },
   {
     baslik: "CarotOS Poligon Öğretmen",
+    ikon: "/ikonlar/ikon-poligon-ogretmen.webp",
     metin:
-      "Öğretmenler için sınıf yönetim uygulaması. Tek adımda sınıf odası oluşturma, öğrenci ilerlemesinin izlenmesi, görev yönlendirme ve öğrenciye özel ipucu gönderimi.",
+      "Öğretmenlerin sınıfı yönettiği uygulama. Tek tıkla sınıf odası açar, öğrencilerin ilerlemesini izler, görev yönlendirir ve istenen öğrenciye ipucu gönderir.",
   },
   {
     baslik: "CarotOS Mağaza",
+    ikon: "/ikonlar/ikon-magaza.webp",
     yeni: "1.2",
     metin:
-      "Debian depolarındaki 51 uygulamaya yedi kategoride erişim sağlayan grafik yazılım mağazası. Kurulum ve kaldırma işlemleri apt ile yapılır, yetkilendirme pkexec üzerinden alınır. Açık ve koyu tema; Türkçe ve İngilizce arayüz.",
+      "Debian depolarındaki 153 uygulamayı on kategoride listeleyen yazılım mağazası. Uygulamaları tek tıkla kurup kaldırabilirsiniz. Açık ve koyu tema ile Türkçe ve İngilizce arayüz seçeneği vardır.",
+  },
+  {
+    baslik: "Carotene",
+    ikon: "/ikonlar/ikon-carotene.webp",
+    yeni: "1.3",
+    metin:
+      "ClamAV tabanlı antivirüs uygulaması. Hızlı tarama, ana klasör taraması ve seçtiğiniz klasörün taranması mümkündür. Bulunan dosyalar karantinaya alınır, virüs tanımları uygulamadan güncellenir ve tarama geçmişi saklanır. Arka planda çalışan bir hizmet kurmaz, yalnızca siz başlattığınızda tarar.",
+  },
+  {
+    baslik: "CarotPot",
+    ikon: "/ikonlar/ikon-carotpot.webp",
+    yeni: "1.3",
+    metin:
+      "Yerel ağınızdaki şüpheli hareketleri yakalayan tuzak sistemi. SSH, Telnet, FTP ve MySQL gibi sahte hizmetler açar, bunlara bağlanan cihazları kaydeder ve sizi uyarır. Gerçek bir giriş yapılamaz. Tuzak dosyalar açıldığında ya da değiştirildiğinde de uyarır. Sistem açılışında kendiliğinden başlamaz.",
+  },
+  {
+    baslik: "Filenor",
+    ikon: "/ikonlar/ikon-filenor.webp",
+    yeni: "1.3",
+    metin:
+      "Görsel, ses, video, belge, tablo, sunum ve yazı tipi dosyalarını tek arayüzden dönüştüren uygulama. PDF dosyalarını birleştirebilir, bölebilir, döndürebilir, küçültebilir ve kilitleyebilir, taranmış belgelerde metin tanıma (OCR) yapabilirsiniz. Var olan bir dosyanın üzerine hiçbir zaman yazmaz. Komut satırı sürümü de vardır.",
+  },
+  {
+    baslik: "CarotOS Former",
+    ikon: "/ikonlar/ikon-former.webp",
+    yeni: "1.3",
+    metin:
+      "Güvenlik araçlarını animasyonlarla öğreten rehber uygulama. Güvenlik Paneli'ndeki araçların ve CarotPot ile Carotene'in her biri için konu anlatımı, oynatılabilir bir animasyon ve “kendin dene” bölümü bulunur. Türkçe ve İngilizce çalışır.",
+  },
+  {
+    baslik: "CarotOS GSD",
+    ikon: "/ikonlar/ikon-gsd.webp",
+    yeni: "1.3",
+    metin:
+      "Genel Sistem Sözlüğü. Linux, ağ, siber güvenlik, kriptografi ve bilgisayar bilimi alanlarında 161 terim içerir. Terimleri arayabilir, örnek komutları görebilir ve ilgili terimlere geçebilirsiniz. Türkçe ve İngilizce kullanılabilir.",
   },
 ];
 
@@ -229,7 +335,7 @@ const poligonUygulamalari = [
     ekran: "/ekranlar/poligon-ogrenci.webp",
     alt: "CarotOS Poligon öğrenci uygulaması: misafir girişi, kullanıcı oluşturma ve kullanıcı girişi seçenekleri",
     metin:
-      "Misafir modunda hesapsız kullanım veya kullanıcı hesabıyla giriş. Hesapla girişte ilerleme kaydı tutulur. Görevler bireysel olarak ya da sınıf odasına katılarak tamamlanır.",
+      "Hesap açmadan misafir olarak ya da kullanıcı hesabıyla giriş yapabilirsiniz. Hesapla girişte ilerlemeniz kaydedilir. Görevleri tek başınıza ya da bir sınıf odasına katılarak tamamlarsınız.",
   },
   {
     baslik: "CarotOS Poligon Öğretmen",
@@ -237,7 +343,28 @@ const poligonUygulamalari = [
     ekran: "/ekranlar/poligon-ogretmen.webp",
     alt: "CarotOS Poligon öğretmen uygulaması: oda kodu, oda şifresi, öğrenci listesi ve ipucu alanı",
     metin:
-      "Tek tıkla oda kodu ve şifresi oluşturma. Öğrenci ve sınıf görünümleri, soru oluşturma ve kayıtlı sorular ayrı sekmelerde yer alır. İpucu tek bir öğrenciye veya tüm sınıfa iletilebilir.",
+      "Tek tıkla oda kodu ve şifresi oluşturulur. Öğrenci ve sınıf görünümleri, soru oluşturma ve kayıtlı sorular ayrı sekmelerde yer alır. İpucu tek bir öğrenciye ya da tüm sınıfa gönderilebilir.",
+  },
+];
+
+const guvenlikUygulamalari = [
+  {
+    baslik: "CarotPot",
+    ikon: "/ikonlar/ikon-carotpot.webp",
+    ekran: "/ekranlar/carotpot.webp",
+    oran: "1280 / 820",
+    alt: "CarotPot panosu: tuzak açık, saatlik etkinlik grafiği, tuzak başına olay sayıları, en etkin saldırganlar ve canlı akış",
+    metin:
+      "Yerel ağda bu bilgisayarı tarayan ya da giriş deneyen cihazları tespit eder. SSH, web paneli, Telnet, FTP, VNC, RDP, MySQL ve Redis olmak üzere sekiz sahte hizmet açar. Pano son 24 saatin etkinliğini ve en etkin saldırganları gösterir. Saldırgan profilinde denenen kullanıcı adları, maskeli parolalar ve bir risk puanı bulunur. Bir cihazı engellemek için onayınız istenir.",
+  },
+  {
+    baslik: "Carotene",
+    ikon: "/ikonlar/ikon-carotene.webp",
+    ekran: "/ekranlar/carotene.webp",
+    oran: "1040 / 700",
+    alt: "Carotene: iki tehdit bulunmuş bir tarama sonucu, virüs tanımlarının güncelliği ve tarama seçenekleri",
+    metin:
+      "ClamAV ile hızlı tarama, ana klasör taraması ve özel klasör taraması yapar. Tarama sürerken taranan dosya sayısı ve bulgular canlı görünür. Bulunan dosyalar karantinaya alınabilir, silinebilir ya da yok sayılabilir. Virüs tanımlarının güncelliği ana ekranda gösterilir ve uygulamadan güncellenir. Temiz sonuç dosyaların güvenli olduğunu garanti etmez, yalnızca bilinen bir imzaya rastlanmadığını gösterir.",
   },
 ];
 
@@ -258,7 +385,7 @@ const araclar = [
 <Base
   lang="tr"
   title="CarotOS — Siber güvenlik öğrenmek için bir Linux dağıtımı"
-  description="Debian 13 tabanlı, Türkçe arayüzlü, eğitim odaklı Linux dağıtımı. On güvenlik aracı ve yedi özgün uygulama içerir."
+  description="Debian 13 tabanlı, Türkçe arayüzlü, eğitim odaklı Linux dağıtımı. On güvenlik aracı ve on iki özgün uygulama içerir."
 >
   {/* ============================================================
       KAHRAMAN
@@ -270,8 +397,8 @@ const araclar = [
         <h1>Az ve öz.</h1>
         <p class="lede hero__lede">
           CarotOS, siber güvenlik eğitimi için hazırlanmış bir Linux
-          dağıtımıdır. On güvenlik aracı ve bu araçları kullanmak için yazılmış
-          yedi uygulama içerir.
+          dağıtımıdır. On güvenlik aracı ve proje için yazılmış on iki uygulama
+          içerir.
         </p>
 
         <div class="hero__actions">
@@ -352,7 +479,7 @@ const araclar = [
       <p class="eyebrow">Uygulamalar</p>
       <h2 class="sec__title">Uygulamalar ve araçlar</h2>
       <p class="lede sec__lede">
-        Bu proje için yazılan yedi uygulama. Python ve GTK3 ile geliştirildi,
+        Bu proje için yazılan on iki uygulama. Python ve GTK3 ile geliştirildi,
         GPL-3.0 ile dağıtılıyor.
       </p>
 
@@ -360,7 +487,19 @@ const araclar = [
         {
           uygulamalar.map((u, i) => (
             <article class="card app">
-              <span class="app__no">{String(i + 1).padStart(2, "0")}</span>
+              {u.ikon ? (
+                <img
+                  class="app__logo"
+                  src={u.ikon}
+                  alt=""
+                  width="44"
+                  height="44"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : (
+                <span class="app__no">{String(i + 1).padStart(2, "0")}</span>
+              )}
               <div>
                 <h3>
                   {u.baslik}
@@ -399,7 +538,7 @@ const araclar = [
           Öğrenciler ve öğretmenler için izole ve güvenli sızma testi
           uygulama ortamı. Öğretmen sınıf odası oluşturur, öğrenciler
           görevleri kendi bilgisayarlarında gerçek araçlarla tamamlar. Ağa
-          açık bileşen yoktur; tüm işlemler yerel makinede yapılır.
+          açık bileşen yoktur. Tüm işlemler yerel makinede yapılır.
         </p>
         <div class="grid grid--2 poligon__grid">
           {
@@ -411,6 +550,38 @@ const araclar = [
                 </div>
                 <p>{p.metin}</p>
                 <div class="poligon__ekran-cerceve">
+                  <img
+                    src={p.ekran}
+                    alt={p.alt}
+                    class="poligon__ekran"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="poligon">
+        <h3 class="tools__title">CarotPot ve Carotene</h3>
+        <p class="lede poligon__lede">
+          Ağ ve dosya güvenliği için iki uygulama. CarotPot, yerel ağdaki tarama
+          ve giriş denemelerini sahte hizmetlerle yakalar. Carotene ise
+          dosyaları ClamAV ile tarar. İkisi de siz başlatmadıkça arka planda
+          çalışmaz.
+        </p>
+        <div class="grid grid--2 poligon__grid">
+          {
+            guvenlikUygulamalari.map((p) => (
+              <article class="card poligon__card">
+                <div class="poligon__head">
+                  <img src={p.ikon} alt="" class="poligon__ikon" width="40" height="40" />
+                  <h4>{p.baslik}</h4>
+                </div>
+                <p>{p.metin}</p>
+                <div class="poligon__ekran-cerceve" style={`aspect-ratio: ${p.oran}`}>
                   <img
                     src={p.ekran}
                     alt={p.alt}

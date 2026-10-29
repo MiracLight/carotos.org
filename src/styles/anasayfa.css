@@ -195,7 +195,7 @@
   clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
 }
 
-/* 1.2 ile gelen uygulamalar için sürüm etiketi */
+/* 1.2 ve sonrasında gelen uygulamalar için sürüm etiketi */
 .app__tag {
   display: inline-block;
   margin-left: 0.55rem;
@@ -208,6 +208,14 @@
   border: 1px solid rgba(24, 95, 165, 0.35);
   padding: 0.15rem 0.55rem;
   border-radius: 999px;
+}
+
+/* Uygulama logosu: kartın solunda, numaranın yerine */
+.app__logo {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
 }
 
 /* Tek sayıda kart olduğunda son kart iki sütuna yayılır */

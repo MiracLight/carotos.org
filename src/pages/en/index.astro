@@ -11,14 +11,14 @@ import "../../styles/anasayfa.css";
    Keep it in sync with src/pages/index.astro
    ------------------------------------------------------------------ */
 const release = {
-  tag: "1.2",
+  tag: "1.3",
   codename: "Eggshell",
-  date: "17 October 2026",
-  file: "carotos-1.2-amd64.iso",
-  size: "2.26 GB",
-  sha256: "2c97e3d2e1c888b7dc5e2df4f92833e9f0983bd6278b5edeb205ce8e62a73a69",
-  url: "https://download.carotos.org/carotos-1.2-amd64.iso",
-  shaUrl: "https://download.carotos.org/carotos-1.2-amd64.iso.sha256",
+  date: "29 October 2026",
+  file: "carotos-1.3-amd64.iso",
+  size: "2.53 GB",
+  sha256: "b25b128bb901aec00343fcf79230e9b5f18b49d14cfafade25542d7d8dc3236e",
+  url: "https://download.carotos.org/carotos-1.3-amd64.iso",
+  shaUrl: "https://download.carotos.org/carotos-1.3-amd64.iso.sha256",
 };
 
 /* Debian 13 "trixie" amd64 installation guide, Table 3.2 —
@@ -37,15 +37,15 @@ const slides = [
     alt: "CarotOS desktop with the XFCE panel and a dock",
     grup: "System",
     baslik: "Desktop",
-    aciklama: "XFCE 4, two-panel layout and CarotOS wallpaper.",
+    aciklama: "XFCE 4 with a two-panel layout and the CarotOS wallpaper.",
   },
   {
     src: "/ekranlar/karsilama-1.webp",
     kucuk: "/ekranlar/kucuk/karsilama-1.webp",
     alt: "Welcome Wizard opening page",
     grup: "Welcome Wizard",
-    baslik: "CarotOS 1.0 “Eggshell”",
-    aciklama: "Introduction shown on first login, for first-time Linux users.",
+    baslik: "CarotOS 1.3 “Eggshell”",
+    aciklama: "The introduction shown on first login, written for people new to Linux.",
   },
   {
     src: "/ekranlar/karsilama-2.webp",
@@ -53,15 +53,15 @@ const slides = [
     alt: "Welcome Wizard appearance and language page",
     grup: "Welcome Wizard",
     baslik: "Appearance and language",
-    aciklama: "Light or dark theme and system language selection; settings are applied on exit.",
+    aciklama: "Choose a light or dark theme and the system language. Settings are applied on exit.",
   },
   {
     src: "/ekranlar/karsilama-duvar.webp",
     kucuk: "/ekranlar/kucuk/karsilama-duvar.webp",
     alt: "Welcome Wizard desktop background page with three options",
-    grup: "Welcome Wizard · 1.2",
+    grup: "Welcome Wizard",
     baslik: "Desktop background",
-    aciklama: "Selection among three CarotOS backgrounds; the chosen background is applied to the desktop on exit.",
+    aciklama: "Choose one of three CarotOS backgrounds. It is applied to the desktop on exit.",
   },
   {
     src: "/ekranlar/karsilama-3.webp",
@@ -69,7 +69,7 @@ const slides = [
     alt: "Welcome Wizard page on Linux and distributions",
     grup: "Welcome Wizard",
     baslik: "Linux and distributions",
-    aciklama: "Definition and base of CarotOS: Debian 13, Xfce and APT.",
+    aciklama: "What CarotOS is and what it is built on: Debian 13, Xfce and APT.",
   },
   {
     src: "/ekranlar/karsilama-4.webp",
@@ -77,7 +77,7 @@ const slides = [
     alt: "Welcome Wizard page on the desktop layout",
     grup: "Welcome Wizard",
     baslik: "The desktop",
-    aciklama: "Use of the two-panel desktop layout.",
+    aciklama: "How to use the two-panel desktop layout.",
   },
   {
     src: "/ekranlar/karsilama-5.webp",
@@ -85,7 +85,7 @@ const slides = [
     alt: "Welcome Wizard page on the file system",
     grup: "Welcome Wizard",
     baslik: "The file system",
-    aciklama: "Linux file system: no drive letters; all directories are in a single tree.",
+    aciklama: "Linux has no drive letters. All directories sit in a single tree.",
   },
   {
     src: "/ekranlar/karsilama-6.webp",
@@ -93,7 +93,7 @@ const slides = [
     alt: "Welcome Wizard page on the home folder",
     grup: "Welcome Wizard",
     baslik: "Your home folder",
-    aciklama: "Home folder, the location of personal files.",
+    aciklama: "The home folder, where your personal files are kept.",
   },
   {
     src: "/ekranlar/karsilama-7.webp",
@@ -101,7 +101,7 @@ const slides = [
     alt: "Welcome Wizard page on installing software",
     grup: "Welcome Wizard",
     baslik: "Installing software",
-    aciklama: "Central, signed software installation from repositories; no .exe downloads.",
+    aciklama: "Software is installed from trusted repositories, not by downloading .exe files.",
   },
   {
     src: "/ekranlar/karsilama-8.webp",
@@ -109,7 +109,7 @@ const slides = [
     alt: "Welcome Wizard page introducing the Security Panel",
     grup: "Welcome Wizard",
     baslik: "CarotOS Security Panel",
-    aciklama: "Use of the security tools without command-line knowledge.",
+    aciklama: "Use the security tools without typing commands.",
   },
   {
     src: "/ekranlar/karsilama-9.webp",
@@ -117,7 +117,7 @@ const slides = [
     alt: "Welcome Wizard listing the installed security tools",
     grup: "Welcome Wizard",
     baslik: "Installed security tools",
-    aciklama: "Ten installed security tools, all available from the panel.",
+    aciklama: "All ten security tools that come with CarotOS are available from the panel.",
   },
   {
     src: "/ekranlar/guvenlik-paneli.webp",
@@ -125,37 +125,101 @@ const slides = [
     alt: "CarotOS Security Panel showing the tool list and the nmap form",
     grup: "Application",
     baslik: "Security Panel",
-    aciklama: "Per-field function descriptions and live command output.",
+    aciklama: "Each tool is explained on screen, with its command output next to it.",
   },
   {
     src: "/ekranlar/sistem-sagligi.webp",
     kucuk: "/ekranlar/kucuk/sistem-sagligi.webp",
-    alt: "CarotOS System Health showing an 88 percent score and a check list",
+    alt: "CarotOS System Health showing the health score, check categories and findings that need attention",
     grup: "Application",
     baslik: "System Health",
-    aciklama: "Twenty checks in six categories, health score and one-click fixes.",
+    aciklama: "The system is checked with 23 tests and the result is shown as a health score.",
   },
   {
     src: "/ekranlar/usb-denetimi.webp",
     kucuk: "/ekranlar/kucuk/usb-denetimi.webp",
-    alt: "CarotOS USB Inspector showing four suspicious findings on a flash drive, ordered by severity",
+    alt: "CarotOS USB Inspector showing five suspicious findings on a flash drive, ordered by severity",
     grup: "Application",
     baslik: "USB Inspector",
-    aciklama: "Findings listed by severity, with the reason and file path for each.",
+    aciklama: "Findings are sorted by severity, each with the reason and the file path.",
   },
   {
     src: "/ekranlar/magaza.webp",
     kucuk: "/ekranlar/kucuk/magaza.webp",
-    alt: "CarotOS Store with categories on the left and application cards with Install buttons",
-    grup: "Application · 1.2",
+    alt: "CarotOS Store with categories on the left and featured application cards",
+    grup: "Application",
     baslik: "CarotOS Store",
-    aciklama: "51 applications in seven categories; installation and removal use apt.",
+    aciklama: "The 153 applications in ten categories are installed and removed with one click.",
+  },
+  {
+    src: "/ekranlar/carotene-tarama.webp",
+    kucuk: "/ekranlar/kucuk/carotene-tarama.webp",
+    alt: "Carotene during a scan, showing the number of files scanned, findings and the current path",
+    grup: "Application",
+    baslik: "Carotene · scan",
+    aciklama: "Quick, home folder and custom scans. The scanned file count and findings update live.",
+  },
+  {
+    src: "/ekranlar/carotene.webp",
+    kucuk: "/ekranlar/kucuk/carotene.webp",
+    alt: "Carotene scan result with two threats found and Quarantine, Delete and Ignore buttons",
+    grup: "Application",
+    baslik: "Carotene · result",
+    aciklama: "Every file found can be quarantined, deleted or ignored.",
+  },
+  {
+    src: "/ekranlar/carotpot.webp",
+    kucuk: "/ekranlar/kucuk/carotpot.webp",
+    alt: "CarotPot dashboard with trap status, an hourly activity chart, event counts per trap and a live feed",
+    grup: "Application",
+    baslik: "CarotPot · dashboard",
+    aciklama: "The dashboard shows hourly activity, events per trap, the most active attackers and a live feed.",
+  },
+  {
+    src: "/ekranlar/carotpot-saldirgan.webp",
+    kucuk: "/ekranlar/kucuk/carotpot-saldirgan.webp",
+    alt: "CarotPot attacker profile with a risk score, timeline, attempted usernames and masked passwords",
+    grup: "Application",
+    baslik: "CarotPot · attacker profile",
+    aciklama: "The attacker's risk score, timeline, attempted usernames and masked passwords.",
+  },
+  {
+    src: "/ekranlar/carotpot-tuzaklar.webp",
+    kucuk: "/ekranlar/kucuk/carotpot-tuzaklar.webp",
+    alt: "CarotPot traps page with eight traps, each with a port and device identity",
+    grup: "Application",
+    baslik: "CarotPot · traps",
+    aciklama: "Eight traps. A port and a device identity can be chosen for each.",
+  },
+  {
+    src: "/ekranlar/filenor.webp",
+    kucuk: "/ekranlar/kucuk/filenor.webp",
+    alt: "Filenor with a list of four image files, target format choices and conversion options",
+    grup: "Application",
+    baslik: "Filenor",
+    aciklama: "Choose a target format for the added files and set the conversion options.",
+  },
+  {
+    src: "/ekranlar/former.webp",
+    kucuk: "/ekranlar/kucuk/former.webp",
+    alt: "CarotOS Former showing a step-by-step animated walkthrough of nmap",
+    grup: "Application",
+    baslik: "CarotOS Former",
+    aciklama: "A step-by-step guide to the security tools, with animations.",
+  },
+  {
+    src: "/ekranlar/gsd.webp",
+    kucuk: "/ekranlar/kucuk/gsd.webp",
+    alt: "CarotOS GSD showing the nmap entry with an example command and related terms",
+    grup: "Application",
+    baslik: "CarotOS GSD",
+    aciklama: "A searchable Turkish and English dictionary of 161 terms.",
   },
 ];
 
 const facts = [
   { num: "10", label: "hand-picked security tools" },
-  { num: "7", label: "original applications" },
+  { num: "12", label: "original applications" },
   { num: "~600 MB", label: "memory use when idle" },
   { num: "13", label: "Debian release — trixie" },
 ];
@@ -182,32 +246,69 @@ const philosophy = [
 const apps = [
   {
     title: "Security Panel",
-    text: "Graphical interface for the ten selected security tools. Per-field function descriptions, live command output, and pkexec authorization for privileged operations.",
+    icon: "/ikonlar/ikon-guvenlik-paneli.webp",
+    text: "A graphical interface for ten security tools such as nmap, tcpdump and hydra, so they can be used without typing commands. Each tool is explained on screen and the results appear live.",
   },
   {
     title: "Welcome Wizard",
-    text: "Bilingual introduction and first-run configuration wizard. Selection of theme, language and desktop background; settings are applied to the system on exit. Version 1.2 increases the page count from eleven to fifteen.",
+    icon: "/ikonlar/ikon-karsilama.webp",
+    text: "The introduction guide that opens the first time you start CarotOS. Its 21 pages explain basic Linux concepts, the desktop and the applications that come with CarotOS, in Turkish and English. You can also choose the theme, language and desktop background there.",
   },
   {
     title: "System Health",
-    text: "System status tool with twenty checks across six categories. Health score calculation, one-click fixes for twelve issues, and results saved as a report.",
+    icon: "/ikonlar/ikon-sistem-sagligi.webp",
+    text: "A tool that checks the overall condition of your computer. It runs 23 checks covering the system, updates, network and firewall, protection layers, accounts and storage, and shows the result as a health score. Most problems can be fixed with one click, detailed scans can be run, and the results can be saved as a report.",
   },
   {
     title: "USB Inspector",
-    text: "Automatic inspection of connected USB devices: detection of autorun.inf, double extensions, hidden extensions and shortcuts disguised as folders. File contents are not read; only name, extension and location are examined. Starts in the background at login since version 1.2.",
+    icon: "/ikonlar/ikon-usb-denetimi.webp",
+    text: "A tool that looks for signs of malware on USB drives. It starts in the background at login and, when a drive is plugged in, checks for autorun.inf files, double extensions and shortcuts disguised as folders. This check does not read the contents of files. You can also start a detailed ClamAV scan. Anything it finds is only reported and never touched.",
   },
   {
     title: "CarotOS Poligon",
-    text: "Penetration-testing practice environment for students. Task-based work with hydra, nmap, john, sqlmap and tshark in an isolated environment, plus defense exercises with ufw and fail2ban.",
+    icon: "/ikonlar/ikon-poligon-ogrenci.webp",
+    text: "An application where students learn penetration testing in a safe environment. Tasks are solved with hydra, nmap, john, sqlmap and tshark, and defence can be practised with ufw and fail2ban. Everything stays on your own computer.",
   },
   {
     title: "CarotOS Poligon Teacher",
-    text: "Classroom management application for teachers. One-step room creation, student progress monitoring, task assignment, and individual hints.",
+    icon: "/ikonlar/ikon-poligon-ogretmen.webp",
+    text: "The classroom management application for teachers. It opens a class room with one click, follows each student's progress, assigns tasks and sends a hint to a chosen student.",
   },
   {
     title: "CarotOS Store",
+    icon: "/ikonlar/ikon-magaza.webp",
     yeni: "1.2",
-    text: "Graphical software store providing access to 51 Debian repository applications in seven categories. Installation and removal use apt; authorization is requested through pkexec. Light and dark themes; Turkish and English interface.",
+    text: "A software store that lists the 153 applications from the Debian repositories in ten categories. You can install and remove applications with one click. It has light and dark themes and a Turkish and English interface.",
+  },
+  {
+    title: "Carotene",
+    icon: "/ikonlar/ikon-carotene.webp",
+    yeni: "1.3",
+    text: "An antivirus application based on ClamAV. It offers a quick scan, a home folder scan and a scan of any folder you choose. Infected files are moved to quarantine, virus definitions are updated from the application, and past scans are kept in a history. It installs no background service and scans only when you start it.",
+  },
+  {
+    title: "CarotPot",
+    icon: "/ikonlar/ikon-carotpot.webp",
+    yeni: "1.3",
+    text: "A trap system that catches suspicious activity on your local network. It opens fake services such as SSH, Telnet, FTP and MySQL, records the devices that connect to them and warns you. Nobody can actually log in. It also warns when a decoy file is opened or changed, and it does not start by itself at boot.",
+  },
+  {
+    title: "Filenor",
+    icon: "/ikonlar/ikon-filenor.webp",
+    yeni: "1.3",
+    text: "A converter for image, audio, video, document, spreadsheet, presentation and font files, all from one interface. It can merge, split, rotate, shrink and lock PDF files and run text recognition (OCR) on scanned documents. It never overwrites an existing file, and a command-line version is available.",
+  },
+  {
+    title: "CarotOS Former",
+    icon: "/ikonlar/ikon-former.webp",
+    yeni: "1.3",
+    text: "A guide that teaches security tools with animations. Each tool in the Security Panel, as well as CarotPot and Carotene, has an explanation, a playable animation and a “try it yourself” section. It works in Turkish and English.",
+  },
+  {
+    title: "CarotOS GSD",
+    icon: "/ikonlar/ikon-gsd.webp",
+    yeni: "1.3",
+    text: "The General System Dictionary, with 161 terms on Linux, networking, cyber security, cryptography and computer science. You can search the terms, see example commands and jump to related terms. It is available in Turkish and English.",
   },
 ];
 
@@ -217,14 +318,33 @@ const poligonApps = [
     icon: "/ikonlar/ikon-poligon-ogrenci.webp",
     screenshot: "/ekranlar/poligon-ogrenci.webp",
     alt: "CarotOS Poligon student application: guest, create account and sign-in options",
-    text: "Guest mode without an account, or sign-in with a user account. Progress is recorded for signed-in accounts. Tasks are completed individually or by joining a classroom room.",
+    text: "You can use it as a guest without an account, or sign in with a user account. Progress is saved for signed-in accounts. Tasks are completed alone or by joining a classroom room.",
   },
   {
     title: "CarotOS Poligon Teacher",
     icon: "/ikonlar/ikon-poligon-ogretmen.webp",
     screenshot: "/ekranlar/poligon-ogretmen.webp",
     alt: "CarotOS Poligon teacher application: room code, room password, student list and hint field",
-    text: "One-click generation of room code and password. Student and class views, question authoring and saved questions are organized in separate tabs. Hints can be sent to a single student or to the whole class.",
+    text: "A room code and password are generated with one click. Student and class views, question authoring and saved questions are in separate tabs. A hint can be sent to one student or to the whole class.",
+  },
+];
+
+const securityApps = [
+  {
+    title: "CarotPot",
+    icon: "/ikonlar/ikon-carotpot.webp",
+    screenshot: "/ekranlar/carotpot.webp",
+    ratio: "1280 / 820",
+    alt: "CarotPot dashboard: traps on, an hourly activity chart, events per trap, the most active attackers and a live feed",
+    text: "Detects devices on the local network that scan this computer or try to log in to it. It opens eight fake services: SSH, web panel, Telnet, FTP, VNC, RDP, MySQL and Redis. The dashboard shows the activity of the last 24 hours and the most active attackers. An attacker profile lists the usernames tried, masked passwords and a risk score. Blocking a device asks for your confirmation.",
+  },
+  {
+    title: "Carotene",
+    icon: "/ikonlar/ikon-carotene.webp",
+    screenshot: "/ekranlar/carotene.webp",
+    ratio: "1040 / 700",
+    alt: "Carotene: a scan result with two threats found, the age of the virus definitions and the scan options",
+    text: "Runs quick, home folder and custom folder scans with ClamAV. While a scan runs, the number of files scanned and the findings update live. Files that are found can be quarantined, deleted or ignored. The age of the virus definitions is shown on the main screen, and they are updated from the application. A clean result does not guarantee that files are safe, it only shows that no known signature was found.",
   },
 ];
 
@@ -245,7 +365,7 @@ const tools = [
 <Base
   lang="en"
   title="CarotOS — A Linux distribution for learning cybersecurity"
-  description="A Debian 13 based, education-focused Linux distribution with ten security tools and seven original applications."
+  description="A Debian 13 based, education-focused Linux distribution with ten security tools and twelve original applications."
 >
   {/* ============================================================
       HERO
@@ -257,8 +377,8 @@ const tools = [
         <h1>Few, explained well.</h1>
         <p class="lede hero__lede">
           CarotOS is a Linux distribution built for cybersecurity education. It
-          ships ten security tools and seven applications written to operate
-          them.
+          ships ten security tools and twelve applications written for the
+          project.
         </p>
 
         <div class="hero__actions">
@@ -338,7 +458,7 @@ const tools = [
       <p class="eyebrow">Applications</p>
       <h2 class="sec__title">Applications and tools</h2>
       <p class="lede sec__lede">
-        Seven applications written for this project in Python and GTK3,
+        Twelve applications written for this project in Python and GTK3,
         distributed under the GPL-3.0.
       </p>
 
@@ -346,7 +466,19 @@ const tools = [
         {
           apps.map((a, i) => (
             <article class="card app">
-              <span class="app__no">{String(i + 1).padStart(2, "0")}</span>
+              {a.icon ? (
+                <img
+                  class="app__logo"
+                  src={a.icon}
+                  alt=""
+                  width="44"
+                  height="44"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : (
+                <span class="app__no">{String(i + 1).padStart(2, "0")}</span>
+              )}
               <div>
                 <h3>
                   {a.title}
@@ -385,7 +517,7 @@ const tools = [
           An isolated and secure penetration-testing environment for students
           and teachers. The teacher creates a classroom room; students complete
           tasks with real tools on their own machines. There are no
-          network-exposed components; all operations run on the local machine.
+          network-exposed components. All operations run on the local machine.
         </p>
         <div class="grid grid--2 poligon__grid">
           {
@@ -397,6 +529,38 @@ const tools = [
                 </div>
                 <p>{p.text}</p>
                 <div class="poligon__ekran-cerceve">
+                  <img
+                    src={p.screenshot}
+                    alt={p.alt}
+                    class="poligon__ekran"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="poligon">
+        <h3 class="tools__title">CarotPot and Carotene</h3>
+        <p class="lede poligon__lede">
+          Two applications for network and file security. CarotPot catches
+          scans and login attempts on the local network with fake services.
+          Carotene scans files with ClamAV. Neither runs in the background
+          unless you start it.
+        </p>
+        <div class="grid grid--2 poligon__grid">
+          {
+            securityApps.map((p) => (
+              <article class="card poligon__card">
+                <div class="poligon__head">
+                  <img src={p.icon} alt="" class="poligon__ikon" width="40" height="40" />
+                  <h4>{p.title}</h4>
+                </div>
+                <p>{p.text}</p>
+                <div class="poligon__ekran-cerceve" style={`aspect-ratio: ${p.ratio}`}>
                   <img
                     src={p.screenshot}
                     alt={p.alt}

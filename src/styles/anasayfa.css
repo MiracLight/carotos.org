@@ -270,10 +270,10 @@
 }
 
 .poligon__ekran-cerceve {
-  aspect-ratio: 7 / 10;
+  aspect-ratio: 5 / 4;
   border-radius: var(--r-sm);
   border: 1px solid rgba(24, 95, 165, 0.18);
-  background: #0b2e52;
+  background: #14161d;
   overflow: hidden;
   display: flex;
   align-items: center;

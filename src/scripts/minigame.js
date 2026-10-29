@@ -552,15 +552,16 @@ export function createGame(canvas, opt) {
     g.fx.push({ kind: "text", x, y, vx: 0, vy: -46, life: 0.9, max: 0.9, str, world: false });
   }
 
-  // Çözünürlük: varsayılan en çok 1,5x; cihaz yavaşsa kare süresine göre kademeli düşer.
-  const QUALITY = [1, 0.75, 0.55];
-  let qi = 0;
+  // Çözünürlük cihazın gerçek piksel oranında tutulur (en çok 2x). Yavaş cihazlarda
+  // çözünürlük düşürülmez (bulanıklık olmasın); bunun yerine sahne daha seyrek çizilir (bkz. frame).
   function fit() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5) * QUALITY[qi];
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const cw = canvas.clientWidth || W;
     canvas.width = Math.round(cw * dpr);
     canvas.height = Math.round(cw * (H / W) * dpr);
     scale = canvas.width / W;
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
   }
 
   // 1. bölüm her zaman Kumsal. Sonrakilerde art arda aynı düzen gelmez; yalnızca açılmış düzenler çıkar
@@ -2869,11 +2870,13 @@ export function createGame(canvas, opt) {
     const w = Math.ceil(ctx.measureText(str).width);
     const lw = w + pad * 2;
     const lh = Math.ceil(size * 1.5) + pad * 2;
+    // Metin, ekran çözünürlüğünün 1,5 katında çizilir; küçültülerek basıldığında kenarlar net kalır
+    const ss = scale * 1.5;
     const oc = document.createElement("canvas");
-    oc.width = Math.ceil(lw * scale);
-    oc.height = Math.ceil(lh * scale);
+    oc.width = Math.ceil(lw * ss);
+    oc.height = Math.ceil(lh * ss);
     const c = oc.getContext("2d");
-    c.scale(scale, scale);
+    c.scale(ss, ss);
     c.font = FONT(weight, size);
     c.textAlign = "left";
     c.lineJoin = "round";
@@ -2888,8 +2891,8 @@ export function createGame(canvas, opt) {
     return { c: oc, ox, oy: -(size * 1.1) - pad, w: lw, h: lh };
   }
   function text(str, x, y, size, align = "center", weight = 700) {
-    // Büyük, animasyonla değişen boyutlar için ölçek 6 px'lik kademelere yuvarlanır
-    const qs = size < 30 ? size : Math.round(size / 6) * 6;
+    // Büyük, animasyonla değişen boyutlar için ölçek 4 px'lik kademelere yuvarlanır
+    const qs = size < 30 ? size : Math.round(size / 4) * 4;
     const k = size / qs;
     const ready = !document.fonts || document.fonts.status === "loaded" ? 1 : 0;
     const key = `${weight}|${qs}|${align}|${scale.toFixed(2)}|${ready}|${str}`;
@@ -3091,29 +3094,54 @@ export function createGame(canvas, opt) {
     }
   }
 
-  let ema = 16.7;
+  // Yavaş cihazlar: çözünürlüğü düşürmek (bulanıklık) yerine sahne daha seyrek çizilir.
+  // Oyun mantığı her karede çalışır, hareket aynı hızda kalır; yalnızca çizim 2. ya da 3. karede yapılır.
+  let every = 1; // 1: her karede, 2: her 2. karede, 3: her 3. karede çiz
+  let ema = 16.7; // kare aralığının (ms) üstel ortalaması
   let emaN = 0;
-  let skip = 0;
+  let cost = 4; // bir sahne çiziminin süresinin (ms) üstel ortalaması
+  let calm = 0; // art arda hafif geçen çizim sayısı
+  let hold = 300; // sıklığı artırmayı denemeden önce beklenecek kare (başarısız denemede katlanır)
+  let tick = 0;
   function frame(ts) {
     if (!alive) return;
     const raw = ts - (last || ts);
     const dt = Math.min(0.05, raw / 1000);
     last = ts;
-    // Oyun sürerken kare süresi uzun kalıyorsa çözünürlüğü düşür (yavaş cihazlar)
-    if (g.phase === "run" && raw > 0 && raw < 250) {
+    const running = g.phase === "run" && raw > 0 && raw < 250;
+    if (running) {
       ema += (raw - ema) * 0.08;
-      if (++emaN > 50 && ema > 26 && qi < QUALITY.length - 1) {
-        qi += 1;
-        fit();
+      emaN++;
+      hold--;
+      if (emaN > 40 && ema > (every === 1 ? 24 : 38) && every < 3) {
+        // 60 kare/sn tutturulamıyor: çizimi seyrelt, bir sonraki denemeyi geciktir
+        every += 1;
+        hold = Math.min(4800, hold > 0 ? hold * 2 : 600);
         ema = 16.7;
         emaN = 0;
+        calm = 0;
       }
     }
     if (g.world) update(dt);
     // Bilgi paneli açıkken (başlangıç, bölüm sonu, bitiş) sahne neredeyse durgundur:
     // her karede değil, her 3. karede çiz
     const idle = !g.world || g.phase === "done" || g.phase === "over";
-    if (!idle || ++skip % 3 === 0) render();
+    const step = idle ? Math.max(3, every) : every;
+    if (++tick % step === 0) {
+      const t0 = performance.now();
+      render();
+      if (running && !idle) {
+        cost += (performance.now() - t0 - cost) * 0.1;
+        // çizim ucuz kalıyorsa (ve bekleme süresi dolduysa) bir kademe geri dön
+        calm = cost < 7 ? calm + 1 : 0;
+        if (every > 1 && calm > 120 && hold <= 0) {
+          every -= 1;
+          ema = 16.7;
+          emaN = 0;
+          calm = 0;
+        }
+      }
+    }
     raf = requestAnimationFrame(frame);
   }
 

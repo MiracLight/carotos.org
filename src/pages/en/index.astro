@@ -360,7 +360,11 @@ const apps = [
     title: "Filenor",
     icon: "/ikonlar/ikon-filenor.webp",
     yeni: "1.3",
-    text: "A converter for image, audio, video, document, spreadsheet, presentation and font files, all from one interface. It can merge, split, rotate, shrink and lock PDF files and run text recognition (OCR) on scanned documents. It never overwrites an existing file, and a command-line version is available.",
+    text: "A converter for image, audio, video, document, spreadsheet, presentation and font files, all from one interface. It can merge, split, rotate, shrink and lock PDF files and run text recognition (OCR) on scanned documents. It never overwrites an existing file, and a command-line version is available. It comes preinstalled on CarotOS and can also be downloaded for Debian, Ubuntu and Windows.",
+    links: [
+      { label: "Download Filenor (.deb and Windows .exe)", url: "https://github.com/MiracLight/filenor/releases/latest" },
+      { label: "Source code", url: "https://github.com/MiracLight/filenor" },
+    ],
   },
   {
     title: "CarotOS Former",
@@ -549,6 +553,13 @@ const tools = [
                   {a.yeni && <span class="app__tag">{a.yeni}</span>}
                 </h3>
                 <p>{a.text}</p>
+                {a.links && (
+                  <p class="app__links">
+                    {a.links.map((l) => (
+                      <a href={l.url} rel="noopener">{l.label}</a>
+                    ))}
+                  </p>
+                )}
               </div>
             </article>
           ))

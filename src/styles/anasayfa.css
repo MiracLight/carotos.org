@@ -768,3 +768,6 @@
     word-break: break-all;
   }
 }
+.app__links { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .95em; }
+.app__links a { color: var(--deep); text-decoration: underline; text-underline-offset: 3px; }
+.app__links a:hover { text-decoration-thickness: 2px; }

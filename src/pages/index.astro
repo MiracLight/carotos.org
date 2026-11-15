@@ -374,7 +374,11 @@ const uygulamalar = [
     ikon: "/ikonlar/ikon-filenor.webp",
     yeni: "1.3",
     metin:
-      "Görsel, ses, video, belge, tablo, sunum ve yazı tipi dosyalarını tek arayüzden dönüştüren uygulama. PDF dosyalarını birleştirebilir, bölebilir, döndürebilir, küçültebilir ve kilitleyebilir, taranmış belgelerde metin tanıma (OCR) yapabilirsiniz. Var olan bir dosyanın üzerine hiçbir zaman yazmaz. Komut satırı sürümü de vardır.",
+      "Görsel, ses, video, belge, tablo, sunum ve yazı tipi dosyalarını tek arayüzden dönüştüren uygulama. PDF dosyalarını birleştirebilir, bölebilir, döndürebilir, küçültebilir ve kilitleyebilir, taranmış belgelerde metin tanıma (OCR) yapabilirsiniz. Var olan bir dosyanın üzerine hiçbir zaman yazmaz. Komut satırı sürümü de vardır. CarotOS'ta hazır gelir; Debian, Ubuntu ve Windows için ayrıca indirilebilir.",
+    baglantilar: [
+      { etiket: "Filenor indir (.deb ve Windows .exe)", url: "https://github.com/MiracLight/filenor/releases/latest" },
+      { etiket: "Kaynak kodu", url: "https://github.com/MiracLight/filenor" },
+    ],
   },
   {
     baslik: "CarotOS Former",
@@ -570,6 +574,13 @@ const araclar = [
                   {u.yeni && <span class="app__tag">{u.yeni}</span>}
                 </h3>
                 <p>{u.metin}</p>
+                {u.baglantilar && (
+                  <p class="app__links">
+                    {u.baglantilar.map((b) => (
+                      <a href={b.url} rel="noopener">{b.etiket}</a>
+                    ))}
+                  </p>
+                )}
               </div>
             </article>
           ))

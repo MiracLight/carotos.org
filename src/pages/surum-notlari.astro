@@ -12,6 +12,33 @@ import Wave from "../components/Wave.astro";
    ------------------------------------------------------------------ */
 const surumler = [
   {
+    etiket: "1.4",
+    kodAdi: "Eggshell",
+    tarih: "15 Kasım 2026",
+    tarihISO: "2026-11-15",
+    ozet:
+      "Poligon'a CTF yarışması ve savunmacı görünümü, Komut Açıklayıcı, etik koruma, ISO imza doğrulama ve isteğe bağlı Carot Sleek masaüstü teması geldi. Karşılama 29 sayfaya, Mağaza 220 uygulamaya, GSD 197 terime çıktı; açılış ekranı yenilendi ve tüm uygulamalar güvenlik açısından gözden geçirildi.",
+    degisiklikler: [
+      { tur: "eklendi", metin: "Poligon CTF yarışması: öğretmen paneli (başlat, bitir, canlı skor, CSV), 12 görevlik paket, öğrenciye özel bayraklar, dinamik puan, ilk çözüm bonusu, ipucu cezası ve skoru dondurma" },
+      { tur: "eklendi", metin: "Poligon savunmacı görünümü: sahte servislere gelen saldırıların olay günlüğü, bulgu analizi ve ufw ile fail2ban durumu" },
+      { tur: "eklendi", metin: "Komut Açıklayıcı: bir komutu çalıştırmadan önce parçalarını sade dille anlatır; terminalde Alt+E ile açılır, Güvenlik Paneli'nde her aracın yanında “Açıkla” düğmesi vardır" },
+      { tur: "eklendi", metin: "Etik koruma: Güvenlik Paneli taramadan önce hedef için onay ister ve onaylanan ağları hatırlar; Ayarlar'dan sıfırlanabilir" },
+      { tur: "eklendi", metin: "Karşılama Sihirbazı: Ağ ve gizlilik, Güvenlik duvarı, Disk şifreleme ve swap, Terminal, Komut Açıklayıcı, Etik ve sorumluluk, Windows ile birlikte ve İndirdiğini doğrula sayfaları; konular seçilebilir; sayfa sayısı 29" },
+      { tur: "eklendi", metin: "ISO doğrulama: SHA256SUMS ve ayrık imza ile indirilen dosyanın gerçekten CarotOS'tan geldiği doğrulanabilir; Karşılama ve Former'da adım adım anlatım" },
+      { tur: "eklendi", metin: "Former: CTF yarışması, Komut Açıklayıcı, Etik, Disk şifreleme, ISO doğrulama ve savunmacı görünümü konuları; konu sayısı 20" },
+      { tur: "eklendi", metin: "Carot Sleek: isteğe bağlı modern masaüstü teması, yuvarlak köşeler, gölge ve bulanıklık, alt dock ve kenardan kayarak çıkan CarotOS Yan Paneli; Karşılama'dan açılır, kapatınca önceki görünüm geri gelir" },
+      { tur: "eklendi", metin: "Sistem Sağlığı: ağ keşfi (mDNS) tek düğmeyle kapatılıp açılabilir; DHCP ve mDNS gibi beklenen masaüstü dinleyicileri “Dinlenen portlar” puanını düşürmez" },
+      { tur: "eklendi", metin: "Ağ ve gizlilik: isteğe bağlı sahte MAC anahtarı (varsayılan kapalı); apt.carotos.org imzalı deposu için anahtar halkası paketi ISO'da gelir" },
+      { tur: "eklendi", metin: "Yedi dilde arayüz çevirisi: Almanca, Fransızca, İspanyolca, Portekizce, Rusça, Japonca ve Çince" },
+      { tur: "degisti", metin: "Açılış: CarotOS Plymouth teması, GRUB 5/30 saniye menü süresi ve os-prober, sessiz açılış, Intel ekranlarda i915.fastboot" },
+      { tur: "degisti", metin: "Mağaza kataloğu 153'ten 220 uygulamaya çıktı ve çevirisi yapıldı; yetki gerektiren adımlar ayrı bir yardımcıyla çalışır, indirme aşamasında güvenli iptal edilebilir" },
+      { tur: "degisti", metin: "CarotOS GSD 197 terime, Sistem Sağlığı 24 denetime çıktı; uygulama simgeleri yenilendi" },
+      { tur: "duzeltildi", metin: "Kapsamlı güvenlik denetimi: Poligon (öğrenciye özel anahtar, bağlantı sınırları, doğrulama), Mağaza, CarotPot, Güvenlik Paneli, Carotene, USB Denetimi, Filenor, Sistem Sağlığı ve kurulum betikleri tek tek gözden geçirilip düzeltildi" },
+      { tur: "duzeltildi", metin: "fastfetch çıktısı uzun donanım adında satır sarıp hizayı bozuyordu; değerler kısaltıldı, dar terminalde logosuz açılır" },
+      { tur: "duzeltildi", metin: "Former ve diğer uygulamalarda sol menü kendi kaydırma alanına alındı; düşük çözünürlüklü ekranlarda alt kısım kesilmez" },
+    ],
+  },
+  {
     etiket: "1.3",
     kodAdi: "Eggshell",
     tarih: "29 Ekim 2026",

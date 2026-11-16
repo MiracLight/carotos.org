@@ -335,7 +335,7 @@ const apps = [
     title: "CarotOS Recovery",
     icon: "/ikonlar/ikon-kurtarma.webp",
     yeni: "1.4",
-    text: "A tool that keeps copies of your system at chosen moments (recovery points), so you can go back to that moment when an update or a wrong setting breaks the system. It is the same idea as Windows System Restore. You can take a point by hand with “Create a point now” before a big change, and a point is also opened automatically right before apt installs or updates packages (you can turn this off in settings). Each point holds /etc, /root and the installed package list; thanks to hard links, only changed files take up space. Points can be restored or deleted, and the number of points kept, the minimum time between automatic points and the minimum free space are set in settings. This is not a backup tool: it does not touch or protect your personal files (/home), and the points live on the same disk.",
+    text: "A tool that takes you back to an earlier moment when an update or a wrong setting breaks the system, much like Windows System Restore. You can take a recovery point by hand, and one is also taken automatically when apt installs or updates packages. Each point holds /etc, /root and the installed package list, and only changed files take up space. It does not touch your personal files, so it is not a replacement for backups.",
   },
   {
     title: "USB Inspector",

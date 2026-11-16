@@ -200,6 +200,14 @@ const slaytlar = [
     aciklama: "Sistem durumu 24 denetimle kontrol edilir ve bir sağlık puanı olarak gösterilir.",
   },
   {
+    src: "/ekranlar/kurtarma.webp",
+    kucuk: "/ekranlar/kucuk/kurtarma.webp",
+    alt: "CarotOS Kurtarma: kurtarma noktaları listesi, nokta oluşturma, geri yükleme ve silme düğmeleri",
+    grup: "Uygulama",
+    baslik: "Kurtarma",
+    aciklama: "Sistemin kurtarma noktalarını alır; bir güncelleme sistemi bozarsa o ana döner.",
+  },
+  {
     src: "/ekranlar/usb-denetimi.webp",
     kucuk: "/ekranlar/kucuk/usb-denetimi.webp",
     alt: "CarotOS USB Denetimi: bir bellekte beş şüpheli bulgu, önem derecesine göre listelenmiş",
@@ -283,7 +291,7 @@ const slaytlar = [
 
 const gercekler = [
   { sayi: "10", etiket: "seçilmiş güvenlik aracı" },
-  { sayi: "12", etiket: "özgün uygulama" },
+  { sayi: "13", etiket: "özgün uygulama" },
   { sayi: "~600 MB", etiket: "boşta bellek kullanımı" },
   { sayi: "13", etiket: "Debian sürümü — trixie" },
 ];
@@ -322,13 +330,20 @@ const uygulamalar = [
     baslik: "Karşılama Sihirbazı",
     ikon: "/ikonlar/ikon-karsilama.webp",
     metin:
-      "CarotOS'u ilk açtığınızda karşınıza gelen tanıtım rehberi. Linux'un temel kavramlarını, masaüstünü ve CarotOS ile gelen uygulamaları 29 sayfada Türkçe ve İngilizce anlatır. Tema, dil ve masaüstü arka planını da buradan seçebilirsiniz. Konuları siz seçersiniz: ağ ve gizlilik, güvenlik duvarı, disk şifreleme, Windows ile birlikte kurulum, terminal, Komut Açıklayıcı, etik ve indirdiğiniz ISO'nun doğrulanması ayrı kartlardır. İsterseniz Görünüm sayfasından modern masaüstü teması (Carot Sleek) açılır ve kapatınca geri alınır.",
+      "CarotOS'u ilk açtığınızda karşınıza gelen tanıtım rehberi. Linux'un temel kavramlarını, masaüstünü ve CarotOS ile gelen uygulamaları 30 sayfada Türkçe ve İngilizce anlatır. Tema, dil ve masaüstü arka planını da buradan seçebilirsiniz. Konuları siz seçersiniz: ağ ve gizlilik, güvenlik duvarı, disk şifreleme, Windows ile birlikte kurulum, terminal, Komut Açıklayıcı, etik ve indirdiğiniz ISO'nun doğrulanması ayrı kartlardır. İsterseniz Görünüm sayfasından modern masaüstü teması (Carot Sleek) açılır ve kapatınca geri alınır.",
   },
   {
     baslik: "Sistem Sağlığı",
     ikon: "/ikonlar/ikon-sistem-sagligi.webp",
     metin:
-      "Bilgisayarınızın genel durumunu kontrol eden araç. Sistem, güncellemeler, ağ ve güvenlik duvarı, koruma katmanları, hesaplar ve disk gibi alanlarda 23 denetim yapar, sonucu bir sağlık puanı olarak gösterir. DHCP ve mDNS gibi beklenen masaüstü dinleyicileri puanı düşürmez; ağ keşfini (mDNS) buradan açıp kapatabilirsiniz. Sorunların çoğu tek tıkla düzeltilebilir, ayrıntılı tarama yapılabilir ve sonuçlar rapor olarak kaydedilir.",
+      "Bilgisayarınızın genel durumunu kontrol eden araç. Sistem, güncellemeler, ağ ve güvenlik duvarı, koruma katmanları, hesaplar ve disk gibi alanlarda 24 denetim yapar, sonucu bir sağlık puanı olarak gösterir. DHCP ve mDNS gibi beklenen masaüstü dinleyicileri puanı düşürmez; ağ keşfini (mDNS) buradan açıp kapatabilirsiniz. Sorunların çoğu tek tıkla düzeltilebilir, ayrıntılı tarama yapılabilir ve sonuçlar rapor olarak kaydedilir.",
+  },
+  {
+    baslik: "CarotOS Kurtarma",
+    ikon: "/ikonlar/ikon-kurtarma.webp",
+    yeni: "1.4",
+    metin:
+      "Sistemin belirli anlardaki kopyalarını (kurtarma noktalarını) saklayan ve bir güncelleme ya da yanlış ayar sistemi bozduğunda o ana dönmenizi sağlayan araç. Windows'un Sistem Geri Yükleme'siyle aynı fikirdir. Büyük bir değişiklikten önce “Şimdi nokta oluştur” ile elle nokta alabilirsiniz; apt ile paket kurup güncellerken de değişiklikten hemen önce kendiliğinden bir nokta açılır (ayarlardan kapatılabilir). Her nokta /etc, /root ve kurulu paket listesini içerir; sabit bağlar sayesinde yalnızca değişen dosyalar yer kaplar. Noktalar geri yüklenebilir ya da silinebilir; kaç nokta saklanacağı, otomatik noktalar arası süre ve gereken boş alan ayarlardan değiştirilir. Bu bir yedekleme aracı değildir: kişisel dosyalarınıza (/home) dokunmaz ve onları korumaz, noktalar da aynı diskte durur.",
   },
   {
     baslik: "USB Denetimi",
@@ -453,7 +468,7 @@ const araclar = [
 <Base
   lang="tr"
   title="CarotOS — Siber güvenlik öğrenmek için bir Linux dağıtımı"
-  description="Debian 13 tabanlı, Türkçe arayüzlü, eğitim odaklı Linux dağıtımı. On güvenlik aracı ve on iki özgün uygulama içerir."
+  description="Debian 13 tabanlı, Türkçe arayüzlü, eğitim odaklı Linux dağıtımı. On güvenlik aracı ve on üç özgün uygulama içerir."
 >
   {/* ============================================================
       KAHRAMAN
@@ -465,7 +480,7 @@ const araclar = [
         <h1>Az ve öz.</h1>
         <p class="lede hero__lede">
           CarotOS, siber güvenlik eğitimi için hazırlanmış bir Linux
-          dağıtımıdır. On güvenlik aracı ve proje için yazılmış on iki uygulama
+          dağıtımıdır. On güvenlik aracı ve proje için yazılmış on üç uygulama
           içerir.
         </p>
 
@@ -547,7 +562,7 @@ const araclar = [
       <p class="eyebrow">Uygulamalar</p>
       <h2 class="sec__title">Uygulamalar ve araçlar</h2>
       <p class="lede sec__lede">
-        Bu proje için yazılan on iki uygulama. Python ve GTK3 ile geliştirildi,
+        Bu proje için yazılan on üç uygulama. Python ve GTK3 ile geliştirildi,
         GPL-3.0 ile dağıtılıyor.
       </p>
 

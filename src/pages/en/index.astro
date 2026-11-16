@@ -200,6 +200,14 @@ const slides = [
     aciklama: "The system is checked with 24 tests and the result is shown as a health score.",
   },
   {
+    src: "/ekranlar/kurtarma.webp",
+    kucuk: "/ekranlar/kucuk/kurtarma.webp",
+    alt: "CarotOS Recovery showing the list of recovery points with buttons to create, restore and delete them",
+    grup: "Application",
+    baslik: "Recovery",
+    aciklama: "Takes recovery points of the system and goes back to one when an update breaks it.",
+  },
+  {
     src: "/ekranlar/usb-denetimi.webp",
     kucuk: "/ekranlar/kucuk/usb-denetimi.webp",
     alt: "CarotOS USB Inspector showing five suspicious findings on a flash drive, ordered by severity",
@@ -283,7 +291,7 @@ const slides = [
 
 const facts = [
   { num: "10", label: "hand-picked security tools" },
-  { num: "12", label: "original applications" },
+  { num: "13", label: "original applications" },
   { num: "~600 MB", label: "memory use when idle" },
   { num: "13", label: "Debian release — trixie" },
 ];
@@ -316,12 +324,18 @@ const apps = [
   {
     title: "Welcome Wizard",
     icon: "/ikonlar/ikon-karsilama.webp",
-    text: "The introduction guide that opens the first time you start CarotOS. Its 29 pages explain basic Linux concepts, the desktop and the applications that come with CarotOS, in Turkish and English. You can also choose the theme, language and desktop background there. You pick the topics yourself: network and privacy, the firewall, disk encryption, installing alongside Windows, the terminal, the Command Explainer, ethics and verifying the ISO you downloaded each have their own card. On the Appearance page you can optionally turn on a modern desktop theme (Carot Sleek); switching it off restores your previous look.",
+    text: "The introduction guide that opens the first time you start CarotOS. Its 30 pages explain basic Linux concepts, the desktop and the applications that come with CarotOS, in Turkish and English. You can also choose the theme, language and desktop background there. You pick the topics yourself: network and privacy, the firewall, disk encryption, installing alongside Windows, the terminal, the Command Explainer, ethics and verifying the ISO you downloaded each have their own card. On the Appearance page you can optionally turn on a modern desktop theme (Carot Sleek); switching it off restores your previous look.",
   },
   {
     title: "System Health",
     icon: "/ikonlar/ikon-sistem-sagligi.webp",
     text: "A tool that checks the overall condition of your computer. It runs 24 checks covering the system, updates, network and firewall, protection layers, accounts and storage, and shows the result as a health score. Expected desktop listeners such as DHCP and mDNS do not lower the score, and you can switch network discovery (mDNS) on or off from here. Most problems can be fixed with one click, detailed scans can be run, and the results can be saved as a report.",
+  },
+  {
+    title: "CarotOS Recovery",
+    icon: "/ikonlar/ikon-kurtarma.webp",
+    yeni: "1.4",
+    text: "A tool that keeps copies of your system at chosen moments (recovery points), so you can go back to that moment when an update or a wrong setting breaks the system. It is the same idea as Windows System Restore. You can take a point by hand with “Create a point now” before a big change, and a point is also opened automatically right before apt installs or updates packages (you can turn this off in settings). Each point holds /etc, /root and the installed package list; thanks to hard links, only changed files take up space. Points can be restored or deleted, and the number of points kept, the minimum time between automatic points and the minimum free space are set in settings. This is not a backup tool: it does not touch or protect your personal files (/home), and the points live on the same disk.",
   },
   {
     title: "USB Inspector",
@@ -433,7 +447,7 @@ const tools = [
 <Base
   lang="en"
   title="CarotOS — A Linux distribution for learning cybersecurity"
-  description="A Debian 13 based, education-focused Linux distribution with ten security tools and twelve original applications."
+  description="A Debian 13 based, education-focused Linux distribution with ten security tools and thirteen original applications."
 >
   {/* ============================================================
       HERO
@@ -445,7 +459,7 @@ const tools = [
         <h1>Few, explained well.</h1>
         <p class="lede hero__lede">
           CarotOS is a Linux distribution built for cybersecurity education. It
-          ships ten security tools and twelve applications written for the
+          ships ten security tools and thirteen applications written for the
           project.
         </p>
 
@@ -526,7 +540,7 @@ const tools = [
       <p class="eyebrow">Applications</p>
       <h2 class="sec__title">Applications and tools</h2>
       <p class="lede sec__lede">
-        Twelve applications written for this project in Python and GTK3,
+        Thirteen applications written for this project in Python and GTK3,
         distributed under the GPL-3.0.
       </p>
 

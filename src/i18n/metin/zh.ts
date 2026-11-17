@@ -33,6 +33,7 @@ const zh: Metin = {
       { key: "github", label: "GitHub", sub: "源代码、发布、问题追踪" },
       { key: "youtube", label: "YouTube", sub: "演示视频" },
       { key: "instagram", label: "Instagram", sub: "公告" },
+      { key: "tiktok", label: "TikTok", sub: "短视频" },
       { key: "reddit", label: "Reddit", sub: "社区与讨论" },
       { key: "mail", label: "电子邮件", sub: "一般咨询" },
     ],

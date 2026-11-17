@@ -33,6 +33,7 @@ const ja: Metin = {
       { key: "github", label: "GitHub", sub: "ソース、リリース、課題トラッカー" },
       { key: "youtube", label: "YouTube", sub: "解説動画" },
       { key: "instagram", label: "Instagram", sub: "お知らせ" },
+      { key: "tiktok", label: "TikTok", sub: "ショート動画" },
       { key: "reddit", label: "Reddit", sub: "コミュニティと議論" },
       { key: "mail", label: "メール", sub: "一般のお問い合わせ" },
     ],

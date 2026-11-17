@@ -33,6 +33,7 @@ const tr: Metin = {
       { key: "github", label: "GitHub", sub: "Kaynak kod, sürümler, hata kaydı" },
       { key: "youtube", label: "YouTube", sub: "Anlatım videoları" },
       { key: "instagram", label: "Instagram", sub: "Duyurular" },
+      { key: "tiktok", label: "TikTok", sub: "Kısa videolar" },
       { key: "reddit", label: "Reddit", sub: "Topluluk ve tartışma" },
       { key: "mail", label: "E-posta", sub: "Genel iletişim" },
     ],

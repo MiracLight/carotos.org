@@ -33,6 +33,7 @@ const pt: Metin = {
       { key: "github", label: "GitHub", sub: "Código-fonte, versões e rastreador de problemas" },
       { key: "youtube", label: "YouTube", sub: "Vídeos de demonstração" },
       { key: "instagram", label: "Instagram", sub: "Anúncios" },
+      { key: "tiktok", label: "TikTok", sub: "Vídeos curtos" },
       { key: "reddit", label: "Reddit", sub: "Comunidade e discussão" },
       { key: "mail", label: "E-mail", sub: "Contato geral" },
     ],

@@ -31,6 +31,7 @@ const en = {
       { key: "github", label: "GitHub", sub: "Source, releases, issue tracker" },
       { key: "youtube", label: "YouTube", sub: "Walkthrough videos" },
       { key: "instagram", label: "Instagram", sub: "Announcements" },
+      { key: "tiktok", label: "TikTok", sub: "Short videos" },
       { key: "reddit", label: "Reddit", sub: "Community and discussion" },
       { key: "mail", label: "Email", sub: "General enquiries" },
     ],

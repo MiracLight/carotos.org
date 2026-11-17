@@ -6,76 +6,16 @@
  * özniteliği olan bir öğeye kısa sürede 5 kez tıklanınca açılır.
  * Oyun kodu ancak o zaman indirilir (dinamik import).
  */
+import type { Dil } from "../i18n/diller";
+import { metin } from "../i18n/metin";
+
 interface Props {
-  lang: "tr" | "en";
+  lang: Dil;
 }
 
 const { lang } = Astro.props;
 
-const t = {
-  tr: {
-    consoleMsg: "Burada saklı bir şey var. Ana sayfadaki büyük kaplumbağaya art arda 5 kez bas.",
-    label: "Gizli oyun: Denize ulaş",
-    close: "Kapat",
-    mute: "Sesi aç/kapat",
-    level: "Bölüm",
-    hint: "← → veya kaydır",
-    reached: "Denize ulaşıldı!",
-    variants: ["Kumsal", "Kayalık", "Sürüntü", "Gelgit Havuzu", "Mercan Kıyısı", "Gece Kumsalı", "Fırtına Kıyısı", "Atık Kıyısı", "Kumul Rüzgârı"],
-    pu: { shield: "Kalkan", shieldBreak: "Kalkan korudu!", magnet: "Mıknatıs", surf: "Dalga ritmi", plastic: "Plastik: ağırlaştın" },
-    egg: { l1: "Kabuğu kır", l2: "ve denize ulaşmasını sağla", tap: "Dokun / tıkla!" },
-    introTitle: "Yumurtadaki yavru denize gitmek istiyor.",
-    introText: "Önce yumurtanın kabuğunu kır. Sonra yavru kaplumbağayı engellerden kaçırarak denize ulaştır. Parlayan baloncukları topla, kırmızı kesikli halkalı plastik atıklardan kaçın. Her bölüm bir öncekinden daha uzun ve hızlı.",
-    start: "Başla",
-    doneTitle: (n: number) => `Bölüm ${n} tamamlandı`,
-    doneLead: "Denize ulaşıldı!",
-    tipLabel: "Güvenlik ipucu",
-    parts: "Toplanan kabuk parçası",
-    next: "Sonraki bölüm",
-    overTitle: "Yavru denize ulaşamadı",
-    overText: "Bütün canlar tükendi. Aynı bölümü yeniden deneyebilirsin.",
-    retry: "Tekrar dene",
-    best: "En iyi",
-    stars: {
-      aria: "3 yıldızdan {n} tanesi",
-      next2: "2. yıldız için: en fazla 1 çarpma",
-      next3: "3. yıldız için: hiç çarpmadan, parçaların yarısını topla",
-      record: "Yeni rekor!",
-      total: "Toplam yıldız",
-    },
-  },
-  en: {
-    consoleMsg: "There is something hidden here. Press the big turtle on the home page 5 times in a row.",
-    label: "Hidden game: Reach the sea",
-    close: "Close",
-    mute: "Toggle sound",
-    level: "Level",
-    hint: "← → or swipe",
-    reached: "You reached the sea!",
-    variants: ["Shoreline", "Rocky Cove", "Driftwood Beach", "Tide Pools", "Coral Shore", "Moonlit Beach", "Storm Coast", "Litter Shore", "Windy Dunes"],
-    pu: { shield: "Shield", shieldBreak: "Shield saved you!", magnet: "Magnet", surf: "Wave rush", plastic: "Plastic: weighed down" },
-    egg: { l1: "Crack the shell", l2: "and help it reach the sea", tap: "Tap / click!" },
-    introTitle: "A hatchling wants to reach the sea.",
-    introText: "First crack the eggshell. Then guide the hatchling past the obstacles to the sea. Collect the glowing bubbles and avoid plastic waste in the red dashed ring. Each level is longer and faster than the last.",
-    start: "Start",
-    doneTitle: (n: number) => `Level ${n} complete`,
-    doneLead: "You reached the sea!",
-    tipLabel: "Security tip",
-    parts: "Shell pieces collected",
-    next: "Next level",
-    overTitle: "The hatchling didn't make it",
-    overText: "All lives are gone. You can try the same level again.",
-    retry: "Try again",
-    best: "Best",
-    stars: {
-      aria: "{n} of 3 stars",
-      next2: "Next star: at most 1 hit",
-      next3: "Next star: no hits and collect half the shell pieces",
-      record: "New best!",
-      total: "Total stars",
-    },
-  },
-}[lang];
+const t = metin(lang).minigame;
 
 // Fonksiyonlar istemciye JSON ile gidemez; metinleri düz veriye çeviriyoruz.
 const veri = {
@@ -87,7 +27,7 @@ const veri = {
   egg: t.egg,
   lang,
   consoleMsg: t.consoleMsg,
-  doneTitle: lang === "tr" ? "Bölüm {n} tamamlandı" : "Level {n} complete",
+  doneTitle: t.doneTitle,
   best: t.best,
   parts: t.parts,
   stars: t.stars,

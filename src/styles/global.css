@@ -114,6 +114,49 @@ h3 {
   letter-spacing: -0.012em;
 }
 
+/* Japonca ve Çince: boşluk olmadığı için tarayıcı kelimeyi ortadan böler ("しっ/かり").
+   keep-all + auto-phrase satırı anlamlı öbek sınırlarında kırar; negatif harf aralığı
+   CJK karakterlerini sıkıştırdığı için kaldırılır, satır aralığı biraz açılır. */
+:lang(ja),
+:lang(zh) {
+  word-break: keep-all;
+  line-break: strict;
+}
+
+:lang(ja) h1,
+:lang(ja) h2,
+:lang(ja) h3,
+:lang(zh) h1,
+:lang(zh) h2,
+:lang(zh) h3 {
+  letter-spacing: 0;
+  line-height: 1.22;
+  text-wrap: balance;
+  word-break: auto-phrase;
+}
+
+:lang(ja) p,
+:lang(zh) p,
+:lang(ja) li,
+:lang(zh) li {
+  line-height: 1.8;
+}
+
+/* Rusça ve Almanca'da uzun kelimeler başlığı taşırmasın: yalnızca kelime kutuya
+   sığmıyorsa kırılır (anywhere her satırı bölüyordu), dile uygun tire koyulur. */
+:lang(ru) h1,
+:lang(ru) h2,
+:lang(de) h1,
+:lang(de) h2 {
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+/* Rusça ana başlık daha uzun: yazı boyutu biraz küçülür */
+:lang(ru) h1 {
+  font-size: clamp(2.4rem, 6.4vw, 4.6rem);
+}
+
 p {
   margin: 0 0 1.1em;
 }

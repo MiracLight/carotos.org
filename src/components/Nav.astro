@@ -1,53 +1,34 @@
 ---
+import { DILLER, DIL_BILGI, bolumYolu, sayfaYolu, yoldanSayfa, type Dil } from "../i18n/diller";
+import { metin } from "../i18n/metin";
+
 interface Props {
-  lang: "tr" | "en";
+  lang: Dil;
 }
 
 const { lang } = Astro.props;
+const t = metin(lang).nav;
 
-const t = {
-  tr: {
-    home: "/",
-    links: [
-      { href: "/#felsefe", label: "Yaklaşım" },
-      { href: "/#icinde", label: "Uygulamalar" },
-      { href: "/surum-notlari", label: "Sürüm notları" },
-    ],
-    download: "İndir",
-    switchLabel: "EN",
-    switchTitle: "Switch to English",
-  },
-  en: {
-    home: "/en",
-    links: [
-      { href: "/en#philosophy", label: "Approach" },
-      { href: "/en#inside", label: "Applications" },
-      { href: "/en/changelog", label: "Changelog" },
-    ],
-    download: "Download",
-    switchLabel: "TR",
-    switchTitle: "Türkçe sürüme geç",
-  },
-}[lang];
+const links = [
+  { href: bolumYolu(lang, "felsefe"), label: t.approach },
+  { href: bolumYolu(lang, "icinde"), label: t.apps },
+  { href: sayfaYolu(lang, "notlar"), label: t.changelog },
+];
 
-const downloadAnchor = lang === "tr" ? "/#indir" : "/en#download";
-
-/* Dil değiştirici, bulunulan sayfanın karşılığına gider.
-   Yeni sayfa eklendiğinde buraya da bir satır eklenmeli. */
-const esler: Record<string, string> = {
-  "/": "/en",
-  "/en": "/",
-  "/surum-notlari": "/en/changelog",
-  "/en/changelog": "/surum-notlari",
-};
-
-const buYol = Astro.url.pathname.replace(/\/+$/, "") || "/";
-const switchTo = esler[buYol] ?? (lang === "tr" ? "/en" : "/");
+/* Dil seçici, bulunulan sayfanın diğer dildeki karşılığına gider
+   (ana sayfa <-> ana sayfa, sürüm notları <-> sürüm notları). */
+const sayfa = yoldanSayfa(Astro.url.pathname);
+const diller = DILLER.map((d) => ({
+  kod: d,
+  ad: DIL_BILGI[d].ad,
+  href: sayfaYolu(d, sayfa),
+  hreflang: DIL_BILGI[d].hreflang,
+}));
 ---
 
 <header class="nav">
   <div class="wrap nav__inner">
-    <a class="nav__brand" href={t.home}>
+    <a class="nav__brand" href={DIL_BILGI[lang].ana}>
       <img
         src="/carotos-logo-yatay.svg"
         alt="CarotOS"
@@ -56,18 +37,60 @@ const switchTo = esler[buYol] ?? (lang === "tr" ? "/en" : "/");
       />
     </a>
 
-    <nav class="nav__links" aria-label={lang === "tr" ? "Ana menü" : "Main menu"}>
-      {t.links.map((l) => <a href={l.href}>{l.label}</a>)}
+    <nav class="nav__links" aria-label={t.menuAria}>
+      {links.map((l) => <a href={l.href}>{l.label}</a>)}
     </nav>
 
     <div class="nav__end">
-      <a class="btn btn--solid nav__cta" href={downloadAnchor}>{t.download}</a>
-      <a class="nav__lang" href={switchTo} title={t.switchTitle} hreflang={lang === "tr" ? "en" : "tr"}>
-        {t.switchLabel}
-      </a>
+      <a class="btn btn--solid nav__cta" href={bolumYolu(lang, "indir")}>{t.download}</a>
+      <details class="nav__lang" data-dil-secici>
+        <summary aria-label={t.langLabel} title={t.langLabel}>
+          <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+            <path
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm-9 9h18M12 3c2.5 2.4 3.8 5.4 3.8 9s-1.3 6.6-3.8 9c-2.5-2.4-3.8-5.4-3.8-9S9.5 5.4 12 3Z"
+            />
+          </svg>
+          <span>{lang.toUpperCase()}</span>
+        </summary>
+        <ul class="nav__lang-menu" role="list">
+          {
+            diller.map((d) => (
+              <li>
+                <a
+                  href={d.href}
+                  hreflang={d.hreflang}
+                  lang={d.hreflang}
+                  aria-current={d.kod === lang ? "true" : undefined}
+                >
+                  <span class="nav__lang-kod">{d.kod.toUpperCase()}</span>
+                  {d.ad}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </details>
     </div>
   </div>
 </header>
+
+<script>
+  // Dil menüsü: dışarı tıklayınca ya da Esc ile kapanır (JS yoksa <details> yine çalışır)
+  document.querySelectorAll<HTMLDetailsElement>("[data-dil-secici]").forEach((d) => {
+    document.addEventListener("click", (e) => {
+      if (d.open && !d.contains(e.target as Node)) d.open = false;
+    });
+    d.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && d.open) {
+        d.open = false;
+        d.querySelector("summary")?.focus();
+      }
+    });
+  });
+</script>
 
 <style>
   .nav {
@@ -130,23 +153,81 @@ const switchTo = esler[buYol] ?? (lang === "tr" ? "/en" : "/");
   }
 
   .nav__lang {
+    position: relative;
+  }
+
+  .nav__lang summary {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    list-style: none;
+    cursor: pointer;
     font-family: var(--font-mono);
     font-size: 0.82rem;
     font-weight: 500;
     letter-spacing: 0.08em;
     color: var(--ink-soft);
-    text-decoration: none;
     padding: 0.4rem 0.6rem;
     border: 1.5px solid rgba(24, 95, 165, 0.25);
     border-radius: var(--r-sm);
     transition:
       border-color 0.18s ease,
       color 0.18s ease;
+    user-select: none;
   }
 
-  .nav__lang:hover {
+  .nav__lang summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .nav__lang summary:hover,
+  .nav__lang[open] summary {
     border-color: var(--current);
     color: var(--deep);
+  }
+
+  .nav__lang-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.4rem);
+    min-width: 11.5rem;
+    margin: 0;
+    padding: 0.35rem;
+    list-style: none;
+    background: #fff;
+    border: 1px solid rgba(24, 95, 165, 0.18);
+    border-radius: var(--r-sm);
+    box-shadow: 0 12px 32px rgba(12, 44, 80, 0.16);
+  }
+
+  .nav__lang-menu a {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.45rem 0.6rem;
+    border-radius: calc(var(--r-sm) - 2px);
+    color: var(--ink);
+    font-size: 0.92rem;
+    text-decoration: none;
+  }
+
+  .nav__lang-menu a:hover,
+  .nav__lang-menu a:focus-visible {
+    background: rgba(24, 95, 165, 0.08);
+    color: var(--deep);
+  }
+
+  .nav__lang-menu a[aria-current="true"] {
+    font-weight: 600;
+    color: var(--deep);
+  }
+
+  .nav__lang-kod {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+    min-width: 1.6rem;
   }
 
   /* Dar ekranda ara bağlantılar gizlenir; logo, indir ve dil kalır.

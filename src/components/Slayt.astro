@@ -11,6 +11,9 @@
  * Görseller kırpılmaz. Sahne 3:2 oranında sabit, görsel içine
  * object-fit: contain ile sığar; oran farkı kenarlarda çerçeve olur.
  */
+import type { Dil } from "../i18n/diller";
+import { metin } from "../i18n/metin";
+
 interface Slayt {
   src: string;
   kucuk: string;
@@ -22,31 +25,12 @@ interface Slayt {
 
 interface Props {
   slaytlar: Slayt[];
-  lang: "tr" | "en";
+  lang: Dil;
 }
 
 const { slaytlar, lang } = Astro.props;
 
-const m = {
-  tr: {
-    onceki: "Önceki görsel",
-    sonraki: "Sonraki görsel",
-    git: "Şu görsele git",
-    bolge: "Ekran görüntüleri",
-    buyut: "Tam boy görüntüle",
-    kapat: "Kapat",
-    ipucu: "Büyütmek için tıkla",
-  },
-  en: {
-    onceki: "Previous image",
-    sonraki: "Next image",
-    git: "Go to image",
-    bolge: "Screenshots",
-    buyut: "View full size",
-    kapat: "Close",
-    ipucu: "Click to enlarge",
-  },
-}[lang];
+const m = metin(lang).slayt;
 ---
 
 <div class="shot" data-shot>

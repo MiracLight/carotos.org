@@ -2,21 +2,27 @@
 import "../styles/global.css";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
+import { DILLER, DIL_BILGI, sayfaYolu, yoldanSayfa, type Dil } from "../i18n/diller";
+import { metin } from "../i18n/metin";
 
 interface Props {
-  lang: "tr" | "en";
+  lang: Dil;
   title: string;
   description: string;
 }
 
 const { lang, title, description } = Astro.props;
 
-const kanonik = new URL(Astro.url.pathname, Astro.site ?? "https://carotos.org");
-const sosyalGorsel = new URL("/sosyal-kart.png", Astro.site ?? "https://carotos.org");
+const kok = Astro.site ?? "https://carotos.org";
+const kanonik = new URL(Astro.url.pathname, kok);
+const sosyalGorsel = new URL("/sosyal-kart.png", kok);
+// Bu sayfanın diğer dillerdeki karşılıkları (hreflang)
+const sayfa = yoldanSayfa(Astro.url.pathname);
+const karsiliklar = DILLER.map((d) => ({ dil: d, href: new URL(sayfaYolu(d, sayfa), kok).href }));
 ---
 
 <!doctype html>
-<html lang={lang}>
+<html lang={DIL_BILGI[lang].hreflang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -41,7 +47,8 @@ const sosyalGorsel = new URL("/sosyal-kart.png", Astro.site ?? "https://carotos.
     <meta property="og:type" content="website" />
     <meta property="og:url" content={kanonik} />
     <meta property="og:site_name" content="CarotOS" />
-    <meta property="og:locale" content={lang === "tr" ? "tr_TR" : "en_US"} />
+    <meta property="og:locale" content={DIL_BILGI[lang].og} />
+    {DILLER.filter((d) => d !== lang).map((d) => <meta property="og:locale:alternate" content={DIL_BILGI[d].og} />)}
     <meta property="og:image" content={sosyalGorsel} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -52,9 +59,8 @@ const sosyalGorsel = new URL("/sosyal-kart.png", Astro.site ?? "https://carotos.
     <meta name="twitter:image" content={sosyalGorsel} />
 
     <!-- Diller arası ilişki -->
-    <link rel="alternate" hreflang="tr" href="https://carotos.org/" />
-    <link rel="alternate" hreflang="en" href="https://carotos.org/en" />
-    <link rel="alternate" hreflang="x-default" href="https://carotos.org/" />
+    {karsiliklar.map((k) => <link rel="alternate" hreflang={DIL_BILGI[k.dil].hreflang} href={k.href} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL(sayfaYolu("tr", sayfa), kok).href} />
 
     <!-- Yazı tipleri -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -67,7 +73,7 @@ const sosyalGorsel = new URL("/sosyal-kart.png", Astro.site ?? "https://carotos.
 
   <body>
     <a class="skip" href="#main">
-      {lang === "tr" ? "İçeriğe geç" : "Skip to content"}
+      {metin(lang).skip}
     </a>
 
     <Nav lang={lang} />

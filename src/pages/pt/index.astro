@@ -1,0 +1,874 @@
+---
+import Base from "../../layouts/Base.astro";
+import Wave from "../../components/Wave.astro";
+import Turtle from "../../components/Turtle.astro";
+import Slayt from "../../components/Slayt.astro";
+import Minigame from "../../components/Minigame.astro";
+import "../../styles/anasayfa.css";
+
+/* ------------------------------------------------------------------
+   Release info — when a new version ships, update ONLY this block.
+   Keep it in sync with src/pages/index.astro
+   ------------------------------------------------------------------ */
+const release = {
+  tag: "1.4",
+  codename: "Eggshell",
+  date: "15 de novembro de 2026",
+  file: "carotos-1.4-amd64.iso",
+  size: "2.68 GB",
+  sha256: "baa3ca5f4bd021f720e8f6e5494c51a37877bf783166747952d417dda404f447",
+  url: "https://download.carotos.org/carotos-1.4-amd64.iso",
+  shaUrl: "https://download.carotos.org/carotos-1.4-amd64.iso.sha256",
+};
+
+/* Debian 13 "trixie" amd64 installation guide, Table 3.2 —
+   recommended minimums for a desktop install. */
+const requirements = [
+  { name: "Processador", value: "64 bits (amd64), 1 GHz" },
+  { name: "Memória", value: "mínimo de 1 GB, recomendado 2 GB" },
+  { name: "Disco", value: "10 GB" },
+  { name: "Inicialização", value: "BIOS ou UEFI" },
+];
+
+const slides = [
+  {
+    src: "/ekranlar/masaustu.webp",
+    kucuk: "/ekranlar/kucuk/masaustu.webp",
+    alt: "Área de trabalho do CarotOS com o painel XFCE e um dock",
+    grup: "Sistema",
+    baslik: "Área de trabalho",
+    aciklama: "XFCE 4 com layout de dois painéis e o papel de parede do CarotOS.",
+  },
+  {
+    src: "/ekranlar/karsilama-1.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-1.webp",
+    alt: "Página inicial do Assistente de Boas-vindas",
+    grup: "Assistente de Boas-vindas",
+    baslik: "CarotOS 1.4 “Eggshell”",
+    aciklama: "A introdução exibida no primeiro login, escrita para quem está começando no Linux.",
+  },
+  {
+    src: "/ekranlar/karsilama-2.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-2.webp",
+    alt: "Página de aparência e idioma do Assistente de Boas-vindas",
+    grup: "Assistente de Boas-vindas",
+    baslik: "Aparência e idioma",
+    aciklama: "Escolha um tema claro ou escuro e o idioma do sistema. As configurações são aplicadas ao sair.",
+  },
+  {
+    src: "/ekranlar/karsilama-duvar.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-duvar.webp",
+    alt: "Página de papel de parede do Assistente de Boas-vindas, com três opções",
+    grup: "Assistente de Boas-vindas",
+    baslik: "Papel de parede",
+    aciklama: "Escolha um dos três papéis de parede do CarotOS. Ele é aplicado à área de trabalho ao sair.",
+  },
+  {
+    src: "/ekranlar/karsilama-konular.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-konular.webp",
+    alt: "Assistente de Boas-vindas: página de seleção de tópicos",
+    grup: "Assistente de Boas-vindas",
+    baslik: "O que você quer aprender?",
+    aciklama: "Você mesmo escolhe os tópicos. Um ✓ aparece ao lado de cada tópico concluído, e você pode pular a qualquer momento.",
+  },
+  {
+    src: "/ekranlar/karsilama-3.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-3.webp",
+    alt: "Página do Assistente de Boas-vindas sobre Linux e distribuições",
+    grup: "Assistente de Boas-vindas",
+    baslik: "Linux e distribuições",
+    aciklama: "O que é o CarotOS e em que ele se baseia: Debian 13, Xfce e APT.",
+  },
+  {
+    src: "/ekranlar/karsilama-4.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-4.webp",
+    alt: "Página do Assistente de Boas-vindas sobre o layout da área de trabalho",
+    grup: "Assistente de Boas-vindas",
+    baslik: "A área de trabalho",
+    aciklama: "Como usar o layout de dois painéis da área de trabalho.",
+  },
+  {
+    src: "/ekranlar/karsilama-5.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-5.webp",
+    alt: "Página do Assistente de Boas-vindas sobre o sistema de arquivos",
+    grup: "Assistente de Boas-vindas",
+    baslik: "O sistema de arquivos",
+    aciklama: "O Linux não tem letras de unidade. Todos os diretórios ficam em uma única árvore.",
+  },
+  {
+    src: "/ekranlar/karsilama-6.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-6.webp",
+    alt: "Página do Assistente de Boas-vindas sobre a pasta pessoal",
+    grup: "Assistente de Boas-vindas",
+    baslik: "Sua pasta pessoal",
+    aciklama: "A pasta pessoal, onde ficam seus arquivos.",
+  },
+  {
+    src: "/ekranlar/karsilama-7.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-7.webp",
+    alt: "Página do Assistente de Boas-vindas sobre instalação de programas",
+    grup: "Assistente de Boas-vindas",
+    baslik: "Instalando programas",
+    aciklama: "Os programas são instalados a partir de repositórios confiáveis, e não baixando arquivos .exe.",
+  },
+  {
+    src: "/ekranlar/karsilama-8.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-8.webp",
+    alt: "Página do Assistente de Boas-vindas que apresenta o Painel de Segurança",
+    grup: "Assistente de Boas-vindas",
+    baslik: "Painel de Segurança do CarotOS",
+    aciklama: "Use as ferramentas de segurança sem digitar comandos.",
+  },
+  {
+    src: "/ekranlar/karsilama-9.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-9.webp",
+    alt: "Assistente de Boas-vindas com a lista das ferramentas de segurança instaladas",
+    grup: "Assistente de Boas-vindas",
+    baslik: "Ferramentas de segurança instaladas",
+    aciklama: "As dez ferramentas de segurança que acompanham o CarotOS estão disponíveis no painel.",
+  },
+  {
+    src: "/ekranlar/karsilama-ag.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-ag.webp",
+    alt: "Assistente de Boas-vindas: página de rede e privacidade",
+    grup: "Assistente de Boas-vindas",
+    baslik: "Rede e privacidade",
+    aciklama: "Como proteger seu endereço e seu nome em redes compartilhadas, com opções de descoberta de rede (mDNS) e MAC falso.",
+  },
+  {
+    src: "/ekranlar/karsilama-guvenlik-duvari.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-guvenlik-duvari.webp",
+    alt: "Assistente de Boas-vindas: página do firewall",
+    grup: "Assistente de Boas-vindas",
+    baslik: "Firewall",
+    aciklama: "O que um firewall faz, por que ele vem desligado e quando ativá-lo, com um botão de liga/desliga.",
+  },
+  {
+    src: "/ekranlar/karsilama-disk.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-disk.webp",
+    alt: "Assistente de Boas-vindas: página de criptografia de disco e swap",
+    grup: "Assistente de Boas-vindas",
+    baslik: "Criptografia de disco e swap",
+    aciklama: "Criptografia de disco e swap, para que seus dados continuem seguros se o computador for roubado.",
+  },
+  {
+    src: "/ekranlar/karsilama-terminal.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-terminal.webp",
+    alt: "Assistente de Boas-vindas: página dos primeiros passos no terminal",
+    grup: "Assistente de Boas-vindas",
+    baslik: "Primeiros passos no terminal",
+    aciklama: "Alguns comandos que bastam para começar.",
+  },
+  {
+    src: "/ekranlar/karsilama-acikla.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-acikla.webp",
+    alt: "Assistente de Boas-vindas: página do Explicador de comandos",
+    grup: "Assistente de Boas-vindas",
+    baslik: "Explicador de comandos",
+    aciklama: "Descubra o que um comando faz antes de executá-lo. Abre com Alt+E no terminal.",
+  },
+  {
+    src: "/ekranlar/karsilama-etik.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-etik.webp",
+    alt: "Assistente de Boas-vindas: página de ética e responsabilidade",
+    grup: "Assistente de Boas-vindas",
+    baslik: "Ética e responsabilidade",
+    aciklama: "Use ferramentas de segurança apenas onde você tem permissão.",
+  },
+  {
+    src: "/ekranlar/karsilama-dogrula.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-dogrula.webp",
+    alt: "Assistente de Boas-vindas: página de verificação da ISO baixada",
+    grup: "Assistente de Boas-vindas",
+    baslik: "Verifique o seu download",
+    aciklama: "Confirme com SHA-256 e uma assinatura que a ISO realmente vem do CarotOS.",
+  },
+  {
+    src: "/ekranlar/guvenlik-paneli.webp",
+    kucuk: "/ekranlar/kucuk/guvenlik-paneli.webp",
+    alt: "Painel de Segurança do CarotOS mostrando a lista de ferramentas e o formulário do nmap",
+    grup: "Aplicativo",
+    baslik: "Painel de Segurança",
+    aciklama: "Cada ferramenta é explicada na tela, com a saída do comando ao lado.",
+  },
+  {
+    src: "/ekranlar/sistem-sagligi.webp",
+    kucuk: "/ekranlar/kucuk/sistem-sagligi.webp",
+    alt: "Saúde do Sistema do CarotOS mostrando a pontuação de saúde, as categorias de verificação e os itens que precisam de atenção",
+    grup: "Aplicativo",
+    baslik: "Saúde do Sistema",
+    aciklama: "O sistema passa por 24 testes e o resultado aparece como uma pontuação de saúde.",
+  },
+  {
+    src: "/ekranlar/kurtarma.webp",
+    kucuk: "/ekranlar/kucuk/kurtarma.webp",
+    alt: "Recuperação do CarotOS mostrando a lista de pontos de recuperação, com botões para criar, restaurar e excluir",
+    grup: "Aplicativo",
+    baslik: "Recuperação",
+    aciklama: "Cria pontos de recuperação do sistema e volta a um deles quando uma atualização o quebra.",
+  },
+  {
+    src: "/ekranlar/usb-denetimi.webp",
+    kucuk: "/ekranlar/kucuk/usb-denetimi.webp",
+    alt: "Verificação de USB do CarotOS mostrando cinco itens suspeitos em um pen drive, ordenados por gravidade",
+    grup: "Aplicativo",
+    baslik: "Verificação de USB",
+    aciklama: "Os itens encontrados são ordenados por gravidade, cada um com o motivo e o caminho do arquivo.",
+  },
+  {
+    src: "/ekranlar/magaza.webp",
+    kucuk: "/ekranlar/kucuk/magaza.webp",
+    alt: "Loja do CarotOS com as categorias à esquerda e cartões de aplicativos em destaque",
+    grup: "Aplicativo",
+    baslik: "Loja do CarotOS",
+    aciklama: "Os 220 aplicativos, em dez categorias, são instalados e removidos com um clique.",
+  },
+  {
+    src: "/ekranlar/carotene-tarama.webp",
+    kucuk: "/ekranlar/kucuk/carotene-tarama.webp",
+    alt: "Carotene durante uma verificação, mostrando o número de arquivos verificados, os itens encontrados e o caminho atual",
+    grup: "Aplicativo",
+    baslik: "Carotene · verificação",
+    aciklama: "Verificação rápida, da pasta pessoal e personalizada. O número de arquivos verificados e os itens encontrados são atualizados ao vivo.",
+  },
+  {
+    src: "/ekranlar/carotene.webp",
+    kucuk: "/ekranlar/kucuk/carotene.webp",
+    alt: "Resultado de uma verificação do Carotene com duas ameaças encontradas e os botões Quarentena, Excluir e Ignorar",
+    grup: "Aplicativo",
+    baslik: "Carotene · resultado",
+    aciklama: "Cada arquivo encontrado pode ser colocado em quarentena, excluído ou ignorado.",
+  },
+  {
+    src: "/ekranlar/carotpot.webp",
+    kucuk: "/ekranlar/kucuk/carotpot.webp",
+    alt: "Painel do CarotPot com o estado das armadilhas, um gráfico de atividade por hora, a contagem de eventos por armadilha e um feed ao vivo",
+    grup: "Aplicativo",
+    baslik: "CarotPot · painel",
+    aciklama: "O painel mostra a atividade por hora, os eventos por armadilha, os atacantes mais ativos e um feed ao vivo.",
+  },
+  {
+    src: "/ekranlar/carotpot-saldirgan.webp",
+    kucuk: "/ekranlar/kucuk/carotpot-saldirgan.webp",
+    alt: "Perfil de atacante do CarotPot com pontuação de risco, linha do tempo, nomes de usuário tentados e senhas mascaradas",
+    grup: "Aplicativo",
+    baslik: "CarotPot · perfil do atacante",
+    aciklama: "A pontuação de risco do atacante, a linha do tempo, os nomes de usuário tentados e as senhas mascaradas.",
+  },
+  {
+    src: "/ekranlar/carotpot-tuzaklar.webp",
+    kucuk: "/ekranlar/kucuk/carotpot-tuzaklar.webp",
+    alt: "Página de armadilhas do CarotPot com oito armadilhas, cada uma com uma porta e uma identidade de dispositivo",
+    grup: "Aplicativo",
+    baslik: "CarotPot · armadilhas",
+    aciklama: "Oito armadilhas. Para cada uma é possível escolher uma porta e uma identidade de dispositivo.",
+  },
+  {
+    src: "/ekranlar/filenor.webp",
+    kucuk: "/ekranlar/kucuk/filenor.webp",
+    alt: "Filenor com uma lista de quatro arquivos de imagem, opções de formato de destino e opções de conversão",
+    grup: "Aplicativo",
+    baslik: "Filenor",
+    aciklama: "Escolha um formato de destino para os arquivos adicionados e defina as opções de conversão.",
+  },
+  {
+    src: "/ekranlar/former.webp",
+    kucuk: "/ekranlar/kucuk/former.webp",
+    alt: "CarotOS Former mostrando um passo a passo animado do nmap",
+    grup: "Aplicativo",
+    baslik: "CarotOS Former",
+    aciklama: "Um guia passo a passo das ferramentas de segurança, com animações.",
+  },
+  {
+    src: "/ekranlar/gsd.webp",
+    kucuk: "/ekranlar/kucuk/gsd.webp",
+    alt: "CarotOS GSD mostrando o verbete do nmap com um comando de exemplo e termos relacionados",
+    grup: "Aplicativo",
+    baslik: "CarotOS GSD",
+    aciklama: "Um dicionário pesquisável, em turco e inglês, com 197 termos.",
+  },
+];
+
+const facts = [
+  { num: "10", label: "ferramentas de segurança selecionadas" },
+  { num: "13", label: "aplicativos originais" },
+  { num: "~600 MB", label: "de memória em uso, em repouso" },
+  { num: "13", label: "versão do Debian — trixie" },
+];
+
+const philosophy = [
+  {
+    title: "Escolha das ferramentas",
+    text: "As ferramentas instaladas cobrem varredura de rede, análise de tráfego, testes web e de senhas e configuração de firewall. O número é mantido baixo de propósito: cada ferramenta precisa de uma interface e de uma documentação escritas para ela.",
+  },
+  {
+    title: "Idioma padrão",
+    text: "O sistema é instalado em turco. O inglês está disponível no assistente de boas-vindas ou nas configurações da sessão. As interfaces dos aplicativos vêm nos dois idiomas.",
+  },
+  {
+    title: "Base Debian 13",
+    text: "Um repositório atual mantém as versões das ferramentas alinhadas com o material que as pessoas usam para estudar. A diferença de versões é um dos pontos em que iniciantes mais costumam travar.",
+  },
+  {
+    title: "Código aberto",
+    text: "Os aplicativos escritos para este projeto são feitos com Python e GTK3 e distribuídos sob a GPL-3.0. O código-fonte e a configuração de montagem da ISO são públicos no GitHub.",
+  },
+];
+
+const apps = [
+  {
+    title: "Painel de Segurança",
+    icon: "/ikonlar/ikon-guvenlik-paneli.webp",
+    text: "Uma interface gráfica para dez ferramentas de segurança, como nmap, tcpdump e hydra, que permite usá-las sem digitar comandos. Cada ferramenta é explicada na tela e os resultados aparecem ao vivo. O botão “Explicar” ao lado de cada ferramenta descreve as partes do comando em linguagem simples, e o Alt+E no terminal abre o mesmo Explicador de comandos. A proteção ética pede a confirmação do alvo antes de uma varredura e lembra as redes que você aprovou; você pode redefini-las em Configurações.",
+  },
+  {
+    title: "Assistente de Boas-vindas",
+    icon: "/ikonlar/ikon-karsilama.webp",
+    text: "O guia de introdução que abre na primeira vez que você inicia o CarotOS. Suas 31 páginas explicam conceitos básicos do Linux, a área de trabalho e os aplicativos que acompanham o CarotOS, em turco e inglês. Ali você também escolhe o tema, o idioma e o papel de parede. Os tópicos são escolhidos por você: rede e privacidade, o firewall, a criptografia de disco, a instalação do CarotOS, a instalação junto com o Windows, o terminal, o Explicador de comandos, a ética e a verificação da ISO baixada têm, cada um, o seu cartão. Na página do papel de parede é possível ativar, se quiser, um tema moderno para a área de trabalho (Carot Sleek); ao desativá-lo, o visual anterior é restaurado.",
+  },
+  {
+    title: "Saúde do Sistema",
+    icon: "/ikonlar/ikon-sistem-sagligi.webp",
+    text: "Uma ferramenta que verifica a condição geral do seu computador. Ela faz 24 verificações que abrangem o sistema, as atualizações, a rede e o firewall, as camadas de proteção, as contas e o armazenamento, e mostra o resultado como uma pontuação de saúde. Serviços esperados em uma área de trabalho, como DHCP e mDNS, não reduzem a pontuação, e você pode ligar ou desligar a descoberta de rede (mDNS) por aqui. A maioria dos problemas pode ser corrigida com um clique, é possível executar verificações detalhadas e salvar os resultados em um relatório.",
+  },
+  {
+    title: "Recuperação do CarotOS",
+    icon: "/ikonlar/ikon-kurtarma.webp",
+    yeni: "1.4",
+    text: "Uma ferramenta que leva você de volta a um momento anterior quando uma atualização ou uma configuração errada quebra o sistema, de forma parecida com a Restauração do Sistema do Windows. Você pode criar um ponto de recuperação manualmente, e um também é criado automaticamente quando o apt instala ou atualiza pacotes. Cada ponto guarda /etc, /root e a lista de pacotes instalados, e apenas os arquivos alterados ocupam espaço. Ela não mexe nos seus arquivos pessoais, portanto não substitui o backup.",
+  },
+  {
+    title: "Verificação de USB",
+    icon: "/ikonlar/ikon-usb-denetimi.webp",
+    text: "Uma ferramenta que procura sinais de malware em unidades USB. Ela inicia em segundo plano no login e, quando uma unidade é conectada, verifica a presença de arquivos autorun.inf, extensões duplas e atalhos disfarçados de pastas. Essa verificação não lê o conteúdo dos arquivos. Você também pode iniciar uma verificação detalhada com o ClamAV. O que for encontrado é apenas relatado, nunca alterado.",
+  },
+  {
+    title: "CarotOS Poligon",
+    icon: "/ikonlar/ikon-poligon-ogrenci.webp",
+    text: "Um aplicativo em que os alunos aprendem testes de invasão em um ambiente seguro. As tarefas são resolvidas com hydra, nmap, john, sqlmap e tshark, e a defesa pode ser praticada com ufw e fail2ban. A turma também pode fazer uma competição CTF: cada aluno recebe suas próprias flags e as pontuações aparecem em um placar ao vivo. A visão do defensor mostra os ataques contra os serviços falsos e o estado do ufw e do fail2ban. Tudo fica no seu próprio computador.",
+  },
+  {
+    title: "CarotOS Poligon Professor",
+    icon: "/ikonlar/ikon-poligon-ogretmen.webp",
+    text: "O aplicativo de gerenciamento de aula para professores. Ele abre uma sala de aula com um clique, acompanha o progresso de cada aluno, atribui tarefas e envia uma dica a um aluno escolhido. Também inicia e encerra a competição CTF, acompanha as pontuações ao vivo e salva os resultados em CSV.",
+  },
+  {
+    title: "Loja do CarotOS",
+    icon: "/ikonlar/ikon-magaza.webp",
+    yeni: "1.2",
+    text: "Uma loja de programas que lista, em dez categorias, 220 aplicativos dos repositórios do Debian. Você instala e remove aplicativos com um clique. Tem temas claro e escuro e interface em turco e inglês.",
+  },
+  {
+    title: "Carotene",
+    icon: "/ikonlar/ikon-carotene.webp",
+    yeni: "1.3",
+    text: "Um antivírus baseado no ClamAV. Oferece verificação rápida, verificação da pasta pessoal e verificação de qualquer pasta que você escolher. Os arquivos infectados são movidos para a quarentena, as definições de vírus são atualizadas pelo próprio aplicativo e as verificações anteriores ficam em um histórico. Ele não instala nenhum serviço em segundo plano e só verifica quando você o inicia. O resultado “limpo” só é exibido se a verificação terminar sem problemas.",
+  },
+  {
+    title: "CarotPot",
+    icon: "/ikonlar/ikon-carotpot.webp",
+    yeni: "1.3",
+    text: "Um sistema de armadilhas que detecta atividade suspeita na sua rede local. Ele abre serviços falsos, como SSH, Telnet, FTP e MySQL, registra os dispositivos que se conectam a eles e avisa você. Ninguém consegue de fato fazer login. Também avisa quando um arquivo isca é aberto ou alterado, e não inicia sozinho na inicialização do sistema. Cada atacante recebe uma pontuação de risco e uma linha do tempo; você pode bloqueá-lo, bloqueá-lo por um tempo determinado ou adicionar uma anotação.",
+  },
+  {
+    title: "Filenor",
+    icon: "/ikonlar/ikon-filenor.webp",
+    yeni: "1.3",
+    text: "Um conversor de arquivos de imagem, áudio, vídeo, documento, planilha, apresentação e fonte, tudo em uma só interface. Ele pode juntar, dividir, girar, reduzir e proteger arquivos PDF e fazer reconhecimento de texto (OCR) em documentos digitalizados. Nunca sobrescreve um arquivo existente e há uma versão para a linha de comando. Vem pré-instalado no CarotOS e também pode ser baixado para Debian, Ubuntu e Windows.",
+    links: [
+      { label: "Baixar o Filenor (.deb e .exe para Windows)", url: "https://github.com/MiracLight/filenor/releases/latest" },
+      { label: "Código-fonte", url: "https://github.com/MiracLight/filenor" },
+    ],
+  },
+  {
+    title: "CarotOS Former",
+    icon: "/ikonlar/ikon-former.webp",
+    yeni: "1.3",
+    text: "Um guia que ensina as ferramentas de segurança com animações. Cada ferramenta do Painel de Segurança, assim como o CarotPot e o Carotene, tem uma explicação, uma animação interativa e uma seção “experimente você mesmo”. Há tópicos sobre a competição CTF, o Explicador de comandos, a ética, a criptografia de disco, a verificação da ISO e a visão do defensor. Funciona em turco e inglês.",
+  },
+  {
+    title: "CarotOS GSD",
+    icon: "/ikonlar/ikon-gsd.webp",
+    yeni: "1.3",
+    text: "O Dicionário Geral de Sistemas (GSD), com 197 termos de Linux, redes, segurança cibernética, criptografia e ciência da computação. Você pode pesquisar os termos, ver comandos de exemplo e ir para termos relacionados. Está disponível em turco e inglês.",
+  },
+];
+
+const poligonApps = [
+  {
+    title: "CarotOS Poligon",
+    icon: "/ikonlar/ikon-poligon-ogrenci.webp",
+    screenshot: "/ekranlar/poligon-ogrenci.webp",
+    alt: "Aplicativo do aluno do CarotOS Poligon: opções de convidado, criar conta e entrar",
+    text: "Você pode usar como convidado, sem conta, ou entrar com uma conta de usuário. O progresso é salvo para quem entra com uma conta. As tarefas são feitas sozinho ou entrando em uma sala de aula.",
+  },
+  {
+    title: "CarotOS Poligon Professor",
+    icon: "/ikonlar/ikon-poligon-ogretmen.webp",
+    screenshot: "/ekranlar/poligon-ogretmen.webp",
+    alt: "Aplicativo do professor do CarotOS Poligon: código da sala, senha da sala, lista de alunos e campo de dica",
+    text: "Um código e uma senha de sala são gerados com um clique. As visões de alunos e da turma, a criação de perguntas e as perguntas salvas ficam em abas separadas. Uma dica pode ser enviada a um aluno ou a toda a turma.",
+  },
+];
+
+const securityApps = [
+  {
+    title: "CarotPot",
+    icon: "/ikonlar/ikon-carotpot.webp",
+    screenshot: "/ekranlar/carotpot.webp",
+    ratio: "1280 / 820",
+    alt: "Painel do CarotPot: armadilhas ligadas, um gráfico de atividade por hora, eventos por armadilha, os atacantes mais ativos e um feed ao vivo",
+    text: "Detecta dispositivos da rede local que fazem varredura neste computador ou tentam fazer login nele. Abre oito serviços falsos: SSH, painel web, Telnet, FTP, VNC, RDP, MySQL e Redis. O painel mostra a atividade das últimas 24 horas e os atacantes mais ativos. O perfil de um atacante lista os nomes de usuário tentados, as senhas mascaradas e uma pontuação de risco. Bloquear um dispositivo exige a sua confirmação.",
+  },
+  {
+    title: "Carotene",
+    icon: "/ikonlar/ikon-carotene.webp",
+    screenshot: "/ekranlar/carotene.webp",
+    ratio: "1040 / 700",
+    alt: "Carotene: resultado de uma verificação com duas ameaças encontradas, a idade das definições de vírus e as opções de verificação",
+    text: "Executa verificações rápidas, da pasta pessoal e de pastas personalizadas com o ClamAV. Enquanto a verificação roda, o número de arquivos verificados e os itens encontrados são atualizados ao vivo. Os arquivos encontrados podem ser colocados em quarentena, excluídos ou ignorados. A idade das definições de vírus aparece na tela principal, e elas são atualizadas pelo aplicativo. Um resultado limpo não garante que os arquivos sejam seguros; mostra apenas que nenhuma assinatura conhecida foi encontrada.",
+  },
+];
+
+const tools = [
+  { name: "nmap", job: "Varredura de rede e de portas" },
+  { name: "tcpdump", job: "Captura de pacotes" },
+  { name: "tshark", job: "Análise de tráfego" },
+  { name: "aircrack-ng", job: "Testes de redes sem fio" },
+  { name: "nikto", job: "Varredura de servidores web" },
+  { name: "sqlmap", job: "Testes de injeção de SQL" },
+  { name: "john", job: "Análise da força de senhas" },
+  { name: "hydra", job: "Testes de autenticação" },
+  { name: "ufw", job: "Firewall" },
+  { name: "fail2ban", job: "Prevenção de intrusões" },
+];
+---
+
+<Base
+  lang="pt"
+  title="CarotOS — Uma distribuição Linux para aprender segurança cibernética"
+  description="Uma distribuição Linux baseada no Debian 13, voltada ao ensino, com dez ferramentas de segurança e treze aplicativos originais."
+>
+  {/* ============================================================
+      HERO
+      ============================================================ */}
+  <section class="band band--foam hero">
+    <div class="wrap hero__inner">
+      <div class="hero__text">
+        <p class="eyebrow">Debian 13 · XFCE · amd64</p>
+        <h1>Poucas, bem explicadas.</h1>
+        <p class="lede hero__lede">
+          O CarotOS é uma distribuição Linux criada para o ensino de segurança
+          cibernética. Ele traz dez ferramentas de segurança e treze aplicativos
+          escritos para o projeto.
+        </p>
+
+        <div class="hero__actions">
+          <a class="btn btn--solid" href="#download">
+            <span>Baixar</span>
+            <span class="hero__size">{release.size}</span>
+          </a>
+          <a
+            class="btn btn--ghost"
+            href="https://github.com/MiracLight/CarotOS"
+            target="_blank"
+            rel="noopener noreferrer">Código-fonte</a
+          >
+        </div>
+      </div>
+
+      <div class="hero__art" aria-hidden="true">
+        <span class="ripple ripple--1"></span>
+        <span class="ripple ripple--2"></span>
+        <span class="ripple ripple--3"></span>
+        <div class="hero__turtle" data-minigame-trigger>
+          <Turtle shell="#378ADA" body="#185FA5" />
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <dl class="facts">
+        {
+          facts.map((f) => (
+            <div class="facts__item">
+              <dt class="facts__num">{f.num}</dt>
+              <dd class="facts__label">{f.label}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <Wave from="#f4f9fd" to="#deedf8" />
+
+  {/* ============================================================
+      PHILOSOPHY
+      ============================================================ */}
+  <section id="philosophy" class="band band--shallow">
+    <div class="wrap">
+      <p class="eyebrow">Abordagem</p>
+      <h2 class="sec__title">Escopo e princípios de projeto</h2>
+      <p class="lede sec__lede">
+        O CarotOS não é uma alternativa às distribuições que trazem grandes
+        conjuntos de ferramentas. Ele acrescenta dez ferramentas e as interfaces
+        para usá-las sobre uma instalação do Debian. O objetivo não é ter mais
+        ferramentas, e sim uma base que funcione em sala de aula.
+      </p>
+
+      <div class="grid grid--2 sec__grid">
+        {
+          philosophy.map((p) => (
+            <article class="card">
+              <h3>{p.title}</h3>
+              <p>{p.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <Wave from="#deedf8" to="#a9cfea" />
+
+  {/* ============================================================
+      WHAT'S INSIDE
+      ============================================================ */}
+  <section id="inside" class="band band--tide">
+    <div class="wrap">
+      <p class="eyebrow">Aplicativos</p>
+      <h2 class="sec__title">Aplicativos e ferramentas</h2>
+      <p class="lede sec__lede">
+        Treze aplicativos escritos para este projeto em Python e GTK3,
+        distribuídos sob a GPL-3.0.
+      </p>
+
+      <div class="grid grid--2 sec__grid">
+        {
+          apps.map((a, i) => (
+            <article class="card app">
+              {a.icon ? (
+                <img
+                  class="app__logo"
+                  src={a.icon}
+                  alt=""
+                  width="44"
+                  height="44"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : (
+                <span class="app__no">{String(i + 1).padStart(2, "0")}</span>
+              )}
+              <div>
+                <h3>
+                  {a.title}
+                  {a.yeni && <span class="app__tag">{a.yeni}</span>}
+                </h3>
+                <p>{a.text}</p>
+                {a.links && (
+                  <p class="app__links">
+                    {a.links.map((l) => (
+                      <a href={l.url} rel="noopener">{l.label}</a>
+                    ))}
+                  </p>
+                )}
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="tools">
+        <h3 class="tools__title">Ferramentas instaladas</h3>
+        <ul class="tools__list">
+          {
+            tools.map((t) => (
+              <li class="tool">
+                <span class="tool__hex" aria-hidden="true" />
+                <span class="tool__name">{t.name}</span>
+                <span class="tool__job">{t.job}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="gorseller">
+        <h3 class="tools__title">Capturas de tela</h3>
+        <Slayt lang="pt" slaytlar={slides} />
+      </div>
+
+      <div class="poligon">
+        <h3 class="tools__title">CarotOS Poligon</h3>
+        <p class="lede poligon__lede">
+          Um ambiente de testes de invasão isolado e seguro para alunos e
+          professores. O professor cria uma sala de aula; os alunos fazem as
+          tarefas com ferramentas reais em suas próprias máquinas. Não há
+          componentes expostos à rede. Todas as operações rodam na máquina
+          local.
+        </p>
+        <div class="grid grid--2 poligon__grid">
+          {
+            poligonApps.map((p) => (
+              <article class="card poligon__card">
+                <div class="poligon__head">
+                  <img src={p.icon} alt="" class="poligon__ikon" width="40" height="40" />
+                  <h4>{p.title}</h4>
+                </div>
+                <p>{p.text}</p>
+                <div class="poligon__ekran-cerceve">
+                  <img
+                    src={p.screenshot}
+                    alt={p.alt}
+                    class="poligon__ekran"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="poligon">
+        <h3 class="tools__title">CarotPot e Carotene</h3>
+        <p class="lede poligon__lede">
+          Dois aplicativos para a segurança de rede e de arquivos. O CarotPot
+          detecta varreduras e tentativas de login na rede local com serviços
+          falsos. O Carotene verifica arquivos com o ClamAV. Nenhum dos dois
+          roda em segundo plano se você não o iniciar.
+        </p>
+        <div class="grid grid--2 poligon__grid">
+          {
+            securityApps.map((p) => (
+              <article class="card poligon__card">
+                <div class="poligon__head">
+                  <img src={p.icon} alt="" class="poligon__ikon" width="40" height="40" />
+                  <h4>{p.title}</h4>
+                </div>
+                <p>{p.text}</p>
+                <div class="poligon__ekran-cerceve" style={`aspect-ratio: ${p.ratio}`}>
+                  <img
+                    src={p.screenshot}
+                    alt={p.alt}
+                    class="poligon__ekran"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Wave from="#a9cfea" to="#185fa5" />
+
+  {/* ============================================================
+      DOWNLOAD
+      ============================================================ */}
+  <section id="download" class="band band--deep">
+    <div class="wrap">
+      <p class="eyebrow">Download</p>
+      <h2 class="sec__title">Versão {release.tag} “{release.codename}”</h2>
+      <p class="lede sec__lede">
+        Instale direto da área de trabalho live, com o ícone “Instalar o
+        CarotOS”. As instalações em BIOS e em UEFI foram testadas. A ISO inclui
+        um shim assinado para o Secure Boot. Os pacotes de firmware para
+        hardware de Wi-Fi, áudio e vídeo estão incluídos.
+      </p>
+
+      <div class="dl">
+        <article class="dl__card">
+          <div class="dl__head">
+            <div>
+              <p class="dl__arch">Desktop</p>
+              <p class="dl__isa mono">x86_64</p>
+            </div>
+            <span class="dl__badge">Estável · {release.codename}</span>
+          </div>
+
+          <ul class="dl__meta">
+            <li><span>Arquivo</span><span class="mono">{release.file}</span></li>
+            <li><span>Tamanho</span><span class="mono">{release.size}</span></li>
+            <li><span>Ambiente</span><span>XFCE</span></li>
+            <li><span>Lançamento</span><span>{release.date}</span></li>
+          </ul>
+
+          <a class="btn btn--light dl__btn" href={release.url}>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M12 3v13m0 0 5-5m-5 5-5-5M4 20h16"
+                stroke="currentColor"
+                stroke-width="2.1"
+                stroke-linecap="round"
+                stroke-linejoin="round"></path>
+            </svg>
+            <span>Baixar a ISO</span>
+          </a>
+
+          <div class="verify">
+            <p class="verify__hash">
+              <span class="verify__hash-label">SHA-256</span>
+              <code>{release.sha256}</code>
+            </p>
+            <a class="verify__link" href={release.shaUrl}
+              >{release.file}.sha256</a
+            >
+          </div>
+        </article>
+
+        <div class="dl__yan">
+          <div class="req">
+            <p class="dl__soon-title">Requisitos do sistema</p>
+            <ul class="req__list">
+              {
+                requirements.map((r) => (
+                  <li>
+                    <span>{r.name}</span>
+                    <span>{r.value}</span>
+                  </li>
+                ))
+              }
+            </ul>
+            <p class="req__not">
+              Mínimos recomendados para uma instalação desktop do Debian 13
+              “trixie”. O XFCE usa menos recursos que o GNOME ou o KDE Plasma.
+              O Debian 13 não oferece suporte à arquitetura i386.
+            </p>
+          </div>
+
+          <div class="dl__soon">
+          <p class="dl__soon-title">Versões planejadas</p>
+
+          <article class="soon">
+            <div>
+              <p class="soon__arch">CarotDeck</p>
+              <p class="soon__isa mono">arm64</p>
+            </div>
+            <p class="soon__note">
+              Uma versão portátil com i3wm para o Orange Pi 5. A meta de uso de
+              memória em repouso é de 200 MB.
+            </p>
+            <span class="soon__tag">Em desenvolvimento</span>
+          </article>
+
+            <p class="dl__soon-foot">
+              Estão planejadas versões para outros ambientes de área de trabalho.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Wave from="#185fa5" to="#0b2e52" />
+
+  {/* ============================================================
+      RELEASES / NEWSLETTER
+      ============================================================ */}
+  <section id="releases" class="band band--abyss news">
+    <div class="wrap">
+      <p class="eyebrow">Versões</p>
+      <h2 class="sec__title">Avisos de novas versões</h2>
+      <p class="lede sec__lede">
+        As notas de versão são publicadas no GitHub: ferramentas adicionadas,
+        erros corrigidos e mudanças que quebram a compatibilidade.
+      </p>
+
+      <div class="news__grid">
+        <div class="news__card news__card--wide">
+          <h3>Boletim por e-mail</h3>
+          <p>
+            Notas de versão enviadas por e-mail. Os endereços não são usados
+            para nenhum outro fim.
+          </p>
+
+          <form class="sub" id="newsletter">
+            <label class="visually-hidden" for="email">Seu endereço de e-mail</label
+            >
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              placeholder="voce@exemplo.com"
+              autocomplete="email"
+            />
+            <button class="btn btn--light" type="submit">Participar</button>
+          </form>
+          <p class="sub__note">
+            “Participar” abre o aplicativo de e-mail com uma mensagem pronta.
+          </p>
+        </div>
+
+        <div class="news__card">
+          <h3>GitHub</h3>
+          <p>
+            Ao escolher <strong>Watch → Custom → Releases</strong> no
+            repositório, você recebe uma notificação a cada nova versão.
+          </p>
+          <a
+            class="btn btn--outline-light news__btn"
+            href="https://github.com/MiracLight/CarotOS/releases"
+            target="_blank"
+            rel="noopener noreferrer">Versões</a
+          >
+        </div>
+
+        <div class="news__card">
+          <h3>RSS / Atom</h3>
+          <p>
+            O feed de versões pode ser adicionado diretamente a um leitor. Não é
+            preciso se cadastrar.
+          </p>
+          <a
+            class="btn btn--outline-light news__btn"
+            href="https://github.com/MiracLight/CarotOS/releases.atom"
+            target="_blank"
+            rel="noopener noreferrer">Endereço do feed</a
+          >
+        </div>
+      </div>
+
+      <p class="news__last">
+        Última versão <strong>{release.tag}</strong> — {release.date}
+      </p>
+    </div>
+  </section>
+  <Minigame lang="pt" />
+</Base>
+
+<script>
+  /* Newsletter form.
+     Not wired to an email service yet; on submit it opens the visitor's
+     mail app with a prepared message. Once you move to Buttondown,
+     Mailchimp or similar, delete this block and give the form an
+     action + method instead. */
+  const form = document.getElementById("newsletter") as HTMLFormElement | null;
+  form?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const field = document.getElementById("email") as HTMLInputElement;
+    if (!field.checkValidity()) {
+      field.reportValidity();
+      return;
+    }
+    const subject = encodeURIComponent("Inscrição no boletim");
+    const body = encodeURIComponent(
+      `Olá,\n\nGostaria de receber o boletim de versões do CarotOS.\nMeu endereço de e-mail: ${field.value}\n`,
+    );
+    window.location.href = `mailto:carotosproject@gmail.com?subject=${subject}&body=${body}`;
+  });
+</script>
+

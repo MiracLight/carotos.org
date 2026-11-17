@@ -1,0 +1,347 @@
+---
+import Base from "../../layouts/Base.astro";
+import Wave from "../../components/Wave.astro";
+
+/* ------------------------------------------------------------------
+   CHANGELOG
+
+   When a new release ships, add an object to the FRONT of this array.
+   Mirror the same entry in src/pages/surum-notlari.astro
+   ------------------------------------------------------------------ */
+const surumler = [
+  {
+    etiket: "1.4",
+    kodAdi: "Eggshell",
+    tarih: "15 de novembro de 2026",
+    tarihISO: "2026-11-15",
+    ozet:
+      "O Poligon ganhou uma competição CTF e uma visão do defensor, e esta versão traz o Explicador de comandos, uma proteção ética, a verificação da assinatura da ISO e o tema opcional de área de trabalho Carot Sleek. Com a ISO renovada, o CarotOS pode ser instalado a partir da área de trabalho live com um instalador gráfico, e o aplicativo Recuperação foi adicionado. O Assistente de Boas-vindas passou a ter 31 páginas, a Loja 220 aplicativos e o GSD 197 termos; a tela de inicialização foi refeita e todos os aplicativos passaram por uma revisão de segurança.",
+    degisiklikler: [
+      { tur: "eklendi", metin: "Instalação a partir da área de trabalho live: o ícone “Instalar o CarotOS” na área de trabalho abre o instalador Calamares; turco e inglês, criptografia de disco (LUKS), instalação offline a partir da ISO e slides do CarotOS durante a instalação. O instalador anterior continua no menu de inicialização como alternativa" },
+      { tur: "eklendi", metin: "Recuperação: salva o estado atual do sistema como um ponto de restauração e volta a ele se algo quebrar; no painel superior e no painel lateral do Carot Sleek" },
+      { tur: "eklendi", metin: "Assistente de Boas-vindas: uma página “Instalando o CarotOS” e um tour de instalação no Former; o assistente agora tem 31 páginas" },
+      { tur: "eklendi", metin: "Teclado no instalador: o layout é sugerido a partir do idioma escolhido; o layout e a variante selecionados (turco F, por exemplo) são usados imediatamente durante a instalação e gravados no sistema instalado" },
+      { tur: "degisti", metin: "Assistente de Boas-vindas: a opção do Carot Sleek foi movida para a página do papel de parede" },
+      { tur: "eklendi", metin: "Competição CTF do Poligon: painel do professor (iniciar, encerrar, placar ao vivo, CSV), um pacote de 12 desafios, flags por aluno, pontuação dinâmica, bônus de primeira resolução, penalidade por dica e congelamento do placar" },
+      { tur: "eklendi", metin: "Visão do defensor do Poligon: um registro de eventos dos ataques aos serviços falsos, análise dos itens encontrados e o estado do ufw e do fail2ban" },
+      { tur: "eklendi", metin: "Explicador de comandos: descreve as partes de um comando em linguagem simples antes de você executá-lo; abre com Alt+E no terminal, e o Painel de Segurança tem um botão “Explicar” ao lado de cada ferramenta" },
+      { tur: "eklendi", metin: "Proteção ética: o Painel de Segurança pede que você confirme o alvo antes de uma varredura e lembra as redes aprovadas; elas podem ser redefinidas em Configurações" },
+      { tur: "eklendi", metin: "Assistente de Boas-vindas: páginas de Rede e privacidade, Firewall, Criptografia de disco e swap, Terminal, Explicador de comandos, Ética e responsabilidade, Instalar junto com o Windows e Verifique o seu download; os tópicos podem ser escolhidos; o assistente agora tem 29 páginas" },
+      { tur: "eklendi", metin: "Verificação da ISO: o SHA256SUMS e uma assinatura separada permitem conferir que um download realmente vem do CarotOS; explicado passo a passo no Assistente de Boas-vindas e no Former" },
+      { tur: "eklendi", metin: "Former: tópicos sobre a competição CTF, o Explicador de comandos, a ética, a criptografia de disco, a verificação da ISO e a visão do defensor; 20 tópicos no total" },
+      { tur: "eklendi", metin: "Carot Sleek: um tema moderno opcional para a área de trabalho, com cantos arredondados, sombras e desfoque, um dock na parte inferior e um Painel Lateral do CarotOS que desliza a partir da borda; ative-o no Assistente de Boas-vindas e, ao desativá-lo, o visual anterior é restaurado" },
+      { tur: "eklendi", metin: "Saúde do Sistema: a descoberta de rede (mDNS) pode ser desligada e ligada com um botão; serviços esperados em uma área de trabalho, como DHCP e mDNS, não reduzem mais a pontuação de “Portas em escuta”" },
+      { tur: "eklendi", metin: "Rede e privacidade: uma opção de MAC falso (desligada por padrão); o pacote de chaveiro do repositório assinado apt.carotos.org vem na ISO" },
+      { tur: "eklendi", metin: "Saúde do Sistema: uma verificação de swap sem criptografia em disco, com uma ação de desativação em um botão (o zram não conta como disco e é feito backup do fstab)" },
+      { tur: "eklendi", metin: "Assistente de Boas-vindas: um botão de liga/desliga do ufw; explica por que o firewall vem desligado e quando ativá-lo" },
+      { tur: "eklendi", metin: "Padrões de privacidade de rede: nenhum nome de host enviado por DHCP, endereços temporários IPv6, configurações de sysctl relacionadas e swap em zram" },
+      { tur: "eklendi", metin: "Preparação do idioma do sistema: o pacote de idioma e o locale do idioma escolhido são instalados, após uma confirmação, na etapa Concluir do Assistente de Boas-vindas; os idiomas estrangeiros já prontos aparecem no seletor marcados com “(beta)”" },
+      { tur: "eklendi", metin: "Identidade do sistema: o /usr/lib/os-release mostra CarotOS; um leve acabamento visual da área de trabalho com gtk.css; o terminal do CarotOS com JetBrains Mono agora é o padrão" },
+      { tur: "degisti", metin: "O MAC falso (aleatório) deixou de ser o padrão; ele quebrava conexões em redes com filtro de MAC e agora é ativado pelo Assistente de Boas-vindas" },
+      { tur: "degisti", metin: "O parâmetro de inicialização noresume foi removido (ele podia fazer perder trabalho não salvo após a hibernação)" },
+      { tur: "degisti", metin: "O Assistente de Boas-vindas não abre mais sozinho depois de Concluir; se você o deixar pela metade, ele volta na próxima sessão" },
+      { tur: "degisti", metin: "O Filenor pergunta antes de instalar do PyPI e não usa mais --break-system-packages; o endpoint /durum, sem autenticação, foi removido do Poligon" },
+      { tur: "degisti", metin: "Carot Sleek: o cursor Bibata e o ícone de navegador personalizado foram removidos, e os atalhos do CarotOS no painel superior foram movidos para o painel lateral" },
+      { tur: "degisti", metin: "O uso de memória em repouso diminuiu: a configuração do compositor do xfwm4 e a camada de idiomas passaram a ler só os cabeçalhos (a parcela do xfwm4 caiu de 76,6 MB para 11,8 MB); os hooks agora interrompem a montagem em caso de falha" },
+      { tur: "duzeltildi", metin: "Relógio do painel: o fuso horário do sistema é gravado no login e a escolha do usuário é mantida" },
+      { tur: "duzeltildi", metin: "Limites de conexões e de reinícios no CarotPot, ações privilegiadas da Loja executadas apenas a partir de diretórios do sistema, e verificações de identidade do arquivo e do resultado “limpo” no Carotene e na Verificação de USB" },
+      { tur: "eklendi", metin: "Indicador de bateria: em notebooks, o nível da bateria aparece no canto superior direito, ao lado do relógio; ele não aparece em computadores de mesa" },
+      { tur: "eklendi", metin: "Traduções da interface em sete idiomas: alemão, francês, espanhol, português, russo, japonês e chinês" },
+      { tur: "degisti", metin: "Inicialização: tema Plymouth do CarotOS, tempo limite do menu do GRUB de 5/30 segundos com os-prober, inicialização silenciosa e i915.fastboot em telas Intel" },
+      { tur: "degisti", metin: "O catálogo da Loja passou de 153 para 220 aplicativos e está traduzido; as etapas que exigem privilégios passam por um auxiliar dedicado e os downloads podem ser cancelados com segurança" },
+      { tur: "degisti", metin: "O CarotOS GSD passou a ter 197 termos e a Saúde do Sistema 24 verificações; os ícones dos aplicativos foram redesenhados" },
+      { tur: "duzeltildi", metin: "Uma ampla revisão de segurança: o Poligon (chaves por aluno, limites de conexão, validação), a Loja, o CarotPot, o Painel de Segurança, o Carotene, a Verificação de USB, o Filenor, a Saúde do Sistema e os scripts de instalação foram revisados e corrigidos, um a um" },
+      { tur: "duzeltildi", metin: "A saída do fastfetch quebrava a linha em nomes longos de hardware e desalinhava; os valores agora são abreviados e o logotipo é omitido em terminais estreitos" },
+      { tur: "duzeltildi", metin: "O menu da esquerda no Former e em outros aplicativos agora rola sozinho, e a parte de baixo não fica mais cortada em telas de baixa resolução" },
+    ],
+  },
+  {
+    etiket: "1.3",
+    kodAdi: "Eggshell",
+    tarih: "29 de outubro de 2026",
+    tarihISO: "2026-10-29",
+    ozet:
+      "Foram adicionados o Carotene, o CarotPot, o Filenor, o CarotOS Former e o CarotOS GSD. A Saúde do Sistema e a Verificação de USB ganharam verificações do ClamAV e do AppArmor, e o catálogo da Loja passou a ter 153 aplicativos.",
+    degisiklikler: [
+      { tur: "eklendi", metin: "Carotene: verificações rápida, da pasta pessoal e personalizada com o ClamAV, quarentena, atualização das definições de vírus e histórico de verificações; não executa nenhum serviço em segundo plano" },
+      { tur: "eklendi", metin: "CarotPot: armadilhas falsas de SSH, Telnet, painel web, FTP, VNC, RDP, MySQL e Redis para a rede local; lista de atacantes, arquivos isca e bloqueio com confirmação" },
+      { tur: "eklendi", metin: "Filenor: conversão de imagens, áudio, vídeo, documentos, planilhas, apresentações e fontes; PDF com junção, divisão, rotação, redução e proteção; OCR" },
+      { tur: "eklendi", metin: "CarotOS Former: um guia bilíngue que explica passo a passo as ferramentas de segurança, o CarotPot e o Carotene, com animações" },
+      { tur: "eklendi", metin: "CarotOS GSD: um dicionário bilíngue pesquisável com 161 termos sobre Linux, redes, segurança cibernética, criptografia, algoritmos e ciência da computação em geral" },
+      { tur: "eklendi", metin: "Saúde do Sistema: uma categoria de Camadas de proteção (AppArmor, perfis do AppArmor, idade das definições de vírus) e verificações detalhadas com debsums e rkhunter; as verificações passaram de 20 para 23 e as categorias de seis para sete" },
+      { tur: "eklendi", metin: "Verificação de USB: uma verificação detalhada com o ClamAV que só roda quando o usuário a inicia pela janela; os arquivos detectados são relatados e não são alterados" },
+      { tur: "eklendi", metin: "Assistente de Boas-vindas: páginas para os novos aplicativos; o assistente agora tem vinte e uma páginas" },
+      { tur: "degisti", metin: "O catálogo da Loja passou de 51 para 153 aplicativos e de sete para dez categorias; o título da janela agora é “Loja do CarotOS”" },
+      { tur: "degisti", metin: "Novos ícones para a Verificação de USB, a Saúde do Sistema e a Loja, usados no menu, no painel e nas janelas" },
+      { tur: "eklendi", metin: "Carotene: quando o ClamAV não está instalado, um botão \"Instalar o ClamAV na Loja\" abre a página do ClamAV na Loja" },
+      { tur: "degisti", metin: "O nome de host padrão agora é \"carotos\" (usuário@carotos); os títulos do Assistente de Boas-vindas para o Carotene, o CarotPot e o Filenor não levam mais o prefixo redundante \"CarotOS\"; a imagem do Poligon agora mostra a interface real" },
+      { tur: "duzeltildi", metin: "O uso de memória em repouso podia passar de 1 GB quando o cache de ícones estava ausente ou desatualizado; o cache agora é verificado a cada inicialização e reconstruído quando necessário" },
+      { tur: "duzeltildi", metin: "A saída do fastfetch quebrava em janelas de terminal estreitas; suas linhas foram encurtadas e o terminal agora abre em 100×30 por padrão" },
+      { tur: "eklendi", metin: "Loja: um carrinho; vários aplicativos podem ser instalados de uma vez com um único pedido de senha" },
+      { tur: "eklendi", metin: "Suporte ao japonês: foram adicionadas as fontes Noto CJK e o locale ja_JP; os caracteres não aparecem mais como quadrados quando o idioma do sistema é o japonês" },
+      { tur: "eklendi", metin: "O nome do host é perguntado durante a instalação (nome sugerido: carotos)" },
+      { tur: "degisti", metin: "Assistente de Boas-vindas: as imagens das páginas dos aplicativos agora são capturas de tela reais; as imagens de Sistema de arquivos e Pasta pessoal foram redesenhadas e são bilíngues" },
+      { tur: "degisti", metin: "O rótulo da ISO e as informações do disco dizem CarotOS em vez de Debian; as entradas do menu do GRUB mostram “CarotOS GNU/Linux”" },
+      { tur: "degisti", metin: "As mensagens de inicialização foram reduzidas no sistema instalado; um serviço com falha continua sendo exibido" },
+      { tur: "duzeltildi", metin: "Loja: com o sistema em turco, alguns pacotes, como o rkhunter, não eram instalados; o apt agora roda independentemente da configuração de idioma" },
+      { tur: "duzeltildi", metin: "O tshark podia falhar com um erro de permissão do dumpcap para um usuário comum; o grupo wireshark e as capabilities do dumpcap agora já vêm prontos na instalação" },
+      { tur: "duzeltildi", metin: "O instalador fazia uma pergunta sobre “alterações locais” para o GRUB; as configurações do GRUB foram movidas para um arquivo drop-in separado" },
+      { tur: "duzeltildi", metin: "Na sessão live, a hora aparecia três horas atrasada; o fuso horário agora é Europe/Istanbul" },
+      { tur: "duzeltildi", metin: "Poligon: o chat e o status não funcionavam para alunos cujo nome tinha espaço ou caractere turco" },
+      { tur: "duzeltildi", metin: "Poligon: qualquer dispositivo da rede da sala de aula podia escrever mensagens aos alunos em nome do professor; o chat agora exige a senha da sala, e as tentativas com senha errada e o tamanho das requisições são limitados" },
+      { tur: "duzeltildi", metin: "Painel de Segurança: ao rodar com direitos de administrador, opções que começam com “-” coladas nos campos são rejeitadas" },
+      { tur: "duzeltildi", metin: "CarotPot: a lista de bloqueio saiu de um diretório em que a conta do honeypot podia gravar e foi para um diretório pertencente ao root; a unidade de expiração dos bloqueios roda com restrições adicionais" },
+    ],
+  },
+  {
+    etiket: "1.2",
+    kodAdi: "Eggshell",
+    tarih: "12 de outubro de 2026",
+    tarihISO: "2026-10-12",
+    ozet:
+      "Foram adicionadas a Loja do CarotOS, a renovação da área de trabalho com o tema Arc e os ícones Papirus e a escolha do papel de parede no assistente de boas-vindas.",
+    degisiklikler: [
+      { tur: "eklendi", metin: "Loja do CarotOS: 51 aplicativos em sete categorias, instalação e remoção pelo apt, temas claro e escuro, interface em turco e inglês" },
+      { tur: "eklendi", metin: "Assistente de Boas-vindas: uma página de papel de parede com três opções, além de páginas da Verificação de USB e da Loja; o assistente agora tem quinze páginas" },
+      { tur: "eklendi", metin: "Verificação de USB: inicia em segundo plano no login" },
+      { tur: "eklendi", metin: "Poligon: opções de convidado, criar conta e entrar" },
+      { tur: "eklendi", metin: "Novos papéis de parede do CarotOS para a tela de login e a área de trabalho; a tela de inicialização mostra a versão 1.2" },
+      { tur: "degisti", metin: "O tema da área de trabalho agora é o Arc com ícones Papirus; claro ou escuro é escolhido no assistente de boas-vindas, e o escuro é o padrão" },
+      { tur: "degisti", metin: "Uma instalação nova agora começa com um dos novos papéis de parede do CarotOS como padrão" },
+    ],
+  },
+  {
+    etiket: "1.1",
+    kodAdi: "Eggshell",
+    tarih: "2 de setembro de 2026",
+    tarihISO: "2026-09-02",
+    ozet:
+      "Foi adicionado o CarotOS Poligon: pratique testes de invasão em um ambiente isolado, com aplicativos para o aluno e para o professor.",
+    degisiklikler: [
+      { tur: "eklendi", metin: "CarotOS Poligon: aplicativos para aluno e professor para praticar com hydra, nmap, john, sqlmap e tshark" },
+      { tur: "eklendi", metin: "Tarefas de defesa no Poligon com ufw e fail2ban" },
+      { tur: "duzeltildi", metin: "O tshark falhava com um erro de acesso em uma conta de usuário comum; o grupo wireshark agora é adicionado automaticamente" },
+      { tur: "duzeltildi", metin: "O nome de usuário exibido ao iniciar no modo \"Try Live\" aparecia como \"Debian Live User\"" },
+    ],
+  },
+  {
+    etiket: "1.0",
+    kodAdi: "Eggshell",
+    tarih: "19 de agosto de 2026",
+    tarihISO: "2026-08-19",
+    ozet:
+      "Primeira versão estável. Base Debian 13 “trixie”, área de trabalho XFCE, dez ferramentas de segurança e quatro aplicativos originais.",
+    degisiklikler: [
+      { tur: "eklendi", metin: "Painel de Segurança: uma interface gráfica para as dez ferramentas, com documentação dos campos e saída ao vivo" },
+      { tur: "eklendi", metin: "Assistente de Boas-vindas: uma introdução bilíngue de onze páginas com escolha de tema e idioma" },
+      { tur: "eklendi", metin: "Saúde do Sistema: vinte verificações em seis categorias, uma pontuação de saúde e doze correções com um clique" },
+      { tur: "eklendi", metin: "Verificação de USB: examina os dispositivos conectados em busca de autorun.inf, extensões duplas e extensões ocultas" },
+      { tur: "eklendi", metin: "Instalação em BIOS e UEFI, com um shim assinado para o Secure Boot" },
+      { tur: "eklendi", metin: "Conjunto completo de firmware para hardware de Wi-Fi, áudio e vídeo" },
+      { tur: "eklendi", metin: "Turco como idioma padrão, com o inglês disponível" },
+      { tur: "duzeltildi", metin: "O nikto não executava em um sistema instalado; uma dependência ausente foi adicionada" },
+      { tur: "duzeltildi", metin: "O idioma escolhido no assistente não era aplicado depois que a sessão reiniciava" },
+      { tur: "duzeltildi", metin: "Os ícones do painel e do menu estavam ausentes em alguns temas" },
+    ],
+  },
+];
+
+const etiketler: Record<string, string> = {
+  eklendi: "Adicionado",
+  duzeltildi: "Corrigido",
+  degisti: "Alterado",
+  kaldirildi: "Removido",
+};
+---
+
+<Base
+  lang="pt"
+  title="Histórico de versões — CarotOS"
+  description="O que mudou em cada versão do CarotOS: ferramentas adicionadas, erros corrigidos e mudanças que quebram a compatibilidade."
+>
+  <section class="band band--foam log__intro">
+    <div class="wrap">
+      <p class="eyebrow">Histórico de versões</p>
+      <h1 class="log__h1">O que mudou</h1>
+      <p class="lede">
+        As ferramentas adicionadas, os erros corrigidos e as mudanças que
+        quebram a compatibilidade são listados aqui a cada versão. As mesmas
+        notas são publicadas na página de versões do GitHub.
+      </p>
+      <div class="log__links">
+        <a class="btn btn--ghost" href="/pt#download">Baixar</a>
+        <a
+          class="btn btn--ghost"
+          href="https://github.com/MiracLight/CarotOS/releases"
+          target="_blank"
+          rel="noopener noreferrer">Versões no GitHub</a
+        >
+      </div>
+    </div>
+  </section>
+
+  <Wave from="#f4f9fd" to="#deedf8" />
+
+  <section class="band band--shallow">
+    <div class="wrap">
+      {
+        surumler.map((s) => (
+          <article class="rel">
+            <header class="rel__head">
+              <h2 class="rel__tag">
+                {s.etiket} <span class="rel__code">“{s.kodAdi}”</span>
+              </h2>
+              <time class="rel__date mono" datetime={s.tarihISO}>
+                {s.tarih}
+              </time>
+            </header>
+
+            <p class="rel__ozet">{s.ozet}</p>
+
+            <ul class="rel__list">
+              {s.degisiklikler.map((d) => (
+                <li class="rel__item">
+                  <span class={`tag tag--${d.tur}`}>{etiketler[d.tur]}</span>
+                  <span class="rel__text">{d.metin}</span>
+                </li>
+              ))}
+            </ul>
+          </article>
+        ))
+      }
+
+      <p class="log__son">
+        Não há versões anteriores: a 1.0 é a primeira versão estável. As
+        compilações intermediárias do desenvolvimento nunca foram publicadas.
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .log__intro {
+    padding-bottom: clamp(3rem, 6vw, 4rem);
+  }
+
+  .log__h1 {
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    margin-bottom: 1.1rem;
+  }
+
+  .log__links {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+
+  .rel {
+    max-width: 78ch;
+  }
+
+  .rel + .rel {
+    margin-top: 3.5rem;
+    padding-top: 3.5rem;
+    border-top: 1.5px solid rgba(24, 95, 165, 0.2);
+  }
+
+  .rel__head {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.9rem;
+  }
+
+  .rel__tag {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    margin: 0;
+  }
+
+  .rel__code {
+    color: var(--current);
+    font-weight: 700;
+  }
+
+  .rel__date {
+    color: var(--ink-faint);
+    font-size: 0.85rem;
+  }
+
+  .rel__ozet {
+    color: var(--ink-soft);
+    font-size: 1.02rem;
+    margin-bottom: 1.8rem;
+    max-width: var(--w-text);
+  }
+
+  .rel__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .rel__item {
+    display: grid;
+    grid-template-columns: 92px 1fr;
+    gap: 0.9rem;
+    align-items: baseline;
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid rgba(24, 95, 165, 0.13);
+  }
+
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 0.24rem 0.4rem;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .tag--eklendi {
+    background: rgba(74, 156, 120, 0.16);
+    color: #2f6f52;
+  }
+
+  .tag--duzeltildi {
+    background: rgba(55, 138, 218, 0.16);
+    color: var(--deep);
+  }
+
+  .tag--degisti {
+    background: rgba(24, 95, 165, 0.1);
+    color: var(--ink-soft);
+  }
+
+  .tag--kaldirildi {
+    background: rgba(160, 90, 90, 0.14);
+    color: #8a4646;
+  }
+
+  .rel__text {
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+
+  .log__son {
+    margin-top: 3rem;
+    font-size: 0.88rem;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 560px) {
+    .rel__item {
+      grid-template-columns: 1fr;
+      gap: 0.3rem;
+    }
+
+    .tag {
+      justify-self: start;
+    }
+  }
+</style>

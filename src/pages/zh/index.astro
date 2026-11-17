@@ -1,0 +1,850 @@
+---
+import Base from "../../layouts/Base.astro";
+import Wave from "../../components/Wave.astro";
+import Turtle from "../../components/Turtle.astro";
+import Slayt from "../../components/Slayt.astro";
+import Minigame from "../../components/Minigame.astro";
+import "../../styles/anasayfa.css";
+
+/* ------------------------------------------------------------------
+   Release info — when a new version ships, update ONLY this block.
+   Keep it in sync with src/pages/index.astro
+   ------------------------------------------------------------------ */
+const release = {
+  tag: "1.4",
+  codename: "Eggshell",
+  date: "2026年11月15日",
+  file: "carotos-1.4-amd64.iso",
+  size: "2.68 GB",
+  sha256: "baa3ca5f4bd021f720e8f6e5494c51a37877bf783166747952d417dda404f447",
+  url: "https://download.carotos.org/carotos-1.4-amd64.iso",
+  shaUrl: "https://download.carotos.org/carotos-1.4-amd64.iso.sha256",
+};
+
+/* Debian 13 "trixie" amd64 installation guide, Table 3.2 —
+   recommended minimums for a desktop install. */
+const requirements = [
+  { name: "处理器", value: "64 位（amd64），1 GHz" },
+  { name: "内存", value: "最低 1 GB，建议 2 GB" },
+  { name: "磁盘", value: "10 GB" },
+  { name: "启动方式", value: "BIOS 或 UEFI" },
+];
+
+const slides = [
+  {
+    src: "/ekranlar/masaustu.webp",
+    kucuk: "/ekranlar/kucuk/masaustu.webp",
+    alt: "带有 XFCE 面板和程序坞的 CarotOS 桌面",
+    grup: "系统",
+    baslik: "桌面",
+    aciklama: "XFCE 4，双面板布局，配有 CarotOS 壁纸。",
+  },
+  {
+    src: "/ekranlar/karsilama-1.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-1.webp",
+    alt: "欢迎向导的开始页面",
+    grup: "欢迎向导",
+    baslik: "CarotOS 1.4 “Eggshell”",
+    aciklama: "首次登录时显示的介绍，专为刚接触 Linux 的人编写。",
+  },
+  {
+    src: "/ekranlar/karsilama-2.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-2.webp",
+    alt: "欢迎向导的外观与语言页面",
+    grup: "欢迎向导",
+    baslik: "外观与语言",
+    aciklama: "选择浅色或深色主题以及系统语言，设置会在退出时应用。",
+  },
+  {
+    src: "/ekranlar/karsilama-duvar.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-duvar.webp",
+    alt: "欢迎向导的桌面背景页面，提供三个选项",
+    grup: "欢迎向导",
+    baslik: "桌面背景",
+    aciklama: "从三张 CarotOS 背景中任选一张，退出时会应用到桌面。",
+  },
+  {
+    src: "/ekranlar/karsilama-konular.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-konular.webp",
+    alt: "欢迎向导：主题选择页面",
+    grup: "欢迎向导",
+    baslik: "你想学什么？",
+    aciklama: "由你自己选择主题。学完的主题旁会出现 ✓，也可以随时跳过。",
+  },
+  {
+    src: "/ekranlar/karsilama-3.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-3.webp",
+    alt: "欢迎向导：Linux 与发行版页面",
+    grup: "欢迎向导",
+    baslik: "Linux 与发行版",
+    aciklama: "CarotOS 是什么，基于什么构建：Debian 13、Xfce 和 APT。",
+  },
+  {
+    src: "/ekranlar/karsilama-4.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-4.webp",
+    alt: "欢迎向导：桌面布局页面",
+    grup: "欢迎向导",
+    baslik: "桌面",
+    aciklama: "如何使用双面板桌面布局。",
+  },
+  {
+    src: "/ekranlar/karsilama-5.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-5.webp",
+    alt: "欢迎向导：文件系统页面",
+    grup: "欢迎向导",
+    baslik: "文件系统",
+    aciklama: "Linux 没有盘符，所有目录都在同一棵树下。",
+  },
+  {
+    src: "/ekranlar/karsilama-6.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-6.webp",
+    alt: "欢迎向导：主文件夹页面",
+    grup: "欢迎向导",
+    baslik: "你的主文件夹",
+    aciklama: "主文件夹，用来存放你的个人文件。",
+  },
+  {
+    src: "/ekranlar/karsilama-7.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-7.webp",
+    alt: "欢迎向导：安装软件页面",
+    grup: "欢迎向导",
+    baslik: "安装软件",
+    aciklama: "软件从可信的软件源安装，而不是下载 .exe 文件。",
+  },
+  {
+    src: "/ekranlar/karsilama-8.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-8.webp",
+    alt: "欢迎向导：安全面板介绍页面",
+    grup: "欢迎向导",
+    baslik: "CarotOS 安全面板",
+    aciklama: "无需输入命令即可使用安全工具。",
+  },
+  {
+    src: "/ekranlar/karsilama-9.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-9.webp",
+    alt: "欢迎向导：已安装的安全工具列表",
+    grup: "欢迎向导",
+    baslik: "已安装的安全工具",
+    aciklama: "CarotOS 自带的十款安全工具都可以从面板中使用。",
+  },
+  {
+    src: "/ekranlar/karsilama-ag.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-ag.webp",
+    alt: "欢迎向导：网络与隐私页面",
+    grup: "欢迎向导",
+    baslik: "网络与隐私",
+    aciklama: "在共享网络中保护你的地址和名称，提供网络发现（mDNS）和伪造 MAC 选项。",
+  },
+  {
+    src: "/ekranlar/karsilama-guvenlik-duvari.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-guvenlik-duvari.webp",
+    alt: "欢迎向导：防火墙页面",
+    grup: "欢迎向导",
+    baslik: "防火墙",
+    aciklama: "防火墙的作用、为什么默认关闭以及何时应该开启，并附有开关。",
+  },
+  {
+    src: "/ekranlar/karsilama-disk.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-disk.webp",
+    alt: "欢迎向导：磁盘加密与交换分区页面",
+    grup: "欢迎向导",
+    baslik: "磁盘加密与交换分区",
+    aciklama: "磁盘加密与交换分区，让电脑被盗时你的数据依然安全。",
+  },
+  {
+    src: "/ekranlar/karsilama-terminal.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-terminal.webp",
+    alt: "欢迎向导：终端入门页面",
+    grup: "欢迎向导",
+    baslik: "终端入门",
+    aciklama: "掌握少数几条命令就足以入门。",
+  },
+  {
+    src: "/ekranlar/karsilama-acikla.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-acikla.webp",
+    alt: "欢迎向导：命令解释器页面",
+    grup: "欢迎向导",
+    baslik: "命令解释器",
+    aciklama: "运行命令之前先弄清它的作用。在终端中按 Alt+E 打开。",
+  },
+  {
+    src: "/ekranlar/karsilama-etik.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-etik.webp",
+    alt: "欢迎向导：道德与责任页面",
+    grup: "欢迎向导",
+    baslik: "道德与责任",
+    aciklama: "只在你获得许可的地方使用安全工具。",
+  },
+  {
+    src: "/ekranlar/karsilama-dogrula.webp",
+    kucuk: "/ekranlar/kucuk/karsilama-dogrula.webp",
+    alt: "欢迎向导：验证下载的 ISO 页面",
+    grup: "欢迎向导",
+    baslik: "验证你的下载",
+    aciklama: "用 SHA-256 和签名确认 ISO 确实来自 CarotOS。",
+  },
+  {
+    src: "/ekranlar/guvenlik-paneli.webp",
+    kucuk: "/ekranlar/kucuk/guvenlik-paneli.webp",
+    alt: "CarotOS 安全面板，显示工具列表和 nmap 表单",
+    grup: "应用",
+    baslik: "安全面板",
+    aciklama: "每个工具都在屏幕上有说明，命令输出就显示在旁边。",
+  },
+  {
+    src: "/ekranlar/sistem-sagligi.webp",
+    kucuk: "/ekranlar/kucuk/sistem-sagligi.webp",
+    alt: "CarotOS 系统健康，显示健康评分、检查类别和需要关注的发现",
+    grup: "应用",
+    baslik: "系统健康",
+    aciklama: "通过 24 项检查对系统进行检测，并以健康评分显示结果。",
+  },
+  {
+    src: "/ekranlar/kurtarma.webp",
+    kucuk: "/ekranlar/kucuk/kurtarma.webp",
+    alt: "CarotOS 恢复，显示恢复点列表以及创建、还原和删除按钮",
+    grup: "应用",
+    baslik: "恢复",
+    aciklama: "为系统创建恢复点，更新导致故障时可回到某个恢复点。",
+  },
+  {
+    src: "/ekranlar/usb-denetimi.webp",
+    kucuk: "/ekranlar/kucuk/usb-denetimi.webp",
+    alt: "CarotOS USB 检查，按严重程度排序显示 U 盘上的五项可疑发现",
+    grup: "应用",
+    baslik: "USB 检查",
+    aciklama: "发现按严重程度排序，并附有原因和文件路径。",
+  },
+  {
+    src: "/ekranlar/magaza.webp",
+    kucuk: "/ekranlar/kucuk/magaza.webp",
+    alt: "CarotOS 商店，左侧为分类，右侧为精选应用卡片",
+    grup: "应用",
+    baslik: "CarotOS 商店",
+    aciklama: "十个分类中的 220 款应用，一键安装和卸载。",
+  },
+  {
+    src: "/ekranlar/carotene-tarama.webp",
+    kucuk: "/ekranlar/kucuk/carotene-tarama.webp",
+    alt: "Carotene 扫描过程中，显示已扫描文件数、发现和当前路径",
+    grup: "应用",
+    baslik: "Carotene · 扫描",
+    aciklama: "快速扫描、主文件夹扫描和自定义扫描。已扫描文件数和发现实时更新。",
+  },
+  {
+    src: "/ekranlar/carotene.webp",
+    kucuk: "/ekranlar/kucuk/carotene.webp",
+    alt: "Carotene 扫描结果，发现两个威胁，并有隔离、删除和忽略按钮",
+    grup: "应用",
+    baslik: "Carotene · 结果",
+    aciklama: "发现的每个文件都可以隔离、删除或忽略。",
+  },
+  {
+    src: "/ekranlar/carotpot.webp",
+    kucuk: "/ekranlar/kucuk/carotpot.webp",
+    alt: "CarotPot 仪表板，显示陷阱状态、每小时活动图表、各陷阱的事件数和实时动态",
+    grup: "应用",
+    baslik: "CarotPot · 仪表板",
+    aciklama: "仪表板显示每小时活动、各陷阱的事件数、最活跃的攻击者和实时动态。",
+  },
+  {
+    src: "/ekranlar/carotpot-saldirgan.webp",
+    kucuk: "/ekranlar/kucuk/carotpot-saldirgan.webp",
+    alt: "CarotPot 攻击者档案，显示风险评分、时间线、尝试过的用户名和已遮蔽的密码",
+    grup: "应用",
+    baslik: "CarotPot · 攻击者档案",
+    aciklama: "攻击者的风险评分、时间线、尝试过的用户名和已遮蔽的密码。",
+  },
+  {
+    src: "/ekranlar/carotpot-tuzaklar.webp",
+    kucuk: "/ekranlar/kucuk/carotpot-tuzaklar.webp",
+    alt: "CarotPot 陷阱页面，共八个陷阱，每个都有端口和设备身份",
+    grup: "应用",
+    baslik: "CarotPot · 陷阱",
+    aciklama: "八个陷阱，每个都可以选择端口和设备身份。",
+  },
+  {
+    src: "/ekranlar/filenor.webp",
+    kucuk: "/ekranlar/kucuk/filenor.webp",
+    alt: "Filenor，显示四个图片文件的列表、目标格式选项和转换选项",
+    grup: "应用",
+    baslik: "Filenor",
+    aciklama: "为添加的文件选择目标格式并设置转换选项。",
+  },
+  {
+    src: "/ekranlar/former.webp",
+    kucuk: "/ekranlar/kucuk/former.webp",
+    alt: "CarotOS Former，显示 nmap 的分步动画讲解",
+    grup: "应用",
+    baslik: "CarotOS Former",
+    aciklama: "配有动画的安全工具分步指南。",
+  },
+  {
+    src: "/ekranlar/gsd.webp",
+    kucuk: "/ekranlar/kucuk/gsd.webp",
+    alt: "CarotOS GSD，显示 nmap 词条、示例命令和相关术语",
+    grup: "应用",
+    baslik: "CarotOS GSD",
+    aciklama: "可搜索的土耳其语和英语词典，收录 197 个术语。",
+  },
+];
+
+const facts = [
+  { num: "10", label: "款精选安全工具" },
+  { num: "13", label: "款原创应用" },
+  { num: "~600 MB", label: "空闲时内存占用" },
+  { num: "13", label: "Debian 版本：trixie" },
+];
+
+const philosophy = [
+  {
+    title: "工具的选择",
+    text: "预装的工具涵盖网络扫描、流量分析、Web 与密码测试以及防火墙配置。数量刻意保持很少，因为每个工具都需要专门编写的界面和文档。",
+  },
+  {
+    title: "默认语言",
+    text: "系统默认以土耳其语安装。可以在欢迎向导或会话设置中切换为英语。应用界面同时提供两种语言。",
+  },
+  {
+    title: "Debian 13 基础",
+    text: "保持软件源较新，工具版本就能与人们学习所用的资料保持一致。版本不一致是新手最常卡住的地方之一。",
+  },
+  {
+    title: "开源",
+    text: "为本项目编写的应用使用 Python 和 GTK3 构建，以 GPL-3.0 协议发布。源代码和 ISO 构建配置均在 GitHub 上公开。",
+  },
+];
+
+const apps = [
+  {
+    title: "安全面板",
+    icon: "/ikonlar/ikon-guvenlik-paneli.webp",
+    text: "为 nmap、tcpdump、hydra 等十款安全工具提供的图形界面，无需输入命令即可使用。每个工具都在屏幕上有说明，结果实时显示。每个工具旁的“解释”按钮会用通俗的语言说明命令的各个部分，在终端中按 Alt+E 会打开同一个命令解释器。道德防护会在扫描前要求你确认目标，并记住你已批准的网络；可以在设置中重置。",
+  },
+  {
+    title: "欢迎向导",
+    icon: "/ikonlar/ikon-karsilama.webp",
+    text: "首次启动 CarotOS 时打开的入门指南。它的 31 个页面以土耳其语和英语讲解 Linux 的基本概念、桌面以及 CarotOS 自带的应用。你也可以在这里选择主题、语言和桌面背景。主题由你自己挑选：网络与隐私、防火墙、磁盘加密、安装 CarotOS、与 Windows 双系统安装、终端、命令解释器、道德以及验证下载的 ISO，各有一张独立的卡片。在壁纸页面可以选择开启现代桌面主题（Carot Sleek）；关闭后会恢复你之前的外观。",
+  },
+  {
+    title: "系统健康",
+    icon: "/ikonlar/ikon-sistem-sagligi.webp",
+    text: "检查电脑整体状况的工具。它运行 24 项检查，涵盖系统、更新、网络与防火墙、防护层、账户和存储，并以健康评分显示结果。DHCP、mDNS 等桌面环境中预期会出现的监听端口不会拉低评分，你也可以在这里开启或关闭网络发现（mDNS）。大多数问题可以一键修复，可以运行详细扫描，结果还能保存为报告。",
+  },
+  {
+    title: "CarotOS 恢复",
+    icon: "/ikonlar/ikon-kurtarma.webp",
+    yeni: "1.4",
+    text: "当更新或错误的设置导致系统出问题时，可以让你回到更早的状态，类似于 Windows 的系统还原。你可以手动创建恢复点，apt 安装或更新软件包时也会自动创建一个。每个恢复点包含 /etc、/root 和已安装软件包列表，只有发生变化的文件才占用空间。它不会触碰你的个人文件，因此不能代替备份。",
+  },
+  {
+    title: "USB 检查",
+    icon: "/ikonlar/ikon-usb-denetimi.webp",
+    text: "在 U 盘上查找恶意软件迹象的工具。它在登录时于后台启动，插入 U 盘时会检查 autorun.inf 文件、双重扩展名以及伪装成文件夹的快捷方式。这项检查不会读取文件内容。你也可以启动详细的 ClamAV 扫描。发现的内容只会被报告，绝不会被改动。",
+  },
+  {
+    title: "CarotOS Poligon",
+    icon: "/ikonlar/ikon-poligon-ogrenci.webp",
+    text: "让学生在安全环境中学习渗透测试的应用。任务使用 hydra、nmap、john、sqlmap 和 tshark 完成，也可以用 ufw 和 fail2ban 练习防御。全班还可以举办 CTF 比赛：每位学生都有自己的 flag，成绩显示在实时排行榜上。防守视角会显示针对虚假服务的攻击以及 ufw 和 fail2ban 的状态。一切都留在你自己的电脑上。",
+  },
+  {
+    title: "CarotOS Poligon 教师版",
+    icon: "/ikonlar/ikon-poligon-ogretmen.webp",
+    text: "供教师使用的课堂管理应用。一键创建课堂房间，跟踪每位学生的进度，布置任务，并向指定学生发送提示。它还能开始和结束 CTF 比赛，跟踪实时成绩，并把结果保存为 CSV。",
+  },
+  {
+    title: "CarotOS 商店",
+    icon: "/ikonlar/ikon-magaza.webp",
+    yeni: "1.2",
+    text: "一个软件商店，按十个分类列出 Debian 软件源中的 220 款应用。可以一键安装和卸载应用。提供浅色和深色主题，以及土耳其语和英语界面。",
+  },
+  {
+    title: "Carotene",
+    icon: "/ikonlar/ikon-carotene.webp",
+    yeni: "1.3",
+    text: "基于 ClamAV 的杀毒应用。提供快速扫描、主文件夹扫描，以及对你所选任意文件夹的扫描。被感染的文件会移入隔离区，病毒库可在应用内更新，过去的扫描会保存在历史记录中。它不安装任何后台服务，只在你启动时才扫描。只有扫描顺利完成时，才会显示“干净”的结果。",
+  },
+  {
+    title: "CarotPot",
+    icon: "/ikonlar/ikon-carotpot.webp",
+    yeni: "1.3",
+    text: "在本地网络中捕捉可疑活动的陷阱系统。它开放 SSH、Telnet、FTP 和 MySQL 等虚假服务，记录连接这些服务的设备并向你发出警告。实际上没有人能登录。诱饵文件被打开或修改时它也会发出警告，并且不会在开机时自动启动。每个攻击者都有风险评分和时间线；你可以封锁他们、限时封锁，或添加备注。",
+  },
+  {
+    title: "Filenor",
+    icon: "/ikonlar/ikon-filenor.webp",
+    yeni: "1.3",
+    text: "一个转换器，在同一个界面中转换图片、音频、视频、文档、电子表格、演示文稿和字体文件。它可以合并、拆分、旋转、压缩和加密 PDF 文件，并对扫描文档进行文字识别（OCR）。它绝不会覆盖已有文件，并提供命令行版本。CarotOS 已预装它，也可以下载用于 Debian、Ubuntu 和 Windows 的版本。",
+    links: [
+      { label: "下载 Filenor（.deb 和 Windows .exe）", url: "https://github.com/MiracLight/filenor/releases/latest" },
+      { label: "源代码", url: "https://github.com/MiracLight/filenor" },
+    ],
+  },
+  {
+    title: "CarotOS Former",
+    icon: "/ikonlar/ikon-former.webp",
+    yeni: "1.3",
+    text: "用动画讲解安全工具的指南。安全面板中的每个工具，以及 CarotPot 和 Carotene，都配有说明、可播放的动画和“自己动手试试”部分。其中包含 CTF 比赛、命令解释器、道德、磁盘加密、ISO 验证和防守视角等主题。支持土耳其语和英语。",
+  },
+  {
+    title: "CarotOS GSD",
+    icon: "/ikonlar/ikon-gsd.webp",
+    yeni: "1.3",
+    text: "通用系统词典（General System Dictionary），收录 197 个关于 Linux、网络、网络安全、密码学和计算机科学的术语。可以搜索术语、查看示例命令并跳转到相关术语。提供土耳其语和英语。",
+  },
+];
+
+const poligonApps = [
+  {
+    title: "CarotOS Poligon",
+    icon: "/ikonlar/ikon-poligon-ogrenci.webp",
+    screenshot: "/ekranlar/poligon-ogrenci.webp",
+    alt: "CarotOS Poligon 学生端应用：访客、创建账户和登录选项",
+    text: "可以不需要账户，以访客身份使用，也可以用用户账户登录。登录账户的进度会被保存。任务可以单独完成，也可以加入课堂房间一起完成。",
+  },
+  {
+    title: "CarotOS Poligon 教师版",
+    icon: "/ikonlar/ikon-poligon-ogretmen.webp",
+    screenshot: "/ekranlar/poligon-ogretmen.webp",
+    alt: "CarotOS Poligon 教师端应用：房间代码、房间密码、学生列表和提示输入框",
+    text: "一键生成房间代码和密码。学生和班级视图、出题以及已保存的题目位于不同的标签页。提示可以发给单个学生，也可以发给全班。",
+  },
+];
+
+const securityApps = [
+  {
+    title: "CarotPot",
+    icon: "/ikonlar/ikon-carotpot.webp",
+    screenshot: "/ekranlar/carotpot.webp",
+    ratio: "1280 / 820",
+    alt: "CarotPot 仪表板：陷阱已开启、每小时活动图表、各陷阱的事件数、最活跃的攻击者和实时动态",
+    text: "检测本地网络中扫描这台电脑或尝试登录它的设备。它开放八个虚假服务：SSH、Web 面板、Telnet、FTP、VNC、RDP、MySQL 和 Redis。仪表板显示最近 24 小时的活动和最活跃的攻击者。攻击者档案列出尝试过的用户名、已遮蔽的密码和风险评分。封锁设备前会征求你的确认。",
+  },
+  {
+    title: "Carotene",
+    icon: "/ikonlar/ikon-carotene.webp",
+    screenshot: "/ekranlar/carotene.webp",
+    ratio: "1040 / 700",
+    alt: "Carotene：扫描结果，发现两个威胁，并显示病毒库的更新时间和扫描选项",
+    text: "使用 ClamAV 运行快速扫描、主文件夹扫描和自定义文件夹扫描。扫描进行时，已扫描文件数和发现会实时更新。发现的文件可以隔离、删除或忽略。病毒库的更新时间显示在主界面上，可在应用内更新。结果干净并不保证文件安全，只表示没有发现已知特征。",
+  },
+];
+
+const tools = [
+  { name: "nmap", job: "网络和端口扫描" },
+  { name: "tcpdump", job: "数据包捕获" },
+  { name: "tshark", job: "流量分析" },
+  { name: "aircrack-ng", job: "无线网络测试" },
+  { name: "nikto", job: "Web 服务器扫描" },
+  { name: "sqlmap", job: "SQL 注入测试" },
+  { name: "john", job: "密码强度分析" },
+  { name: "hydra", job: "认证测试" },
+  { name: "ufw", job: "防火墙" },
+  { name: "fail2ban", job: "入侵防御" },
+];
+---
+
+<Base
+  lang="zh"
+  title="CarotOS — 学习网络安全的 Linux 发行版"
+  description="基于 Debian 13、面向教学的 Linux 发行版，内置十款安全工具和十三个原创应用。"
+>
+  {/* ============================================================
+      HERO
+      ============================================================ */}
+  <section class="band band--foam hero">
+    <div class="wrap hero__inner">
+      <div class="hero__text">
+        <p class="eyebrow">Debian 13 · XFCE · amd64</p>
+        <h1>少而精，讲透彻。</h1>
+        <p class="lede hero__lede">
+          CarotOS 是为网络安全教学打造的 Linux 发行版，内置十款安全工具和十三个为本项目编写的应用。
+        </p>
+
+        <div class="hero__actions">
+          <a class="btn btn--solid" href="#download">
+            <span>下载</span>
+            <span class="hero__size">{release.size}</span>
+          </a>
+          <a
+            class="btn btn--ghost"
+            href="https://github.com/MiracLight/CarotOS"
+            target="_blank"
+            rel="noopener noreferrer">源代码</a
+          >
+        </div>
+      </div>
+
+      <div class="hero__art" aria-hidden="true">
+        <span class="ripple ripple--1"></span>
+        <span class="ripple ripple--2"></span>
+        <span class="ripple ripple--3"></span>
+        <div class="hero__turtle" data-minigame-trigger>
+          <Turtle shell="#378ADA" body="#185FA5" />
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <dl class="facts">
+        {
+          facts.map((f) => (
+            <div class="facts__item">
+              <dt class="facts__num">{f.num}</dt>
+              <dd class="facts__label">{f.label}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <Wave from="#f4f9fd" to="#deedf8" />
+
+  {/* ============================================================
+      PHILOSOPHY
+      ============================================================ */}
+  <section id="philosophy" class="band band--shallow">
+    <div class="wrap">
+      <p class="eyebrow">理念</p>
+      <h2 class="sec__title">范围与设计原则</h2>
+      <p class="lede sec__lede">
+        CarotOS 不是那些自带庞大工具集的发行版的替代品。它在 Debian 安装的基础上增加十款工具和操作它们的界面。目标不是堆高工具数量，而是打造一个能在课堂上正常使用的基础系统。
+      </p>
+
+      <div class="grid grid--2 sec__grid">
+        {
+          philosophy.map((p) => (
+            <article class="card">
+              <h3>{p.title}</h3>
+              <p>{p.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <Wave from="#deedf8" to="#a9cfea" />
+
+  {/* ============================================================
+      WHAT'S INSIDE
+      ============================================================ */}
+  <section id="inside" class="band band--tide">
+    <div class="wrap">
+      <p class="eyebrow">应用</p>
+      <h2 class="sec__title">应用与工具</h2>
+      <p class="lede sec__lede">
+        为本项目用 Python 和 GTK3 编写的十三个应用，以 GPL-3.0 协议发布。
+      </p>
+
+      <div class="grid grid--2 sec__grid">
+        {
+          apps.map((a, i) => (
+            <article class="card app">
+              {a.icon ? (
+                <img
+                  class="app__logo"
+                  src={a.icon}
+                  alt=""
+                  width="44"
+                  height="44"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : (
+                <span class="app__no">{String(i + 1).padStart(2, "0")}</span>
+              )}
+              <div>
+                <h3>
+                  {a.title}
+                  {a.yeni && <span class="app__tag">{a.yeni}</span>}
+                </h3>
+                <p>{a.text}</p>
+                {a.links && (
+                  <p class="app__links">
+                    {a.links.map((l) => (
+                      <a href={l.url} rel="noopener">{l.label}</a>
+                    ))}
+                  </p>
+                )}
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="tools">
+        <h3 class="tools__title">预装工具</h3>
+        <ul class="tools__list">
+          {
+            tools.map((t) => (
+              <li class="tool">
+                <span class="tool__hex" aria-hidden="true" />
+                <span class="tool__name">{t.name}</span>
+                <span class="tool__job">{t.job}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="gorseller">
+        <h3 class="tools__title">截图</h3>
+        <Slayt lang="zh" slaytlar={slides} />
+      </div>
+
+      <div class="poligon">
+        <h3 class="tools__title">CarotOS Poligon</h3>
+        <p class="lede poligon__lede">
+          为学生和教师提供的隔离、安全的渗透测试环境。教师创建课堂房间，学生在自己的电脑上用真实工具完成任务。没有暴露在网络上的组件，所有操作都在本机运行。
+        </p>
+        <div class="grid grid--2 poligon__grid">
+          {
+            poligonApps.map((p) => (
+              <article class="card poligon__card">
+                <div class="poligon__head">
+                  <img src={p.icon} alt="" class="poligon__ikon" width="40" height="40" />
+                  <h4>{p.title}</h4>
+                </div>
+                <p>{p.text}</p>
+                <div class="poligon__ekran-cerceve">
+                  <img
+                    src={p.screenshot}
+                    alt={p.alt}
+                    class="poligon__ekran"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="poligon">
+        <h3 class="tools__title">CarotPot 与 Carotene</h3>
+        <p class="lede poligon__lede">
+          两个用于网络和文件安全的应用。CarotPot 用虚假服务捕捉本地网络中的扫描和登录尝试。Carotene 用 ClamAV 扫描文件。除非你启动，否则两者都不会在后台运行。
+        </p>
+        <div class="grid grid--2 poligon__grid">
+          {
+            securityApps.map((p) => (
+              <article class="card poligon__card">
+                <div class="poligon__head">
+                  <img src={p.icon} alt="" class="poligon__ikon" width="40" height="40" />
+                  <h4>{p.title}</h4>
+                </div>
+                <p>{p.text}</p>
+                <div class="poligon__ekran-cerceve" style={`aspect-ratio: ${p.ratio}`}>
+                  <img
+                    src={p.screenshot}
+                    alt={p.alt}
+                    class="poligon__ekran"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Wave from="#a9cfea" to="#185fa5" />
+
+  {/* ============================================================
+      DOWNLOAD
+      ============================================================ */}
+  <section id="download" class="band band--deep">
+    <div class="wrap">
+      <p class="eyebrow">下载</p>
+      <h2 class="sec__title">版本 {release.tag} “{release.codename}”</h2>
+      <p class="lede sec__lede">
+        直接在 Live 桌面上点击“安装 CarotOS”图标即可安装。BIOS 和 UEFI 安装均已测试。ISO 中附带已签名的 shim，支持安全启动（Secure Boot）。还包含 Wi-Fi、音频和显卡硬件所需的固件包。
+      </p>
+
+      <div class="dl">
+        <article class="dl__card">
+          <div class="dl__head">
+            <div>
+              <p class="dl__arch">桌面版</p>
+              <p class="dl__isa mono">x86_64</p>
+            </div>
+            <span class="dl__badge">稳定版 · {release.codename}</span>
+          </div>
+
+          <ul class="dl__meta">
+            <li><span>文件</span><span class="mono">{release.file}</span></li>
+            <li><span>大小</span><span class="mono">{release.size}</span></li>
+            <li><span>桌面环境</span><span>XFCE</span></li>
+            <li><span>发布日期</span><span>{release.date}</span></li>
+          </ul>
+
+          <a class="btn btn--light dl__btn" href={release.url}>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M12 3v13m0 0 5-5m-5 5-5-5M4 20h16"
+                stroke="currentColor"
+                stroke-width="2.1"
+                stroke-linecap="round"
+                stroke-linejoin="round"></path>
+            </svg>
+            <span>下载 ISO</span>
+          </a>
+
+          <div class="verify">
+            <p class="verify__hash">
+              <span class="verify__hash-label">SHA-256</span>
+              <code>{release.sha256}</code>
+            </p>
+            <a class="verify__link" href={release.shaUrl}
+              >{release.file}.sha256</a
+            >
+          </div>
+        </article>
+
+        <div class="dl__yan">
+          <div class="req">
+            <p class="dl__soon-title">系统要求</p>
+            <ul class="req__list">
+              {
+                requirements.map((r) => (
+                  <li>
+                    <span>{r.name}</span>
+                    <span>{r.value}</span>
+                  </li>
+                ))
+              }
+            </ul>
+            <p class="req__not">
+              这是 Debian 13 “trixie” 桌面安装的建议最低配置。XFCE 比 GNOME 或 KDE Plasma 占用的资源更少。Debian 13 不再支持 i386 架构。
+            </p>
+          </div>
+
+          <div class="dl__soon">
+          <p class="dl__soon-title">计划中的版本</p>
+
+          <article class="soon">
+            <div>
+              <p class="soon__arch">CarotDeck</p>
+              <p class="soon__isa mono">arm64</p>
+            </div>
+            <p class="soon__note">
+              运行于 Orange Pi 5、使用 i3wm 的便携版本。空闲内存占用目标为 200 MB。
+            </p>
+            <span class="soon__tag">开发中</span>
+          </article>
+
+            <p class="dl__soon-foot">
+              计划推出适用于其他桌面环境的版本。
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Wave from="#185fa5" to="#0b2e52" />
+
+  {/* ============================================================
+      RELEASES / NEWSLETTER
+      ============================================================ */}
+  <section id="releases" class="band band--abyss news">
+    <div class="wrap">
+      <p class="eyebrow">版本发布</p>
+      <h2 class="sec__title">版本发布通知</h2>
+      <p class="lede sec__lede">
+        发布说明在 GitHub 上发布：新增的工具、修复的错误、不向后兼容的变更。
+      </p>
+
+      <div class="news__grid">
+        <div class="news__card news__card--wide">
+          <h3>电子邮件通讯</h3>
+          <p>
+            通过电子邮件发送发布说明。邮箱地址不会用于其他任何用途。
+          </p>
+
+          <form class="sub" id="newsletter">
+            <label class="visually-hidden" for="email">你的电子邮箱地址</label
+            >
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              placeholder="you@example.com"
+              autocomplete="email"
+            />
+            <button class="btn btn--light" type="submit">订阅</button>
+          </form>
+          <p class="sub__note">
+            点击“订阅”会打开邮件应用，并生成一封写好的邮件。
+          </p>
+        </div>
+
+        <div class="news__card">
+          <h3>GitHub</h3>
+          <p>
+            在仓库中选择 <strong>Watch → Custom → Releases</strong>，每次发布都会收到通知。
+          </p>
+          <a
+            class="btn btn--outline-light news__btn"
+            href="https://github.com/MiracLight/CarotOS/releases"
+            target="_blank"
+            rel="noopener noreferrer">发布页面</a
+          >
+        </div>
+
+        <div class="news__card">
+          <h3>RSS / Atom</h3>
+          <p>
+            可以将发布订阅源直接添加到阅读器中，无需注册。
+          </p>
+          <a
+            class="btn btn--outline-light news__btn"
+            href="https://github.com/MiracLight/CarotOS/releases.atom"
+            target="_blank"
+            rel="noopener noreferrer">订阅源地址</a
+          >
+        </div>
+      </div>
+
+      <p class="news__last">
+        最新版本 <strong>{release.tag}</strong> — {release.date}
+      </p>
+    </div>
+  </section>
+  <Minigame lang="zh" />
+</Base>
+
+<script>
+  /* Newsletter form.
+     Not wired to an email service yet; on submit it opens the visitor's
+     mail app with a prepared message. Once you move to Buttondown,
+     Mailchimp or similar, delete this block and give the form an
+     action + method instead. */
+  const form = document.getElementById("newsletter") as HTMLFormElement | null;
+  form?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const field = document.getElementById("email") as HTMLInputElement;
+    if (!field.checkValidity()) {
+      field.reportValidity();
+      return;
+    }
+    const subject = encodeURIComponent("订阅通讯");
+    const body = encodeURIComponent(
+      `你好，\n\n我想订阅 CarotOS 的发布通讯。\n我的邮箱地址：${field.value}\n`,
+    );
+    window.location.href = `mailto:carotosproject@gmail.com?subject=${subject}&body=${body}`;
+  });
+</script>

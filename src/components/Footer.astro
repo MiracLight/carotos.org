@@ -1,66 +1,15 @@
 ---
 import Turtle from "./Turtle.astro";
+import type { Dil } from "../i18n/diller";
+import { metin } from "../i18n/metin";
 
 interface Props {
-  lang: "tr" | "en";
+  lang: Dil;
 }
 
 const { lang } = Astro.props;
 
-const t = {
-  tr: {
-    eyebrow: "İletişim",
-    heading: "İletişim",
-    lede: "Hata bildirimleri ve katkılar GitHub üzerinden, sorular ve tartışma Reddit'te. Diğer konular için e-posta.",
-    made: "Yapımcılar",
-    team: [
-      {
-        name: "Yusuf Miraç Üzümcüler",
-        title: "Kurucu ve Baş Sistem Mimarı",
-        role: "Çekirdek sistem geliştirme, mimari ve tasarım, altyapı yönetimi.",
-      },
-      {
-        name: "Metin Ege Boyar",
-        title: "Kurucu Ortak, Topluluk ve Büyüme",
-        role: "Topluluk yönetimi, iletişim stratejisi ve proje koordinasyonu.",
-      },
-    ],
-    licence: "GPL-3.0 lisansı altında yayımlanır. Debian 13 “trixie” tabanlıdır.",
-    channels: [
-      { key: "github", label: "GitHub", sub: "Kaynak kod, sürümler, hata kaydı" },
-      { key: "youtube", label: "YouTube", sub: "Anlatım videoları" },
-      { key: "instagram", label: "Instagram", sub: "Duyurular" },
-      { key: "reddit", label: "Reddit", sub: "Topluluk ve tartışma" },
-      { key: "mail", label: "E-posta", sub: "Genel iletişim" },
-    ],
-  },
-  en: {
-    eyebrow: "Contact",
-    heading: "Contact",
-    lede: "Bug reports and contributions go through GitHub, questions and discussion on Reddit. Everything else by email.",
-    made: "Built by",
-    team: [
-      {
-        name: "Yusuf Miraç Üzümcüler",
-        title: "Founder & Lead System Architect",
-        role: "Core system development, architecture and design, infrastructure management.",
-      },
-      {
-        name: "Metin Ege Boyar",
-        title: "Co-Founder, Community & Growth",
-        role: "Community management, communications strategy and project coordination.",
-      },
-    ],
-    licence: "Released under the GPL-3.0 licence. Based on Debian 13 “trixie”.",
-    channels: [
-      { key: "github", label: "GitHub", sub: "Source, releases, issue tracker" },
-      { key: "youtube", label: "YouTube", sub: "Walkthrough videos" },
-      { key: "instagram", label: "Instagram", sub: "Announcements" },
-      { key: "reddit", label: "Reddit", sub: "Community and discussion" },
-      { key: "mail", label: "Email", sub: "General enquiries" },
-    ],
-  },
-}[lang];
+const t = metin(lang).footer;
 
 const urls: Record<string, { href: string; display: string }> = {
   github: {

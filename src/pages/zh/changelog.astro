@@ -1,0 +1,344 @@
+---
+import Base from "../../layouts/Base.astro";
+import Wave from "../../components/Wave.astro";
+
+/* ------------------------------------------------------------------
+   CHANGELOG
+
+   When a new release ships, add an object to the FRONT of this array.
+   Mirror the same entry in src/pages/surum-notlari.astro
+   ------------------------------------------------------------------ */
+const surumler = [
+  {
+    etiket: "1.4",
+    kodAdi: "Eggshell",
+    tarih: "2026年11月15日",
+    tarihISO: "2026-11-15",
+    ozet:
+      "Poligon 新增了 CTF 比赛和防守视角，本次发布还加入了命令解释器、道德防护、ISO 签名验证以及可选的 Carot Sleek 桌面主题。更新后的 ISO 可以在 Live 桌面上通过图形安装程序安装 CarotOS，并新增了恢复应用。欢迎向导扩充到 31 页，商店扩充到 220 款应用，GSD 扩充到 197 个术语；启动画面重新设计，每个应用都经过了安全审查。",
+    degisiklikler: [
+      { tur: "eklendi", metin: "在 Live 桌面上安装：桌面上的“安装 CarotOS”图标会打开 Calamares 安装程序；支持土耳其语和英语、磁盘加密（LUKS）、从 ISO 离线安装，安装过程中会播放 CarotOS 幻灯片。原有的安装程序仍保留在启动菜单中作为备用" },
+      { tur: "eklendi", metin: "恢复：将系统当前状态保存为恢复点，出问题时可以回到该状态；入口位于顶部面板和 Carot Sleek 侧边面板" },
+      { tur: "eklendi", metin: "欢迎向导：新增“安装 CarotOS”页面，Former 中新增安装导览；向导现在共 31 页" },
+      { tur: "eklendi", metin: "安装程序中的键盘：根据所选语言推荐键盘布局；所选的布局和变体（例如土耳其语 F 键盘）会在安装过程中立即生效，并写入已安装的系统" },
+      { tur: "degisti", metin: "欢迎向导：Carot Sleek 开关移到了桌面壁纸页面" },
+      { tur: "eklendi", metin: "Poligon CTF 比赛：教师面板（开始、结束、实时排行榜、CSV）、包含 12 道题的题包、每位学生独立的 flag、动态计分、首杀加分、提示扣分和成绩冻结" },
+      { tur: "eklendi", metin: "Poligon 防守视角：针对虚假服务的攻击事件日志、发现分析，以及 ufw 和 fail2ban 的状态" },
+      { tur: "eklendi", metin: "命令解释器：在运行命令之前用通俗的语言说明命令的各个部分；在终端中按 Alt+E 打开，安全面板中每个工具旁都有“解释”按钮" },
+      { tur: "eklendi", metin: "道德防护：安全面板在扫描前要求你确认目标，并记住已批准的网络；可以在设置中重置" },
+      { tur: "eklendi", metin: "欢迎向导：新增网络与隐私、防火墙、磁盘加密与交换分区、终端、命令解释器、道德与责任、与 Windows 双系统以及验证你的下载等页面；可以自选主题；向导现在共 29 页" },
+      { tur: "eklendi", metin: "ISO 验证：通过 SHA256SUMS 和分离签名，可以确认下载的文件确实来自 CarotOS；欢迎向导和 Former 中有分步讲解" },
+      { tur: "eklendi", metin: "Former：新增 CTF 比赛、命令解释器、道德、磁盘加密、ISO 验证和防守视角等主题；共 20 个主题" },
+      { tur: "eklendi", metin: "Carot Sleek：可选的现代桌面主题，带有圆角、阴影和模糊效果、底部程序坞，以及从边缘滑出的 CarotOS 侧边面板；可在欢迎向导中开启，关闭后会恢复之前的外观" },
+      { tur: "eklendi", metin: "系统健康：网络发现（mDNS）可以用一个按钮关闭和开启；DHCP、mDNS 等桌面环境中预期会出现的监听端口不再拉低“监听端口”的评分" },
+      { tur: "eklendi", metin: "网络与隐私：新增可选的伪造 MAC 开关（默认关闭）；已签名的 apt.carotos.org 软件源的密钥环软件包随 ISO 一同提供" },
+      { tur: "eklendi", metin: "系统健康：新增磁盘上未加密交换分区的检查，并提供一键停用操作（zram 不算磁盘，fstab 会先备份）" },
+      { tur: "eklendi", metin: "欢迎向导：新增 ufw 开关；说明防火墙为什么默认关闭以及何时应该开启" },
+      { tur: "eklendi", metin: "网络隐私默认设置：不通过 DHCP 发送主机名、IPv6 临时地址、相关的 sysctl 设置以及 zram 交换分区" },
+      { tur: "eklendi", metin: "系统语言准备：你所选语言的语言包和区域设置会在欢迎向导的“完成”步骤中经询问后安装；已就绪的外语会在选择器中标注“（beta）”" },
+      { tur: "eklendi", metin: "系统标识：/usr/lib/os-release 显示 CarotOS；对桌面做了轻量的 gtk.css 美化；使用 JetBrains Mono 字体的 CarotOS 终端现为默认终端" },
+      { tur: "degisti", metin: "伪造（随机）MAC 不再是默认设置；它会导致启用 MAC 过滤的网络无法连接，现在改为在欢迎向导中开启" },
+      { tur: "degisti", metin: "移除了 noresume 启动参数（它可能导致休眠后丢失未保存的工作）" },
+      { tur: "degisti", metin: "欢迎向导在“完成”之后不再自动打开；如果中途退出，下次会话会再次出现" },
+      { tur: "degisti", metin: "Filenor 在从 PyPI 安装前会先询问，且不再使用 --break-system-packages；移除了 Poligon 中无需认证的 /durum 接口" },
+      { tur: "degisti", metin: "Carot Sleek：去掉了 Bibata 光标和带品牌标识的浏览器图标，顶部面板中的 CarotOS 启动器移到了侧边面板" },
+      { tur: "degisti", metin: "降低了空闲内存占用：调整了 xfwm4 合成器设置，语言层改为只读取头部信息（xfwm4 的占用从 76.6 MB 降到 11.8 MB）；现在 hook 失败时会中止构建" },
+      { tur: "duzeltildi", metin: "面板时钟：登录时会写入系统时区，并保留用户的选择" },
+      { tur: "duzeltildi", metin: "CarotPot 的连接数和重启次数限制、商店中仅从系统目录运行的特权操作，以及 Carotene 和 USB 检查中的文件身份与“干净”结果检查" },
+      { tur: "eklendi", metin: "电池指示器：笔记本电脑上，电量显示在右上角时钟旁；台式机上不会显示" },
+      { tur: "eklendi", metin: "七种语言的界面翻译：德语、法语、西班牙语、葡萄牙语、俄语、日语和中文" },
+      { tur: "degisti", metin: "启动：CarotOS Plymouth 主题、配合 os-prober 的 GRUB 5/30 秒菜单超时、安静启动，以及 Intel 显示器上的 i915.fastboot" },
+      { tur: "degisti", metin: "商店目录从 153 款扩充到 220 款应用并已翻译；需要权限的步骤通过专用辅助程序运行，下载可以安全取消" },
+      { tur: "degisti", metin: "CarotOS GSD 扩充到 197 个术语，系统健康扩充到 24 项检查；重新绘制了应用图标" },
+      { tur: "duzeltildi", metin: "全面的安全审查：Poligon（每位学生独立的密钥、连接数限制、输入验证）、商店、CarotPot、安全面板、Carotene、USB 检查、Filenor、系统健康和安装脚本都经过了审查并修复" },
+      { tur: "duzeltildi", metin: "硬件名称过长时 fastfetch 输出会换行并破坏对齐；现在会缩短取值，并在窄终端中去掉 logo" },
+      { tur: "duzeltildi", metin: "Former 和其他应用的左侧菜单现在可以独立滚动，因此在低分辨率屏幕上底部不会再被截断" },
+    ],
+  },
+  {
+    etiket: "1.3",
+    kodAdi: "Eggshell",
+    tarih: "2026年10月29日",
+    tarihISO: "2026-10-29",
+    ozet:
+      "新增 Carotene、CarotPot、Filenor、CarotOS Former 和 CarotOS GSD。系统健康和 USB 检查增加了 ClamAV 与 AppArmor 检查，商店目录扩充到 153 款应用。",
+    degisiklikler: [
+      { tur: "eklendi", metin: "Carotene：使用 ClamAV 进行快速扫描、主文件夹扫描和自定义扫描，支持隔离、病毒库更新和扫描历史；不运行任何后台服务" },
+      { tur: "eklendi", metin: "CarotPot：面向本地网络的虚假 SSH、Telnet、Web 面板、FTP、VNC、RDP、MySQL 和 Redis 陷阱；攻击者列表、诱饵文件和需确认的封锁" },
+      { tur: "eklendi", metin: "Filenor：图片、音频、视频、文档、电子表格、演示文稿和字体转换；PDF 合并、拆分、旋转、压缩和加密；OCR" },
+      { tur: "eklendi", metin: "CarotOS Former：双语指南，用动画逐步讲解安全工具、CarotPot 和 Carotene" },
+      { tur: "eklendi", metin: "CarotOS GSD：可搜索的双语词典，收录 161 个术语，涵盖 Linux、网络、网络安全、密码学、算法和一般计算机科学" },
+      { tur: "eklendi", metin: "系统健康：新增“防护层”类别（AppArmor、AppArmor 配置文件、病毒库更新时间），以及使用 debsums 和 rkhunter 的详细扫描；检查项从 20 项增加到 23 项，类别从六个增加到七个" },
+      { tur: "eklendi", metin: "USB 检查：详细的 ClamAV 扫描，只在用户从窗口中启动时才运行；检测到的文件只会被报告，不会被改动" },
+      { tur: "eklendi", metin: "欢迎向导：为新应用增加了页面；向导现在共二十一页" },
+      { tur: "degisti", metin: "商店目录从 51 款扩充到 153 款应用，分类从七个增加到十个；窗口标题现在是“CarotOS 商店”" },
+      { tur: "degisti", metin: "USB 检查、系统健康和商店有了新图标，用于菜单、面板和窗口" },
+      { tur: "eklendi", metin: "Carotene：未安装 ClamAV 时，“在商店中安装 ClamAV”按钮会在商店中打开 ClamAV 页面" },
+      { tur: "degisti", metin: "默认主机名现在是“carotos”（user@carotos）；欢迎向导中 Carotene、CarotPot 和 Filenor 的标题不再带有多余的“CarotOS”前缀；Poligon 的图片现在显示真实界面" },
+      { tur: "duzeltildi", metin: "图标缓存缺失或过期时，空闲内存占用可能超过 1 GB；现在每次启动都会检查缓存，必要时重建" },
+      { tur: "duzeltildi", metin: "fastfetch 的输出在窄终端窗口中会错乱；缩短了各行内容，终端现在默认以 100×30 打开" },
+      { tur: "eklendi", metin: "商店：新增购物篮；可以一次安装多个应用，只需输入一次密码" },
+      { tur: "eklendi", metin: "日语支持：加入了 Noto CJK 字体和 ja_JP 区域设置；系统语言为日语时，字符不再显示为方框" },
+      { tur: "eklendi", metin: "安装过程中会询问主机名（建议名称：carotos）" },
+      { tur: "degisti", metin: "欢迎向导：应用页面上的图片现在是真实截图；“文件系统”和“主文件夹”的图片已重新绘制，并且为双语" },
+      { tur: "degisti", metin: "ISO 卷标和磁盘信息显示 CarotOS 而不是 Debian；GRUB 菜单项显示为“CarotOS GNU/Linux”" },
+      { tur: "degisti", metin: "已安装系统上的启动信息有所精简；失败的服务仍会显示" },
+      { tur: "duzeltildi", metin: "商店：系统语言为土耳其语时，rkhunter 等部分软件包安装失败；现在 apt 的运行不再受语言设置影响" },
+      { tur: "duzeltildi", metin: "普通用户使用 tshark 时可能出现 dumpcap 权限错误；现在 wireshark 组和 dumpcap 权限在安装时就已就绪" },
+      { tur: "duzeltildi", metin: "安装程序会就 GRUB 询问“本地修改”的问题；GRUB 设置已移到单独的 drop-in 文件中" },
+      { tur: "duzeltildi", metin: "在 Live 会话中时间显示慢了三个小时；时区现在是 Europe/Istanbul" },
+      { tur: "duzeltildi", metin: "Poligon：名字中含有空格或土耳其语字符的学生无法使用聊天和状态功能" },
+      { tur: "duzeltildi", metin: "Poligon：课堂网络中的任何设备都可以冒充教师向学生发送消息；现在聊天需要房间密码，并限制了错误密码的尝试次数和请求大小" },
+      { tur: "duzeltildi", metin: "安全面板：以管理员权限运行时，粘贴到输入框中以“-”开头的选项会被拒绝" },
+      { tur: "duzeltildi", metin: "CarotPot：封锁列表从蜜罐账户可写的目录移到了 root 所有的目录；封锁到期单元以额外的限制运行" },
+    ],
+  },
+  {
+    etiket: "1.2",
+    kodAdi: "Eggshell",
+    tarih: "2026年10月12日",
+    tarihISO: "2026-10-12",
+    ozet:
+      "新增 CarotOS 商店，桌面换用 Arc 主题和 Papirus 图标，并在欢迎向导中加入背景选择。",
+    degisiklikler: [
+      { tur: "eklendi", metin: "CarotOS 商店：七个分类中的 51 款应用，通过 apt 安装和卸载，浅色和深色主题，土耳其语和英语界面" },
+      { tur: "eklendi", metin: "欢迎向导：新增提供三个选项的桌面背景页面，以及 USB 检查和商店页面；向导现在共十五页" },
+      { tur: "eklendi", metin: "USB 检查：登录时在后台启动" },
+      { tur: "eklendi", metin: "Poligon：访客、创建账户和登录选项" },
+      { tur: "eklendi", metin: "登录界面和桌面有了新的 CarotOS 背景；启动画面显示 1.2 版本" },
+      { tur: "degisti", metin: "桌面主题现在是 Arc 加 Papirus 图标；浅色或深色在欢迎向导中选择，默认为深色" },
+      { tur: "degisti", metin: "全新安装现在默认使用新的 CarotOS 背景之一" },
+    ],
+  },
+  {
+    etiket: "1.1",
+    kodAdi: "Eggshell",
+    tarih: "2026年9月2日",
+    tarihISO: "2026-09-02",
+    ozet:
+      "新增 CarotOS Poligon：在隔离的靶场中练习渗透测试，提供学生端和教师端应用。",
+    degisiklikler: [
+      { tur: "eklendi", metin: "CarotOS Poligon：学生端和教师端应用，用于练习 hydra、nmap、john、sqlmap 和 tshark" },
+      { tur: "eklendi", metin: "Poligon 中使用 ufw 和 fail2ban 的防御任务" },
+      { tur: "duzeltildi", metin: "普通用户账户下 tshark 因访问错误而失败；现在会自动添加 wireshark 组" },
+      { tur: "duzeltildi", metin: "以“Try Live”模式启动时显示的用户名是“Debian Live User”" },
+    ],
+  },
+  {
+    etiket: "1.0",
+    kodAdi: "Eggshell",
+    tarih: "2026年8月19日",
+    tarihISO: "2026-08-19",
+    ozet:
+      "首个稳定版。基于 Debian 13 “trixie”，XFCE 桌面，十款安全工具和四个原创应用。",
+    degisiklikler: [
+      { tur: "eklendi", metin: "安全面板：十款工具的图形界面，附有字段说明和实时输出" },
+      { tur: "eklendi", metin: "欢迎向导：十一页的双语介绍，可选择主题和语言" },
+      { tur: "eklendi", metin: "系统健康：六个类别共二十项检查、健康评分、十二项一键修复" },
+      { tur: "eklendi", metin: "USB 检查：检查已连接设备中的 autorun.inf、双重扩展名和隐藏扩展名" },
+      { tur: "eklendi", metin: "支持 BIOS 和 UEFI 安装，并附带支持安全启动的已签名 shim" },
+      { tur: "eklendi", metin: "包含 Wi-Fi、音频和显卡硬件的完整固件集" },
+      { tur: "eklendi", metin: "默认语言为土耳其语，也可使用英语" },
+      { tur: "duzeltildi", metin: "nikto 在已安装的系统上无法运行；已补上缺失的依赖" },
+      { tur: "duzeltildi", metin: "在向导中选择的语言在会话重启后没有生效" },
+      { tur: "duzeltildi", metin: "某些主题下面板和菜单图标缺失" },
+    ],
+  },
+];
+
+const etiketler: Record<string, string> = {
+  eklendi: "新增",
+  duzeltildi: "修复",
+  degisti: "变更",
+  kaldirildi: "移除",
+};
+---
+
+<Base
+  lang="zh"
+  title="更新日志 — CarotOS"
+  description="CarotOS 每个版本的变化：新增的工具、修复的错误、不向后兼容的变更。"
+>
+  <section class="band band--foam log__intro">
+    <div class="wrap">
+      <p class="eyebrow">更新日志</p>
+      <h1 class="log__h1">有什么变化</h1>
+      <p class="lede">
+        这里列出每个版本新增的工具、修复的错误和不向后兼容的变更。相同的说明也发布在 GitHub 的发布页面上。
+      </p>
+      <div class="log__links">
+        <a class="btn btn--ghost" href="/zh#download">下载</a>
+        <a
+          class="btn btn--ghost"
+          href="https://github.com/MiracLight/CarotOS/releases"
+          target="_blank"
+          rel="noopener noreferrer">GitHub 发布页面</a
+        >
+      </div>
+    </div>
+  </section>
+
+  <Wave from="#f4f9fd" to="#deedf8" />
+
+  <section class="band band--shallow">
+    <div class="wrap">
+      {
+        surumler.map((s) => (
+          <article class="rel">
+            <header class="rel__head">
+              <h2 class="rel__tag">
+                {s.etiket} <span class="rel__code">“{s.kodAdi}”</span>
+              </h2>
+              <time class="rel__date mono" datetime={s.tarihISO}>
+                {s.tarih}
+              </time>
+            </header>
+
+            <p class="rel__ozet">{s.ozet}</p>
+
+            <ul class="rel__list">
+              {s.degisiklikler.map((d) => (
+                <li class="rel__item">
+                  <span class={`tag tag--${d.tur}`}>{etiketler[d.tur]}</span>
+                  <span class="rel__text">{d.metin}</span>
+                </li>
+              ))}
+            </ul>
+          </article>
+        ))
+      }
+
+      <p class="log__son">
+        没有更早的版本：1.0 是第一个稳定版。开发过程中的中间构建从未发布过。
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .log__intro {
+    padding-bottom: clamp(3rem, 6vw, 4rem);
+  }
+
+  .log__h1 {
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    margin-bottom: 1.1rem;
+  }
+
+  .log__links {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+
+  .rel {
+    max-width: 78ch;
+  }
+
+  .rel + .rel {
+    margin-top: 3.5rem;
+    padding-top: 3.5rem;
+    border-top: 1.5px solid rgba(24, 95, 165, 0.2);
+  }
+
+  .rel__head {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.9rem;
+  }
+
+  .rel__tag {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    margin: 0;
+  }
+
+  .rel__code {
+    color: var(--current);
+    font-weight: 700;
+  }
+
+  .rel__date {
+    color: var(--ink-faint);
+    font-size: 0.85rem;
+  }
+
+  .rel__ozet {
+    color: var(--ink-soft);
+    font-size: 1.02rem;
+    margin-bottom: 1.8rem;
+    max-width: var(--w-text);
+  }
+
+  .rel__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .rel__item {
+    display: grid;
+    grid-template-columns: 92px 1fr;
+    gap: 0.9rem;
+    align-items: baseline;
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid rgba(24, 95, 165, 0.13);
+  }
+
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 0.24rem 0.4rem;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .tag--eklendi {
+    background: rgba(74, 156, 120, 0.16);
+    color: #2f6f52;
+  }
+
+  .tag--duzeltildi {
+    background: rgba(55, 138, 218, 0.16);
+    color: var(--deep);
+  }
+
+  .tag--degisti {
+    background: rgba(24, 95, 165, 0.1);
+    color: var(--ink-soft);
+  }
+
+  .tag--kaldirildi {
+    background: rgba(160, 90, 90, 0.14);
+    color: #8a4646;
+  }
+
+  .rel__text {
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+
+  .log__son {
+    margin-top: 3rem;
+    font-size: 0.88rem;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 560px) {
+    .rel__item {
+      grid-template-columns: 1fr;
+      gap: 0.3rem;
+    }
+
+    .tag {
+      justify-self: start;
+    }
+  }
+</style>

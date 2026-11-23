@@ -8,10 +8,10 @@ export default defineConfig({
     sitemap({
       i18n: {
         defaultLocale: "tr",
-        // src/i18n/diller.ts ile aynı 9 dil
+        // src/i18n/diller.ts ile aynı 11 dil
         locales: {
           tr: "tr-TR", en: "en-US", de: "de-DE", fr: "fr-FR", es: "es-ES",
-          pt: "pt-BR", ru: "ru-RU", ja: "ja-JP", zh: "zh-Hans",
+          pt: "pt-BR", ru: "ru-RU", ja: "ja-JP", zh: "zh-Hans", ar: "ar-EG", hi: "hi-IN",
         },
       },
       // 404 sayfası site haritasına girmez

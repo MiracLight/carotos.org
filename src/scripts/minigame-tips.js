@@ -15,9 +15,11 @@ import pt from "./ipuclari/pt.js";
 import ru from "./ipuclari/ru.js";
 import ja from "./ipuclari/ja.js";
 import zh from "./ipuclari/zh.js";
+import ar from "./ipuclari/ar.js";
+import hi from "./ipuclari/hi.js";
 
 /** Dil koduna göre ipucu listeleri (her dil src/scripts/ipuclari/<kod>.js). */
-export const TIPS = { tr, en, de, fr, es, pt, ru, ja, zh };
+export const TIPS = { tr, en, de, fr, es, pt, ru, ja, zh, ar, hi };
 
 /** Diziyi karıştırır (Fisher–Yates). */
 function shuffle(a, rand) {

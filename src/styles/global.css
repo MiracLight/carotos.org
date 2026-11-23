@@ -114,6 +114,19 @@ h3 {
   letter-spacing: -0.012em;
 }
 
+/* Arapça (bitişik yazı) ve Hintçe: negatif harf aralığı harfleri koparır; işaretler için satır yüksekliği */
+:lang(ar),
+:lang(ar) *,
+:lang(hi),
+:lang(hi) * {
+  letter-spacing: 0 !important;
+}
+
+:lang(ar) :is(h1, h2, h3),
+:lang(hi) :is(h1, h2, h3) {
+  line-height: 1.35;
+}
+
 /* Japonca ve Çince: boşluk olmadığı için tarayıcı kelimeyi ortadan böler ("しっ/かり").
    keep-all + auto-phrase satırı anlamlı öbek sınırlarında kırar; negatif harf aralığı
    CJK karakterlerini sıkıştırdığı için kaldırılır, satır aralığı biraz açılır. */

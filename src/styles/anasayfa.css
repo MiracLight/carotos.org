@@ -48,9 +48,9 @@
   font-family: var(--font-mono);
   font-size: 0.78rem;
   opacity: 0.72;
-  padding-left: 0.6rem;
-  margin-left: 0.15rem;
-  border-left: 1px solid rgba(255, 255, 255, 0.32);
+  padding-inline-start: 0.6rem;
+  margin-inline-start: 0.15rem;
+  border-inline-start: 1px solid rgba(255, 255, 255, 0.32);
 }
 
 /* --- Kaplumbağa ve dalga halkaları --- */
@@ -136,6 +136,11 @@
   gap: 0.15rem;
 }
 
+[dir="rtl"] .facts__num {
+  direction: ltr;
+  text-align: right;
+}
+
 .facts__num {
   font-family: var(--font-display);
   font-weight: 800;
@@ -198,7 +203,7 @@
 /* 1.2 ve sonrasında gelen uygulamalar için sürüm etiketi */
 .app__tag {
   display: inline-block;
-  margin-left: 0.55rem;
+  margin-inline-start: 0.55rem;
   vertical-align: 0.15em;
   font-family: var(--font-mono);
   font-size: 0.68rem;
@@ -386,7 +391,7 @@
 
 .req__list li span:last-child {
   color: var(--on-dark);
-  text-align: right;
+  text-align: end;
 }
 
 .req__not {
@@ -469,7 +474,7 @@
 
 .dl__meta li span:last-child {
   color: var(--on-dark);
-  text-align: right;
+  text-align: end;
   word-break: break-all;
 }
 
@@ -760,7 +765,7 @@
   }
 
   .dl__meta li span:last-child {
-    text-align: left;
+    text-align: start;
   }
 
   .verify__cmd code {

@@ -22,7 +22,7 @@ const karsiliklar = DILLER.map((d) => ({ dil: d, href: new URL(sayfaYolu(d, sayf
 ---
 
 <!doctype html>
-<html lang={DIL_BILGI[lang].hreflang}>
+<html lang={DIL_BILGI[lang].hreflang} dir={lang === "ar" ? "rtl" : "ltr"}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -87,7 +87,7 @@ const karsiliklar = DILLER.map((d) => ({ dil: d, href: new URL(sayfaYolu(d, sayf
     <style>
       .skip {
         position: absolute;
-        left: -9999px;
+        inset-inline-start: -9999px;
         top: 0;
         z-index: 100;
         background: var(--deep);
@@ -99,7 +99,7 @@ const karsiliklar = DILLER.map((d) => ({ dil: d, href: new URL(sayfaYolu(d, sayf
       }
 
       .skip:focus {
-        left: 0;
+        inset-inline-start: 0;
       }
     </style>
   </body>

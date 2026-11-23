@@ -1,0 +1,338 @@
+---
+import Base from "../../layouts/Base.astro";
+import Wave from "../../components/Wave.astro";
+
+/* ------------------------------------------------------------------
+   CHANGELOG
+
+   When a new release ships, add an object to the FRONT of this array.
+   Mirror the same entry in src/pages/surum-notlari.astro
+   ------------------------------------------------------------------ */
+const surumler = [
+  {
+    etiket: "1.4",
+    kodAdi: "Eggshell",
+    tarih: "15 नवंबर 2026",
+    tarihISO: "2026-11-15",
+    ozet:
+      "Poligon ने एक CTF प्रतियोगिता और एक defender view हासिल किया है, और इस रिलीज़ में Command Explainer, एक ethics guard, ISO signature verification और वैकल्पिक Carot Sleek desktop theme जोड़ा गया है। रिफ्रेश किए गए ISO के साथ, CarotOS को live desktop से graphical installer के साथ इंस्टॉल किया जा सकता है, और Recovery app भी जोड़ दिया गया है। Welcome Wizard अब 31 पेज का हो गया है, Store में 220 applications और GSD में 197 terms हो गए हैं; boot screen को फिर से डिज़ाइन किया गया है और हर application की security review की गई है।",
+    degisiklikler: [
+      { tur: "eklendi", metin: "live desktop से इंस्टॉल करें: desktop पर “Install CarotOS” आइकन Calamares installer खोलता है; Turkish और English, disk encryption (LUKS), ISO से offline install, इंस्टॉलेशन के दौरान CarotOS slides। पिछला installer fallback के रूप में boot menu में रहता है" },
+      { tur: "eklendi", metin: "Recovery: सिस्टम की वर्तमान स्थिति को एक restore point के रूप में सहेजता है और कुछ खराब होने पर उस पर वापस जाता है; टॉप पैनल और Carot Sleek साइड पैनल में" },
+      { tur: "eklendi", metin: "Welcome Wizard: Former में एक “Installing CarotOS” पेज और इंस्टॉलेशन टूर; अब इस wizard में 31 पेज हैं" },
+      { tur: "eklendi", metin: "installer में Keyboard: लेआउट चुनी गई भाषा के आधार पर सुझाया जाता है; चुना गया लेआउट और वेरिएंट (उदाहरण के लिए Turkish F) इंस्टॉलेशन के दौरान तुरंत उपयोग किए जाते हैं और इंस्टॉल किए गए सिस्टम में लिखे जाते हैं" },
+      { tur: "degisti", metin: "Welcome Wizard: Carot Sleek स्विच को डेस्कटॉप वॉलपेपर पेज पर ले जाया गया है" },
+      { tur: "eklendi", metin: "Poligon CTF प्रतियोगिता: टीचर पैनल (start, end, live scoreboard, CSV), 12-चैलेंज पैक, प्रति-छात्र फ्लैग्स, डायनेमिक स्कोरिंग, फर्स्ट-सॉल्व बोनस, हिंट पेनल्टी और स्कोर फ्रीजिंग" },
+      { tur: "eklendi", metin: "Poligon defender व्यू: नकली सेवाओं पर हमलों का इवेंट लॉग, फाइंडिंग एनालिसिस, और ufw और fail2ban की स्थिति" },
+      { tur: "eklendi", metin: "Command Explainer: कमांड चलाने से पहले इसके हिस्सों को सरल भाषा में समझाता है; टर्मिनल में Alt+E से खुलता है, और Security Panel में हर टूल के बगल में एक “Explain” बटन है" },
+      { tur: "eklendi", metin: "Ethics guard: Security Panel स्कैन करने से पहले आपसे टारगेट की पुष्टि करने के लिए कहता है और स्वीकृत नेटवर्क को याद रखता है; इन्हें Settings में रीसेट किया जा सकता है" },
+      { tur: "eklendi", metin: "Welcome Wizard: Network और privacy, Firewall, Disk encryption और swap, Terminal, Command Explainer, Ethics और responsibility, Alongside Windows और Verify your download पेज; विषयों को चुना जा सकता है; इस wizard में अब 29 पेज हैं" },
+      { tur: "eklendi", metin: "ISO verification: SHA256SUMS और एक detached signature आपको यह जांचने की अनुमति देते हैं कि डाउनलोड वास्तव में CarotOS से आया है; Welcome Wizard और Former में स्टेप-बाय-स्टेप समझाया गया है" },
+      { tur: "eklendi", metin: "Former: CTF प्रतियोगिता के लिए विषय, Command Explainer, ethics, disk encryption, ISO verification और defender view; कुल 20 विषय" },
+      { tur: "eklendi", metin: "Carot Sleek: एक वैकल्पिक आधुनिक डेस्कटॉप थीम जिसमें राउंडेड कॉर्नर्स, शैडो और ब्लर, एक बॉटम डॉक और एक CarotOS Side Panel है जो किनारे से स्लाइड होकर आता है; इसे Welcome Wizard से चालू करें और बंद करने पर पिछला लुक वापस आ जाएगा" },
+      { tur: "eklendi", metin: "System Health: नेटवर्क डिस्कवरी (mDNS) को एक बटन से चालू या बंद किया जा सकता है; DHCP और mDNS जैसे अपेक्षित डेस्कटॉप लिसनर्स अब “Listening ports” स्कोर को कम नहीं करेंगे" },
+      { tur: "eklendi", metin: "Network and privacy: एक वैकल्पिक fake-MAC स्विच (डिफ़ॉल्ट रूप से बंद); signed apt.carotos.org रिपॉजिटरी के लिए key ring पैकेज ISO पर उपलब्ध है" },
+      { tur: "eklendi", metin: "System Health: डिस्क पर अनएन्क्रिप्टेड-swap चेक और एक बटन से बंद करने का विकल्प (zram को डिस्क नहीं माना जाता है, fstab का बैकअप लिया जाता है)" },
+      { tur: "eklendi", metin: "Welcome Wizard: एक ufw चालू/बंद स्विच; यह बताता है कि फ़ायरवॉल डिफ़ॉल्ट रूप से बंद क्यों है और इसे कब चालू करना चाहिए" },
+      { tur: "eklendi", metin: "Network privacy defaults: DHCP के ज़रिए कोई hostname नहीं भेजा जाता, IPv6 temporary addresses, संबंधित sysctl settings और zram swap" },
+      { tur: "eklendi", metin: "System language preparation: आपके द्वारा चुनी गई भाषा का language pack और locale, Welcome Wizard के Finish step में पूछने के बाद इंस्टॉल हो जाते हैं; तैयार विदेशी भाषाएं picker में “(beta)” मार्क के साथ दिखाई देंगी" },
+      { tur: "eklendi", metin: "System identity: /usr/lib/os-release में CarotOS दिखाता है; एक हल्का gtk.css desktop polish; CarotOS terminal जिसमें JetBrains Mono है अब default है" },
+      { tur: "degisti", metin: "Fake (random) MAC अब default नहीं है; इसने MAC-filtered networks पर कनेक्शन तोड़ दिए थे और अब इसे Welcome Wizard से चालू किया जा सकता है" },
+      { tur: "degisti", metin: "noresume boot parameter हटा दिया गया है (यह hibernation के बाद unsaved work खो सकता था)" },
+      { tur: "degisti", metin: "Welcome Wizard अब Finish के बाद अपने आप नहीं खुलता; यदि आप इसे आधा पूरा छोड़ देते हैं तो यह अगले session में वापस आएगा" },
+      { tur: "degisti", metin: "Filenor अब PyPI से इंस्टॉल करने से पहले पूछता है और --break-system-packages का उपयोग नहीं करता है; Poligon से अनঅথेंटिकेटेड /durum एंडपॉइंट हटा दिया गया है" },
+      { tur: "degisti", metin: "Carot Sleek: Bibata कर्सर और ब्रांडेड ब्राउज़र आइकन हटा दिए गए हैं, और टॉप पैनल में CarotOS लॉन्चर साइड पैनल में चले गए हैं" },
+      { tur: "degisti", metin: "Idle memory कम हुई: xfwm4 कंपोजिटर सेटिंग और केवल हेडर पढ़ने वाली लैंग्वेज लेयर (xfwm4 शेयर 76.6 MB से घटकर 11.8 MB हो गया); विफलता पर हुक्स अब बिल्ड को रोक देते हैं" },
+      { tur: "duzeltildi", metin: "Panel clock: लॉगिन पर सिस्टम टाइम ज़ोन लिखा जाता है और उपयोगकर्ता की पसंद को सुरक्षित रखा जाता है" },
+      { tur: "duzeltildi", metin: "CarotPot कनेक्शन और रीस्टार्ट सीमाएं, Store के विशेषाधिकार प्राप्त कार्य केवल सिस्टम डायरेक्टरी से चलते हैं, और Carotene और USB Inspector में फाइल-पहचान और “clean”-परिणाम जांच" },
+      { tur: "eklendi", metin: "Battery indicator: लैपटॉप पर बैटरी लेवल घड़ी के बगल में ऊपर दाईं ओर दिखाई देता है; यह डेस्कटॉप कंप्यूटर पर दिखाई नहीं देता है" },
+      { tur: "eklendi", metin: "सात भाषाओं में इंटरफ़ेस अनुवाद: German, French, Spanish, Portuguese, Russian, Japanese और Chinese" },
+      { tur: "degisti", metin: "Boot: CarotOS Plymouth theme, GRUB 5/30 second menu timeout with os-prober, quiet boot, और Intel डिस्प्ले पर i915.fastboot" },
+      { tur: "degisti", metin: "Store कैटलॉग 153 से बढ़कर 220 एप्लिकेशन हो गया है और अनुवादित है; विशेषाधिकारों की आवश्यकता वाले स्टेप्स एक समर्पित हेल्पर के माध्यम से चलते हैं और डाउनलोड सुरक्षित रूप से रद्द किए जा सकते हैं" },
+      { tur: "degisti", metin: "CarotOS GSD बढ़कर 197 शब्द और System Health 24 चेक हो गया है; एप्लिकेशन आइकन फिर से बनाए गए हैं" },
+      { tur: "duzeltildi", metin: "एक व्यापक सुरक्षा समीक्षा: Poligon (प्रति-छात्र कुंजियाँ, कनेक्शन सीमाएँ, सत्यापन), Store, CarotPot, Security Panel, Carotene, USB Inspector, Filenor, System Health और इंस्टॉल स्क्रिप्ट्स की समीक्षा की गई और उन्हें ठीक किया गया" },
+      { tur: "duzeltildi", metin: "fastfetch आउटपुट लंबे हार्डवेयर नामों पर रैप हो रहा था और अलाइनमेंट खराब कर रहा था; अब वैल्यूज़ को छोटा कर दिया गया है और संकीर्ण टर्मिनल्स में लोगो हटा दिया गया है" },
+      { tur: "duzeltildi", metin: "Former और अन्य एप्लिकेशन में बायां मेनू अब अपने आप स्क्रॉल होता है, जिससे कम रिज़ॉल्यूशन वाली स्क्रीन पर नीचे का हिस्सा अब नहीं कटेगा" },
+    ],
+  },
+  {
+    etiket: "1.3",
+    kodAdi: "Eggshell",
+    tarih: "29 अक्टूबर 2026",
+    tarihISO: "2026-10-29",
+    ozet:
+      "Carotene, CarotPot, Filenor, CarotOS Former और CarotOS GSD जोड़े गए। System Health और USB Inspector में ClamAV और AppArmor चेक जोड़े गए हैं, और Store कैटलॉग में 153 एप्लिकेशन हो गए हैं।",
+    degisiklikler: [
+      { tur: "eklendi", metin: "Carotene: ClamAV के साथ त्वरित, होम फोल्डर और कस्टम स्कैन, क्वारंटाइन, वायरस-डेफिनिशन अपडेट और स्कैन हिस्ट्री; यह कोई बैकग्राउंड सर्विस नहीं चलाता है" },
+      { tur: "eklendi", metin: "CarotPot: लोकल नेटवर्क के लिए फर्जी SSH, Telnet, वेब पैनल, FTP, VNC, RDP, MySQL और Redis ट्रैप्स; हमलावर सूची, कैनरी फाइलें और पुष्ट ब्लॉकिंग" },
+      { tur: "eklendi", metin: "Filenor: इमेज, ऑडियो, वीडियो, डॉक्यूमेंट, स्प्रेडशीट, प्रेजेंटेशन और फ़ॉन्ट कन्वर्जन; PDF मर्जिंग, स्प्लिटिंग, रोटेटिंग, श्रिंकिंग और लॉकिंग; OCR" },
+      { tur: "eklendi", metin: "CarotOS Former: एक द्विभाषी गाइड जो एनिमेशन के साथ सुरक्षा टूल, CarotPot और Carotene को स्टेप-बाय-स्टेप समझाता है" },
+      { tur: "eklendi", metin: "CarotOS GSD: Linux, networking, cybersecurity, cryptography, algorithms और general computer science को कवर करने वाले 161 शब्दों का एक searchable bilingual dictionary" },
+      { tur: "eklendi", metin: "System Health: एक Protection layers category (AppArmor, AppArmor profiles, virus-definition age) और debsums और rkhunter का उपयोग करके विस्तृत scans; checks की संख्या 20 से बढ़कर 23 और categories छह से सात हो गई हैं" },
+      { tur: "eklendi", metin: "USB Inspector: एक विस्तृत ClamAV scan जो केवल तभी चलता है जब यूजर इसे window से शुरू करता है; detected files की रिपोर्ट दी जाती है और उन्हें बिना किसी बदलाव के छोड़ दिया जाता है" },
+      { tur: "eklendi", metin: "Welcome Wizard: नए applications के लिए pages; wizard में अब इक्कीस pages हैं" },
+      { tur: "degisti", metin: "The Store catalog 51 से बढ़कर 153 applications और सात से दस categories तक पहुँच गया है; window title अब “CarotOS Store” है" },
+      { tur: "degisti", metin: "USB Inspector, System Health और Store के लिए नए icons, जो menu, panel और windows में उपयोग किए जाते हैं" },
+      { tur: "eklendi", metin: "Carotene: जब ClamAV इंस्टॉल नहीं होता है, तो ”Install ClamAV in the Store” बटन Store में ClamAV पेज खोलता है" },
+      { tur: "degisti", metin: "डिफ़ॉल्ट होस्ट नाम अब ”carotos” (user@carotos) है; Carotene, CarotPot और Filenor के लिए Welcome Wizard के टाइटल में अब अनावश्यक ”CarotOS” प्रीफ़िक्स नहीं है; Poligon इमेज अब असली इंटरफ़ेस दिखाती है" },
+      { tur: "duzeltildi", metin: "जब आइकन कैश गायब या पुराना होता था, तब आइडल मेमोरी का उपयोग 1 GB से अधिक हो सकता था; अब हर बूट पर कैश की जाँच की जाती है और ज़रूरत पड़ने पर इसे फिर से बनाया जाता है" },
+      { tur: "duzeltildi", metin: "संकीर्ण टर्मिनल विंडो में fastfetch का आउटपुट खराब हो रहा था; इसकी लाइनों को छोटा कर दिया गया है और टर्मिनल अब डिफ़ॉल्ट रूप से 100×30 पर खुलता है" },
+      { tur: "eklendi", metin: "Store: एक बास्केट; एक ही पासवर्ड प्रॉम्प्ट के साथ एक साथ कई एप्लिकेशन इंस्टॉल किए जा सकते हैं" },
+      { tur: "eklendi", metin: "जापानी भाषा का समर्थन: Noto CJK फ़ॉन्ट्स और ja_JP लोक़ेल जोड़ दिए गए हैं; सिस्टम भाषा जापानी होने पर अब कैरेक्टर्स बॉक्स के रूप में नहीं दिखेंगे" },
+      { tur: "eklendi", metin: "इंस्टॉलेशन के दौरान होस्ट नाम पूछा जाता है (सुझाया गया नाम: carotos)" },
+      { tur: "degisti", metin: "Welcome Wizard: एप्लिकेशन पेजों पर इमेज अब असली स्क्रीनशॉट हैं; File system और Home folder की इमेजेस को फिर से बनाया गया है और वे द्विभाषी हैं" },
+      { tur: "degisti", metin: "ISO लेबल और डिस्क जानकारी में Debian के बजाय CarotOS लिखा है; GRUB मेनू एंट्रीज़ में “CarotOS GNU/Linux” लिखा है" },
+      { tur: "degisti", metin: "इंस्टॉल किए गए सिस्टम पर बूट मैसेज कम कर दिए गए हैं; एक विफल सर्विस अभी भी दिखाई देती है" },
+      { tur: "duzeltildi", metin: "Store: तुर्की सिस्टम भाषा के साथ, rkhunter जैसे कुछ पैकेज इंस्टॉल करने में विफल रहे; apt अब भाषा सेटिंग से स्वतंत्र रूप से चलता है" },
+      { tur: "duzeltildi", metin: "एक सामान्य यूजर के लिए dumpcap परमिशन एरर के साथ tshark विफल हो सकता था; wireshark ग्रुप और dumpcap क्षमताएं अब इंस्टॉल के समय तैयार आती हैं" },
+      { tur: "duzeltildi", metin: "इंस्टॉलर ने GRUB के लिए “local changes” का सवाल पूछा था; GRUB सेटिंग्स को एक अलग drop-in फ़ाइल में ले जाया गया है" },
+      { tur: "duzeltildi", metin: "लाइव सेशन में समय तीन घंटे पीछे दिखा था; टाइम ज़ोन अब Europe/Istanbul है" },
+      { tur: "duzeltildi", metin: "Poligon: जिन छात्रों के नाम में स्पेस या तुर्की अक्षर थे, उनके लिए चैट और स्टेटस काम नहीं कर रहा था" },
+      { tur: "duzeltildi", metin: "Poligon: क्लासरूम नेटवर्क पर कोई भी डिवाइस शिक्षक के नाम से छात्रों को संदेश भेज सकता था; अब चैट के लिए रूम पासवर्ड की आवश्यकता है, और गलत पासवर्ड के प्रयास और रिक्वेस्ट साइज सीमित कर दिए गए हैं" },
+      { tur: "duzeltildi", metin: "Security Panel: जब एडमिनिस्ट्रेटर अधिकारों के साथ चलाया जाता है, तो फ़ील्ड में पेस्ट किए गए “-” से शुरू होने वाले विकल्पों को अस्वीकार कर दिया जाता है" },
+      { tur: "duzeltildi", metin: "CarotPot: ब्लॉक लिस्ट को एक ऐसे डायरेक्टरी से हटाकर रूट-ओन्ड डायरेक्टरी में ले जाया गया जहाँ honeypot अकाउंट लिख सकता था; block-expiry यूनिट अतिरिक्त प्रतिबंधों के साथ चलती है" },
+    ],
+  },
+  {
+    etiket: "1.2",
+    kodAdi: "Eggshell",
+    tarih: "12 अक्टूबर 2026",
+    tarihISO: "2026-10-12",
+    ozet:
+      "CarotOS Store जोड़ा गया, Arc थीम और Papirus आइकन्स के साथ डेस्कटॉप को रिफ्रेश किया गया, और वेलकम विजार्ड में बैकग्राउंड सिलेक्शन जोड़ा गया।",
+    degisiklikler: [
+      { tur: "eklendi", metin: "CarotOS Store: सात श्रेणियों में 51 एप्लिकेशन, apt के माध्यम से इंस्टॉलेशन और रिमूवल, लाइट और डार्क थीम्स, तुर्की और अंग्रेजी इंटरफ़ेस" },
+      { tur: "eklendi", metin: "Welcome Wizard: तीन विकल्पों वाला एक डेस्कटॉप बैकग्राउंड पेज, साथ ही USB Inspector और Store पेज; अब विज़ार्ड में पंद्रह पेज हैं" },
+      { tur: "eklendi", metin: "USB Inspector: लॉगिन पर बैकग्राउंड में शुरू होता है" },
+      { tur: "eklendi", metin: "Poligon: guest, create-account और sign-in विकल्प" },
+      { tur: "eklendi", metin: "लॉगिन स्क्रीन और डेस्कटॉप के लिए नए CarotOS बैकग्राउंड; बूट स्प्लैश में वर्शन 1.2 दिखाता है" },
+      { tur: "degisti", metin: "डेस्कटॉप थीम अब Arc के साथ Papirus आइकन है; वेलकम विज़ार्ड में light या dark चुना जा सकता है, और dark डिफ़ॉल्ट है" },
+      { tur: "degisti", metin: "एक फ्रेश इंस्टॉलेशन अब नए CarotOS बैकग्राउंड में से एक के साथ डिफ़ॉल्ट रूप से शुरू होता है" },
+    ],
+  },
+  {
+    etiket: "1.1",
+    kodAdi: "Eggshell",
+    tarih: "2 सितंबर 2026",
+    tarihISO: "2026-09-02",
+    ozet:
+      "CarotOS Poligon जोड़ा गया: स्टूडेंट और टीचर एप्लिकेशन के साथ एक आइसोलेटेड रेंज में पेंटेस्टिंग का अभ्यास करें।",
+    degisiklikler: [
+      { tur: "eklendi", metin: "CarotOS Poligon: hydra, nmap, john, sqlmap और tshark के साथ अभ्यास के लिए स्टूडेंट/टीचर एप्लिकेशन" },
+      { tur: "eklendi", metin: "ufw और fail2ban का उपयोग करके Poligon में डिफेंस टास्क" },
+      { tur: "duzeltildi", metin: "एक नियमित यूजर अकाउंट के तहत tshark एक्सेस एरर के साथ विफल रहा; wireshark ग्रुप को अब स्वचालित रूप से जोड़ दिया गया है" },
+      { tur: "duzeltildi", metin: "”Try Live” मोड में बूट करते समय दिखाया गया यूजरनेम ”Debian Live User” था" },
+    ],
+  },
+  {
+    etiket: "1.0",
+    kodAdi: "Eggshell",
+    tarih: "19 अगस्त 2026",
+    tarihISO: "2026-08-19",
+    ozet:
+      "पहला स्थिर रिलीज़। Debian 13 “trixie” बेस, XFCE डेस्कटॉप, दस सुरक्षा उपकरण और चार मूल एप्लिकेशन।",
+    degisiklikler: [
+      { tur: "eklendi", metin: "Security Panel: दस उपकरणों के लिए एक ग्राफिकल इंटरफेस, जिसमें फील्ड डॉक्यूमेंटेशन और लाइव आउटपुट है" },
+      { tur: "eklendi", metin: "Welcome Wizard: थीम और भाषा चयन के साथ ग्यारह पन्नों का द्विभाषी परिचय" },
+      { tur: "eklendi", metin: "System Health: छह श्रेणियों में बीस चेक, एक हेल्थ स्कोर, बारह वन-क्लिक फिक्स" },
+      { tur: "eklendi", metin: "BIOS और UEFI इंस्टॉलेशन, Secure Boot के लिए एक हस्ताक्षरित shim के साथ" },
+      { tur: "eklendi", metin: "Wi-Fi, ऑडियो और ग्राफिक्स हार्डवेयर के लिए पूर्ण फर्मवेयर सेट" },
+      { tur: "eklendi", metin: "डिफ़ॉल्ट भाषा के रूप में Turkish, English भी उपलब्ध है" },
+      { tur: "eklendi", metin: "डिफ़ॉल्ट भाषा तुर्की, अंग्रेज़ी भी उपलब्ध" },
+      { tur: "duzeltildi", metin: "nikto एक इंस्टॉल किए गए सिस्टम पर नहीं चला; एक गायब डिपेंडेंसी जोड़ दी गई" },
+      { tur: "duzeltildi", metin: "सेशन रीस्टार्ट होने के बाद विज़ार्ड में चुनी गई भाषा लागू नहीं हुई" },
+      { tur: "duzeltildi", metin: "कुछ थीम्स के तहत पैनल और मेनू आइकन गायब थे" },
+    ],
+  },
+];
+
+const etiketler: Record<string, string> = {
+  eklendi: "जोड़ा गया",
+  duzeltildi: "ठीक किया गया",
+  degisti: "बदला गया",
+  kaldirildi: "हटा दिया गया",
+};
+---
+
+<Base
+  lang="hi"
+  title="परिवर्तन सूची | CarotOS"
+  description="प्रत्येक CarotOS रिलीज़ में क्या बदला: जोड़े गए टूल्स, ठीक किए गए बग, बैकवर्ड्स-इनकम्पैटिबल बदलाव।"
+>
+  <section class="band band--foam log__intro">
+    <div class="wrap">
+      <p class="eyebrow">परिवर्तन सूची</p>
+      <h1 class="log__h1">क्या बदला</h1>
+      <p class="lede">
+        प्रत्येक रिलीज़ के लिए जोड़े गए टूल्स, ठीक किए गए बग और बैकवर्ड्स-इनकम्पैटिबल बदलाव यहाँ सूचीबद्ध हैं। समान नोट्स GitHub रिलीज़ पेज पर भी प्रकाशित किए जाते हैं।
+      </p>
+      <div class="log__links">
+        <a class="btn btn--ghost" href="/en#download">डाउनलोड करें</a> <a class="btn btn--ghost" href="https://github.com/MiracLight/CarotOS/releases" target="_blank" rel="noopener noreferrer">GitHub रिलीज़</a >
+      </div>
+    </div>
+  </section>
+
+  <Wave from="#f4f9fd" to="#deedf8" />
+
+  <section class="band band--shallow">
+    <div class="wrap">
+      {
+        surumler.map((s) => (
+          <article class="rel">
+            <header class="rel__head">
+              <h2 class="rel__tag">
+                {s.etiket} <span class="rel__code">“{s.kodAdi}”</span>
+              </h2>
+              <time class="rel__date mono" datetime={s.tarihISO}>
+                {s.tarih}
+              </time>
+            </header>
+
+            <p class="rel__ozet">{s.ozet}</p>
+
+            <ul class="rel__list">
+              {s.degisiklikler.map((d) => (
+                <li class="rel__item">
+                  <span class={`tag tag--${d.tur}`}>{etiketler[d.tur]}</span>
+                  <span class="rel__text">{d.metin}</span>
+                </li>
+              ))}
+            </ul>
+          </article>
+        ))
+      }
+
+      <p class="log__son">
+        कोई पिछला रिलीज़ नहीं — 1.0 पहला स्थिर वर्शन है। डेवलपमेंट से इंटरमीडिएट बिल्ड कभी प्रकाशित नहीं किए गए थे।
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .log__intro {
+    padding-bottom: clamp(3rem, 6vw, 4rem);
+  }
+
+  .log__h1 {
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    margin-bottom: 1.1rem;
+  }
+
+  .log__links {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+
+  .rel {
+    max-width: 78ch;
+  }
+
+  .rel + .rel {
+    margin-top: 3.5rem;
+    padding-top: 3.5rem;
+    border-top: 1.5px solid rgba(24, 95, 165, 0.2);
+  }
+
+  .rel__head {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.9rem;
+  }
+
+  .rel__tag {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    margin: 0;
+  }
+
+  .rel__code {
+    color: var(--current);
+    font-weight: 700;
+  }
+
+  .rel__date {
+    color: var(--ink-faint);
+    font-size: 0.85rem;
+  }
+
+  .rel__ozet {
+    color: var(--ink-soft);
+    font-size: 1.02rem;
+    margin-bottom: 1.8rem;
+    max-width: var(--w-text);
+  }
+
+  .rel__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .rel__item {
+    display: grid;
+    grid-template-columns: 92px 1fr;
+    gap: 0.9rem;
+    align-items: baseline;
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid rgba(24, 95, 165, 0.13);
+  }
+
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 0.24rem 0.4rem;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .tag--eklendi {
+    background: rgba(74, 156, 120, 0.16);
+    color: #2f6f52;
+  }
+
+  .tag--duzeltildi {
+    background: rgba(55, 138, 218, 0.16);
+    color: var(--deep);
+  }
+
+  .tag--degisti {
+    background: rgba(24, 95, 165, 0.1);
+    color: var(--ink-soft);
+  }
+
+  .tag--kaldirildi {
+    background: rgba(160, 90, 90, 0.14);
+    color: #8a4646;
+  }
+
+  .rel__text {
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+
+  .log__son {
+    margin-top: 3rem;
+    font-size: 0.88rem;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 560px) {
+    .rel__item {
+      grid-template-columns: 1fr;
+      gap: 0.3rem;
+    }
+
+    .tag {
+      justify-self: start;
+    }
+  }
+</style>

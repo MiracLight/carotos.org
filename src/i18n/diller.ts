@@ -1,10 +1,10 @@
 /* ------------------------------------------------------------------
-   Sitenin dilleri. CarotOS arayüzüyle aynı 9 dil.
+   Sitenin dilleri. CarotOS arayüzüyle aynı 11 dil.
    Yeni dil: buraya bir satır, src/i18n/metin/<kod>.ts ve
    src/pages/<kod>/{index,changelog}.astro, src/scripts/ipuclari/<kod>.js.
    ------------------------------------------------------------------ */
 
-export const DILLER = ["tr", "en", "de", "fr", "es", "pt", "ru", "ja", "zh"] as const;
+export const DILLER = ["tr", "en", "de", "fr", "es", "pt", "ru", "ja", "zh", "ar", "hi"] as const;
 export type Dil = (typeof DILLER)[number];
 
 /** Sayfa türleri: her dilde aynı sayfanın karşılığı vardır. */
@@ -38,6 +38,8 @@ export const DIL_BILGI: Record<Dil, DilBilgisi> = {
   ru: { ad: "Русский", hreflang: "ru", og: "ru_RU", ana: "/ru", notlar: "/ru/changelog", indir: "download", felsefe: "philosophy", icinde: "inside" },
   ja: { ad: "日本語", hreflang: "ja", og: "ja_JP", ana: "/ja", notlar: "/ja/changelog", indir: "download", felsefe: "philosophy", icinde: "inside" },
   zh: { ad: "简体中文", hreflang: "zh-Hans", og: "zh_CN", ana: "/zh", notlar: "/zh/changelog", indir: "download", felsefe: "philosophy", icinde: "inside" },
+  ar: { ad: "العربية", hreflang: "ar", og: "ar_EG", ana: "/ar", notlar: "/ar/changelog", indir: "download", felsefe: "philosophy", icinde: "inside" },
+  hi: { ad: "हिन्दी", hreflang: "hi", og: "hi_IN", ana: "/hi", notlar: "/hi/changelog", indir: "download", felsefe: "philosophy", icinde: "inside" },
 };
 
 /** Bir dildeki sayfanın yolu. */

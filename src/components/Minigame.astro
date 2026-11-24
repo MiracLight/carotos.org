@@ -532,7 +532,7 @@ const veri = {
   }
 
   /* Oyun açıkken arkadaki sayfa animasyonları (süzülen kaplumbağa vb.) durur */
-  html.mg-open body *:not(.mg):not(.mg *) {
+  html:has(dialog.mg[open]) body *:not(.mg):not(.mg *) {
     animation-play-state: paused !important;
   }
 

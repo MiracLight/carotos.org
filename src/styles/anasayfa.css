@@ -637,7 +637,12 @@
 
 @media (min-width: 1040px) {
   .news__grid {
-    grid-template-columns: 1.7fr 1fr 1fr;
+    grid-template-columns: 1.4fr 1fr;
+  }
+  /* Bülten formu geniş durur; GitHub ve RSS kartları yanında alt alta */
+  .news__card--wide {
+    grid-column: 1;
+    grid-row: span 2;
   }
 }
 
@@ -785,8 +790,13 @@
   display: block;
   width: 100%;
   max-width: 540px;
-  height: 640px;
+  height: 680px;
   border: 0;
   border-radius: 12px;
   background: #fff;
+}
+@media (max-width: 520px) {
+  .sub__frame iframe {
+    height: 780px;
+  }
 }

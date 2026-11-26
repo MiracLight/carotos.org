@@ -774,22 +774,15 @@ const tools = [
             通过电子邮件发送发布说明。邮箱地址不会用于其他任何用途。
           </p>
 
-          <form class="sub" id="newsletter">
-            <label class="visually-hidden" for="email">你的电子邮箱地址</label
-            >
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              placeholder="you@example.com"
-              autocomplete="email"
-            />
-            <button class="btn btn--light" type="submit">订阅</button>
-          </form>
-          <p class="sub__note">
-            点击“订阅”会打开邮件应用，并生成一封写好的邮件。
-          </p>
+          <div class="sub__frame">
+            <iframe
+              src="https://67633d94.sibforms.com/v2/serve/MUIFAGmcZ6uZ8ACuV_vY5RZNYRnoRnMLIWTNt8PXoCujQnM0CA3Uf1SLr7wMqEJeSE78095pYIsM1mixN7-ftp9CVz4JEgXivRME_UO6L_0MSsc13UC0SCaD33HOpUUWlRCV-F-mHG0Y1Qug40xaa3yI0V5_S0aLMdzqXrzlXVQzY_uarxTztLRgaX_9d1MPCyOlHgaUFnaVYrSxtQ=="
+              title="新闻邮件订阅表单"
+              loading="lazy"
+              scrolling="no"
+              frameborder="0"></iframe>
+          </div>
+          <p class="sub__note">您的邮箱仅用于发布新闻。点击收到邮件中的链接后即完成订阅；每封邮件都附有退订链接。邮件通过 Brevo 发送。</p>
         </div>
 
         <div class="news__card">
@@ -826,25 +819,3 @@ const tools = [
   </section>
   <Minigame lang="zh" />
 </Base>
-
-<script>
-  /* Newsletter form.
-     Not wired to an email service yet; on submit it opens the visitor's
-     mail app with a prepared message. Once you move to Buttondown,
-     Mailchimp or similar, delete this block and give the form an
-     action + method instead. */
-  const form = document.getElementById("newsletter") as HTMLFormElement | null;
-  form?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const field = document.getElementById("email") as HTMLInputElement;
-    if (!field.checkValidity()) {
-      field.reportValidity();
-      return;
-    }
-    const subject = encodeURIComponent("订阅通讯");
-    const body = encodeURIComponent(
-      `你好，\n\n我想订阅 CarotOS 的发布通讯。\n我的邮箱地址：${field.value}\n`,
-    );
-    window.location.href = `mailto:carotosproject@gmail.com?subject=${subject}&body=${body}`;
-  });
-</script>

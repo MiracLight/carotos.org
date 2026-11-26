@@ -796,22 +796,15 @@ const tools = [
             usan para ningún otro fin.
           </p>
 
-          <form class="sub" id="newsletter">
-            <label class="visually-hidden" for="email">Tu dirección de correo</label
-            >
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              placeholder="tu@ejemplo.com"
-              autocomplete="email"
-            />
-            <button class="btn btn--light" type="submit">Suscribirme</button>
-          </form>
-          <p class="sub__note">
-            Suscribirme abre la aplicación de correo con un mensaje preparado.
-          </p>
+          <div class="sub__frame">
+            <iframe
+              src="https://67633d94.sibforms.com/v2/serve/MUIFAGmcZ6uZ8ACuV_vY5RZNYRnoRnMLIWTNt8PXoCujQnM0CA3Uf1SLr7wMqEJeSE78095pYIsM1mixN7-ftp9CVz4JEgXivRME_UO6L_0MSsc13UC0SCaD33HOpUUWlRCV-F-mHG0Y1Qug40xaa3yI0V5_S0aLMdzqXrzlXVQzY_uarxTztLRgaX_9d1MPCyOlHgaUFnaVYrSxtQ=="
+              title="Suscripción al boletín"
+              loading="lazy"
+              scrolling="no"
+              frameborder="0"></iframe>
+          </div>
+          <p class="sub__note">Tu dirección se usa solo para noticias de las versiones. El registro se completa al hacer clic en el enlace del correo que recibes; cada correo incluye un enlace para darte de baja. El envío se hace con Brevo.</p>
         </div>
 
         <div class="news__card">
@@ -850,25 +843,3 @@ const tools = [
   </section>
   <Minigame lang="es" />
 </Base>
-
-<script>
-  /* Newsletter form.
-     Not wired to an email service yet; on submit it opens the visitor's
-     mail app with a prepared message. Once you move to Buttondown,
-     Mailchimp or similar, delete this block and give the form an
-     action + method instead. */
-  const form = document.getElementById("newsletter") as HTMLFormElement | null;
-  form?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const field = document.getElementById("email") as HTMLInputElement;
-    if (!field.checkValidity()) {
-      field.reportValidity();
-      return;
-    }
-    const subject = encodeURIComponent("Suscripción al boletín");
-    const body = encodeURIComponent(
-      `Hola:\n\nMe gustaría suscribirme al boletín de versiones de CarotOS.\nMi dirección de correo: ${field.value}\n`,
-    );
-    window.location.href = `mailto:carotosproject@gmail.com?subject=${subject}&body=${body}`;
-  });
-</script>

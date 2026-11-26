@@ -816,21 +816,15 @@ const araclar = [
             kullanılmaz.
           </p>
 
-          <form class="sub" id="bulten">
-            <label class="visually-hidden" for="eposta">E-posta adresin</label>
-            <input
-              id="eposta"
-              name="eposta"
-              type="email"
-              required
-              placeholder="ornek@eposta.com"
-              autocomplete="email"
-            />
-            <button class="btn btn--light" type="submit">Katıl</button>
-          </form>
-          <p class="sub__note" id="bulten-not">
-            Katıl, hazır bir mesajla e-posta uygulamasını açar.
-          </p>
+          <div class="sub__frame">
+            <iframe
+              src="https://67633d94.sibforms.com/v2/serve/MUIFAGmcZ6uZ8ACuV_vY5RZNYRnoRnMLIWTNt8PXoCujQnM0CA3Uf1SLr7wMqEJeSE78095pYIsM1mixN7-ftp9CVz4JEgXivRME_UO6L_0MSsc13UC0SCaD33HOpUUWlRCV-F-mHG0Y1Qug40xaa3yI0V5_S0aLMdzqXrzlXVQzY_uarxTztLRgaX_9d1MPCyOlHgaUFnaVYrSxtQ=="
+              title="Bülten kayıt formu"
+              loading="lazy"
+              scrolling="no"
+              frameborder="0"></iframe>
+          </div>
+          <p class="sub__note">Adresin yalnızca sürüm haberleri için kullanılır. Kaydın, gelen e-postadaki bağlantıya tıklayınca tamamlanır; her e-postada abonelikten çıkma bağlantısı bulunur. Gönderim Brevo ile yapılır.</p>
         </div>
 
         {/* GitHub */}
@@ -871,26 +865,4 @@ const araclar = [
   </section>
   <Minigame lang="tr" />
 </Base>
-
-<script>
-  /* Bülten formu.
-     Şu an bir e-posta servisine bağlı değil; form gönderildiğinde
-     kullanıcının e-posta uygulamasını hazır bir mesajla açıyor.
-     Buttondown/Mailchimp gibi bir servise geçtiğinizde bu bloğu silip
-     forma action + method vermek yeterli. */
-  const form = document.getElementById("bulten") as HTMLFormElement | null;
-  form?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const alan = document.getElementById("eposta") as HTMLInputElement;
-    if (!alan.checkValidity()) {
-      alan.reportValidity();
-      return;
-    }
-    const konu = encodeURIComponent("Bülten aboneliği");
-    const govde = encodeURIComponent(
-      `Merhaba,\n\nCarotOS sürüm bültenine katılmak istiyorum.\nE-posta adresim: ${alan.value}\n`,
-    );
-    window.location.href = `mailto:carotosproject@gmail.com?subject=${konu}&body=${govde}`;
-  });
-</script>
 

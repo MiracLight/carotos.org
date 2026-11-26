@@ -637,12 +637,33 @@
 
 @media (min-width: 1040px) {
   .news__grid {
-    grid-template-columns: 1.4fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
-  /* Bülten formu geniş durur; GitHub ve RSS kartları yanında alt alta */
-  .news__card--wide {
+  /* Bülten kartı tam satır: açıklama solda, form sağda. GitHub ve RSS altta yan yana. */
+  .news__card.news__card--wide {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 540px);
+    grid-template-rows: 1fr auto auto auto 1fr;
+    column-gap: clamp(1.5rem, 3vw, 2.75rem);
+  }
+  /* Sol sütundaki metin formun yanında dikeyde ortalanır */
+  .news__card--wide > h3 {
     grid-column: 1;
-    grid-row: span 2;
+    grid-row: 2;
+  }
+  .news__card--wide > p:not(.sub__note) {
+    grid-column: 1;
+    grid-row: 3;
+  }
+  .news__card--wide > .sub__note {
+    grid-column: 1;
+    grid-row: 4;
+  }
+  .news__card--wide > .sub__frame {
+    grid-column: 2;
+    grid-row: 1 / -1;
+    margin-top: 0;
   }
 }
 
@@ -658,7 +679,7 @@
 /* Orta genişlikte e-posta kartı iki sütun kaplar, geniş ekranda
    üç sütunlu düzende kendi sütununda durur. */
 @media (min-width: 760px) and (max-width: 1039px) {
-  .news__card--wide {
+  .news__card.news__card--wide {
     grid-column: span 2;
   }
 }

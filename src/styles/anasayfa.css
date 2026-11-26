@@ -635,12 +635,6 @@
   }
 }
 
-@media (min-width: 1040px) {
-  .news__grid {
-    grid-template-columns: 1.7fr 1fr 1fr;
-  }
-}
-
 .news__card {
   background: rgba(255, 255, 255, 0.05);
   border: 1.5px solid rgba(169, 198, 224, 0.22);
@@ -650,11 +644,10 @@
   flex-direction: column;
 }
 
-/* Orta genişlikte e-posta kartı iki sütun kaplar, geniş ekranda
-   üç sütunlu düzende kendi sütununda durur. */
-@media (min-width: 760px) and (max-width: 1039px) {
+/* E-posta kartı üstte tam satır; GitHub ve RSS altında yan yana. */
+@media (min-width: 760px) {
   .news__card.news__card--wide {
-    grid-column: span 2;
+    grid-column: 1 / -1;
   }
 }
 

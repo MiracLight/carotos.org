@@ -794,15 +794,48 @@ const tools = [
             Zweck verwendet.
           </p>
 
-          <div class="sub__frame">
-            <iframe
-              src="https://67633d94.sibforms.com/v2/serve/MUIFAGmcZ6uZ8ACuV_vY5RZNYRnoRnMLIWTNt8PXoCujQnM0CA3Uf1SLr7wMqEJeSE78095pYIsM1mixN7-ftp9CVz4JEgXivRME_UO6L_0MSsc13UC0SCaD33HOpUUWlRCV-F-mHG0Y1Qug40xaa3yI0V5_S0aLMdzqXrzlXVQzY_uarxTztLRgaX_9d1MPCyOlHgaUFnaVYrSxtQ=="
-              title="Newsletter-Anmeldung"
-              loading="lazy"
-              scrolling="no"
-              frameborder="0"></iframe>
+          {/* Brevo kayıt formu: kimlikler ve sınıflar Brevo betiği için (sib-*, form__entry, input, entry__error) */}
+          <div id="sib-form-container" class="bulten">
+            <div id="error-message" class="sib-form-message-panel bulten__mesaj bulten__mesaj--hata" role="alert">
+              <span class="sib-form-message-panel__inner-text">Die Anmeldung konnte nicht gespeichert werden. Bitte versuche es erneut.</span>
+            </div>
+            <div id="success-message" class="sib-form-message-panel bulten__mesaj bulten__mesaj--tamam" role="status">
+              <span class="sib-form-message-panel__inner-text">Fast geschafft! Prüfe dein Postfach (und den Spam-Ordner), um die Anmeldung zu bestätigen.</span>
+            </div>
+            <div id="sib-container">
+              <form id="sib-form" method="POST" action="https://67633d94.sibforms.com/serve/MUIFAGmcZ6uZ8ACuV_vY5RZNYRnoRnMLIWTNt8PXoCujQnM0CA3Uf1SLr7wMqEJeSE78095pYIsM1mixN7-ftp9CVz4JEgXivRME_UO6L_0MSsc13UC0SCaD33HOpUUWlRCV-F-mHG0Y1Qug40xaa3yI0V5_S0aLMdzqXrzlXVQzY_uarxTztLRgaX_9d1MPCyOlHgaUFnaVYrSxtQ==" data-type="subscription">
+                <div class="form__entry sub">
+                  <label class="visually-hidden" for="EMAIL">Deine E-Mail-Adresse</label>
+                  <input class="input" type="email" id="EMAIL" name="EMAIL" autocomplete="email" placeholder="du@example.com" data-required="true" required />
+                  <button class="btn btn--light sib-form-block__button sib-form-block__button-with-loader" form="sib-form" type="submit"><svg class="sib-hide-loader-icon bulten__don" viewBox="0 0 512 512" aria-hidden="true"><path d="M460.116 373.846l-20.823-12.022c-5.541-3.199-7.54-10.159-4.663-15.874 30.137-59.886 28.343-131.652-5.386-189.946-33.641-58.394-94.896-95.833-161.827-99.676C261.028 55.961 256 50.751 256 44.352V20.309c0-6.904 5.808-12.337 12.703-11.982 83.556 4.306 160.163 50.864 202.11 123.677 42.063 72.696 44.079 162.316 6.031 236.832-3.14 6.148-10.75 8.461-16.728 5.01z" /></svg>Anmelden</button>
+                  <label class="entry__error entry__error--primary"></label>
+                </div>
+                <div class="form__entry bulten__dogrula">
+                  <div class="cf-turnstile g-recaptcha" data-sitekey="0x4AAAAAAGUga5pciYe948Q6" id="sib-captcha" data-callback="handleCaptchaResponse" data-language="de" data-theme="dark"></div>
+                  <label class="entry__error entry__error--primary"></label>
+                </div>
+                <input type="text" name="email_address_check" value="" class="input--hidden" tabindex="-1" autocomplete="off" aria-hidden="true" />
+                <input type="hidden" name="locale" value="en" />
+              </form>
+            </div>
           </div>
           <p class="sub__note">Deine Adresse wird nur für Versionsnachrichten verwendet. Die Anmeldung ist abgeschlossen, sobald du in der E-Mail auf den Bestätigungslink klickst; jede E-Mail enthält einen Abmeldelink. Der Versand erfolgt über Brevo.</p>
+          <script is:inline>
+            function handleCaptchaResponse() {
+              document.getElementById("sib-captcha").dispatchEvent(new Event("captchaChange"));
+              window.grecaptcha = window.turnstile;
+            }
+            window.LOCALE = "en";
+            window.EMAIL_INVALID_MESSAGE = window.SMS_INVALID_MESSAGE = window.GENERIC_INVALID_MESSAGE = window.INVALID_NUMBER = "Bitte gib eine gültige E-Mail-Adresse ein.";
+            window.REQUIRED_ERROR_MESSAGE = "Dieses Feld darf nicht leer sein.";
+            window.REQUIRED_CODE_ERROR_MESSAGE = "Dieses Feld darf nicht leer sein.";
+            window.INVALID_DATE = "Bitte gib eine gültige E-Mail-Adresse ein.";
+            window.REQUIRED_MULTISELECT_MESSAGE = "Dieses Feld darf nicht leer sein.";
+            window.translation = { common: { selectedList: "{quantity}", selectedLists: "{quantity}", selectedOption: "{quantity}", selectedOptions: "{quantity}" } };
+            var AUTOHIDE = false;
+          </script>
+          <script is:inline defer src="https://sibforms.com/forms/end-form/build/main.js"></script>
+          <script is:inline async defer src="https://challenges.cloudflare.com/turnstile/v0/api.js"></script>
         </div>
 
         <div class="news__card">

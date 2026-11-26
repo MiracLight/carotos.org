@@ -637,33 +637,7 @@
 
 @media (min-width: 1040px) {
   .news__grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  /* Bülten kartı tam satır: açıklama solda, form sağda. GitHub ve RSS altta yan yana. */
-  .news__card.news__card--wide {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 540px);
-    grid-template-rows: 1fr auto auto auto 1fr;
-    column-gap: clamp(1.5rem, 3vw, 2.75rem);
-  }
-  /* Sol sütundaki metin formun yanında dikeyde ortalanır */
-  .news__card--wide > h3 {
-    grid-column: 1;
-    grid-row: 2;
-  }
-  .news__card--wide > p:not(.sub__note) {
-    grid-column: 1;
-    grid-row: 3;
-  }
-  .news__card--wide > .sub__note {
-    grid-column: 1;
-    grid-row: 4;
-  }
-  .news__card--wide > .sub__frame {
-    grid-column: 2;
-    grid-row: 1 / -1;
-    margin-top: 0;
+    grid-template-columns: 1.7fr 1fr 1fr;
   }
 }
 
@@ -803,21 +777,61 @@
 .app__links a { color: var(--deep); text-decoration: underline; text-underline-offset: 3px; }
 .app__links a:hover { text-decoration-thickness: 2px; }
 
-/* Bülten kayıt formu (Brevo iframe) */
-.sub__frame {
-  margin: 1.1rem 0 0;
+/* Bülten kayıt formu (Brevo). Brevo'nun kendi stil dosyası genel sınıflar içerdiği için
+   yüklenmez; betiğin kullandığı durum sınıfları burada tanımlanır. */
+.sib-form-message-panel {
+  display: none;
 }
-.sub__frame iframe {
+.sib-form-message-panel--active {
   display: block;
-  width: 100%;
-  max-width: 540px;
-  height: 680px;
-  border: 0;
-  border-radius: 12px;
-  background: #fff;
 }
-@media (max-width: 520px) {
-  .sub__frame iframe {
-    height: 780px;
+.sib-hide-loader-icon,
+.input--hidden {
+  display: none !important;
+}
+.bulten__mesaj {
+  margin-top: 1.1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.bulten__mesaj--tamam {
+  background: rgba(91, 191, 140, 0.14);
+  border: 1px solid rgba(91, 191, 140, 0.45);
+  color: #d6f4e4;
+}
+.bulten__mesaj--hata {
+  background: rgba(226, 75, 74, 0.14);
+  border: 1px solid rgba(226, 75, 74, 0.45);
+  color: #fbd9d9;
+}
+.bulten .entry__error {
+  flex-basis: 100%;
+  font-size: 0.8rem;
+  color: #f7b4b4;
+}
+.bulten .entry__error:empty {
+  display: none;
+}
+.bulten__dogrula {
+  margin-top: 0.8rem;
+  min-height: 65px;
+}
+.sib-form-block__button-disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+.bulten__don {
+  width: 1em;
+  height: 1em;
+  margin-inline-end: 0.45em;
+  vertical-align: -0.12em;
+  fill: currentColor;
+  animation: bulten-don 0.9s linear infinite;
+}
+@keyframes bulten-don {
+  to {
+    transform: rotate(360deg);
   }
 }

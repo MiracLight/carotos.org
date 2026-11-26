@@ -1,0 +1,86 @@
+---
+// Bülten aboneliği onaylandıktan sonra Brevo'nun yönlendirdiği sayfa (form ayarlarında bu adres yazılı).
+// Onay bağlantısı dil bilmediği için sayfa Türkçe ve İngilizce birlikte.
+import Base from "../layouts/Base.astro";
+---
+
+<Base
+  lang="tr"
+  title="Abonelik onaylandı | CarotOS"
+  description="CarotOS bülten aboneliğin onaylandı."
+>
+  <section class="band band--foam ok">
+    <div class="wrap ok__inner">
+      <img class="ok__img" src="/carotos-amblem.svg" alt="" width="120" height="120" />
+
+      <h1 class="ok__h1">Aboneliğin onaylandı.</h1>
+      <p class="lede ok__lede">
+        Teşekkürler! Yeni sürümler ve önemli duyurular e-postana gelecek. İstediğin zaman, her
+        e-postanın altındaki bağlantıyla abonelikten çıkabilirsin.
+      </p>
+      <p class="ok__en" lang="en">
+        Your subscription is confirmed. Thank you! New releases and important announcements will
+        arrive in your inbox. You can unsubscribe at any time using the link at the bottom of every
+        email.
+      </p>
+
+      <div class="ok__links">
+        <a class="btn btn--solid" href="/">Ana sayfa</a>
+        <a class="btn btn--ghost" href="/#indir">İndirme</a>
+        <a class="btn btn--ghost" href="/surum-notlari">Sürüm notları</a>
+      </div>
+      <p class="ok__en ok__en--links" lang="en">
+        <a href="/en/">Home</a> · <a href="/en/#download">Download</a> ·
+        <a href="/en/changelog">Changelog</a>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .ok {
+    min-height: 72vh;
+    display: grid;
+    align-items: center;
+  }
+
+  .ok__inner {
+    text-align: center;
+    max-width: 640px;
+  }
+
+  .ok__img {
+    width: 110px;
+    height: auto;
+    margin: 0 auto 1.6rem;
+    display: block;
+  }
+
+  .ok__h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin-bottom: 0.9rem;
+  }
+
+  .ok__lede {
+    margin-inline: auto;
+  }
+
+  .ok__en {
+    margin: 0.7rem auto 0;
+    font-size: 0.92rem;
+    color: var(--ink-faint);
+    max-width: 50ch;
+  }
+
+  .ok__en--links {
+    margin-top: 1rem;
+  }
+
+  .ok__links {
+    display: flex;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 2.2rem;
+  }
+</style>

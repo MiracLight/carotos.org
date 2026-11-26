@@ -14,8 +14,8 @@ export default defineConfig({
           pt: "pt-BR", ru: "ru-RU", ja: "ja-JP", zh: "zh-Hans", ar: "ar-EG", hi: "hi-IN",
         },
       },
-      // 404 sayfası site haritasına girmez
-      filter: (sayfa) => !sayfa.includes("/404"),
+      // 404 ve bülten onay sayfası site haritasına girmez
+      filter: (sayfa) => !sayfa.includes("/404") && !sayfa.includes("/bulten-onaylandi"),
     }),
   ],
 });
